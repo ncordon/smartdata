@@ -3,11 +3,18 @@ Title: Data preprocessing for R
 Version: 0.0.0.9000
 Authors@R: c(
    person("Ignacio", "Cordón", email = "nacho.cordon.castillo@gmail.com", role = c("aut", "cre")),
-   person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut"))
+   person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut")
  )
 Maintainer: Ignacio Cordón <nacho.cordon.castillo@gmail.com>
-Description: Provides an easy pipe for preprocessing tasks in data mining based on already existing and well-known R packages
+Description: Eases data preprocessing tasks, providing a data flow based 
+   on a pipe operator which eases cleansing, transformation, oversampling, 
+   or instance/feature selection operations
 Depends: R (>= 3.4.3)
+Imports:
+   magrittr,
+   imbalance,
+   unbalanced,
+   RoughSets
 License: GPL (>=2) | file LICENSE
 Encoding: UTF-8
 LazyData: true

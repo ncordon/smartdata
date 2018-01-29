@@ -1,0 +1,7 @@
+checkDataset = getFromNamespace("checkDataset", "imbalance")
+checkDatasetClass = getFromNamespace("checkDatasetClass", "imbalance")
+checkAllColumnsNumeric = getFromNamespace("checkAllColumnsNumeric", "imbalance")
+whichMinorityClass = getFromNamespace("whichMinorityClass", "imbalance")
+whichMinority = getFromNamespace("whichMinority", "imbalance")
+#datasetStructure = getFromNamespace("datasetStructure", "imbalance")
+#normalizeNewSamples = getFromNamespace("normalizeNewSamples", "imbalance")

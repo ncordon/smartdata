@@ -13,7 +13,9 @@
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% instance_selection(method = "CNN")
-instance_selection <- function(dataset, method = c("CNN", "ENN"), classAttr = "Class"){
+instance_selection <- function(dataset,
+                               method = c("CNN", "ENN", "multiedit", "FRIS"),
+                               classAttr = "Class"){
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
   #originalShape <- datasetStructure(dataset, classAttr)
@@ -41,6 +43,17 @@ instance_selection <- function(dataset, method = c("CNN", "ENN"), classAttr = "C
     # Reset rownames
     rownames(result) <- c()
   }
+  else if(method == "multiedit"){
+    rowsToKeep <- class::multiedit(dataset[, -classIndex],
+                                   dataset[, classIndex], trace = F)
+    result <- dataset[rowsToKeep, ]
+  }
+  else if(method == "FRIS"){
+    decisionTable <- RoughSets::SF.asDecisionTable(dataset, decision.attr = classIndex)
+    rowsToKeep <- RoughSets::IS.FRIS.FRST(decisionTable)$indx.objects
+    result <- dataset[rowsToKeep, ]
+  }
+
 
   result
 }

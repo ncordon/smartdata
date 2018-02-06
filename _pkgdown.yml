@@ -1,0 +1,19 @@
+url: http://ncordon.github.io/amendr
+
+template:
+  params:
+    bootswatch: cosmo
+
+navbar:
+  title: "amendr"
+  type: default
+  left:
+    - text: "Home"
+      href: index.html
+      icon: fa-home
+    - text: "Quick reference"
+      icon: fa-bars
+      href: "reference/index.html"
+  right:
+    - icon: fa-github
+      href: https://github.com/ncordon/amendr

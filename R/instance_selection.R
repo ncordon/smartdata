@@ -1,3 +1,6 @@
+instSelectionMethods <- c("CNN", "ENN", "multiedit", "FRIS")
+
+
 #' Instance selection wrapper
 #'
 #' @param dataset we want to perform an instance selection on
@@ -13,13 +16,11 @@
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% instance_selection(method = "CNN")
-instance_selection <- function(dataset,
-                               method = c("CNN", "ENN", "multiedit", "FRIS"),
-                               classAttr = "Class"){
+instance_selection <- function(dataset, method = instSelectionMethods, classAttr = "Class"){
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
   #originalShape <- datasetStructure(dataset, classAttr)
-  checkAllColumnsNumeric(dataset, exclude = classAttr, "dataset")
+  checkAllColumnsNumeric(dataset, exclude = classAttr)
   classIndex <- which(names(dataset) == classAttr)
 
 

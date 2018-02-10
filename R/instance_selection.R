@@ -16,7 +16,8 @@ instSelectionMethods <- c("CNN", "ENN", "multiedit", "FRIS")
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% instance_selection(method = "CNN")
-instance_selection <- function(dataset, method = instSelectionMethods, classAttr = "Class"){
+instance_selection <- function(dataset, method = instSelectionMethods,
+                               classAttr = "Class"){
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
   #originalShape <- datasetStructure(dataset, classAttr)

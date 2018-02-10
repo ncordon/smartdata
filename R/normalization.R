@@ -48,8 +48,8 @@ doNormalization.dprep <- function(task){
 #'
 #' @param dataset we want to perform normalization on
 #' @param method selected method of normalization
-#' @param classAttr \code{character}. Indicates the class attribute from
-#'   \code{dataset}. Must exist in it.
+#' @param classAttr \code{character}. Indicates the class attribute or
+#'   attributes from \code{dataset}. Must exist in it.
 #'
 #' @return The normalized dataset
 #' @export
@@ -69,7 +69,7 @@ normalization <- function(dataset, method = normalizationMethods,
   checkDatasetClass(dataset, classAttr)
   checkAllColumnsNumeric(dataset, exclude = classAttr)
   method <- match.arg(method)
-  classIndex <- which(names(dataset) == classAttr)
+  classIndex <- which(names(dataset) %in% classAttr)
   # Strip dataset from class attribute
   datasetClass <- dataset[, classIndex]
   dataset <- dataset[, -classIndex]

@@ -3,14 +3,6 @@ normalizationPackages <- list("min-max" = "clusterSim",
                               "decimal-scaling" = "dprep",
                               "sigmoidal" = "dprep",
                               "softmax" = "dprep")
-normalizationMethods <- names(normalizationPackages)
-
-
-normalizationTask <- function(dataset, method, ...){
-  task <- list(dataset = dataset, method = method, args = list(...))
-  class(task) <- normalizationPackages[[method]]
-  task
-}
 
 
 doNormalization <- function(task){
@@ -48,25 +40,34 @@ doNormalization.dprep <- function(task){
 #'
 #' @param dataset we want to perform normalization on
 #' @param method selected method of normalization
-#' @param classAttr \code{character}. Indicates the class attribute or
+#' @param class_attr \code{character}. Indicates the class attribute or
 #'   attributes from \code{dataset}. Must exist in it.
+#' @param ... Further arguments for \code{method}
 #'
 #' @return The normalized dataset
 #' @export
 #'
 #' @examples
 #' library("amendr")
+#' library("imbalance")
+#' library("magrittr")
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% normalization(method = "min-max", class_attr = "Class")
 #' super_iris <- iris0 %>% normalization(method = "min-max", normalization = "row")
 #'
-normalization <- function(dataset, method = normalizationMethods,
+normalization <- function(dataset,
+                          method = c("min-max",
+                                     "z-score",
+                                     "decimal-scaling",
+                                     "sigmoidal",
+                                     "softmax"),
                           class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
+  dataset <- toNumeric(dataset, exclude = classAttr)
   checkAllColumnsNumeric(dataset, exclude = classAttr)
   method <- match.arg(method)
   classIndex <- which(names(dataset) %in% classAttr)
@@ -75,8 +76,8 @@ normalization <- function(dataset, method = normalizationMethods,
   dataset <- dataset[, -classIndex]
 
   # Perform normalization
-  task <- normalizationTask(dataset, method, ...)
-  dataset <- doNormalization(task)
+  task <- preprocessingTask(dataset, "normalization", method, classAttr, ...)
+  dataset <- preprocess(task)
 
   # Join class attribute again
   dataset[, classIndex] <- datasetClass

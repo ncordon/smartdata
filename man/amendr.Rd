@@ -11,39 +11,39 @@ preprocessing libraries, providing oversampling, instance and feature
 selection, normalization, discretization, space transformation and
 outliers/noise/missing values treatment
 }
-\section{Method to do oversampling \code{\link{}}}{
+\section{Method to do oversampling}{
 NA
 }
 
-\section{Method to do instance selection \code{\link{}}}{
+\section{Method to do instance selection \code{\link{instance_selection}}}{
 NA
 }
 
-\section{Method to do feature selection \code{\link{}}}{
+\section{Method to do feature selection}{
 NA
 }
 
-\section{Method to do normalization \code{\link{}}}{
+\section{Method to do normalization \code{\link{normalization}}}{
 NA
 }
 
-\section{Method to do discretization \code{\link{}}}{
+\section{Method to do discretization}{
 NA
 }
 
-\section{Method to do space transformation \code{\link{}}}{
+\section{Method to do space transformation}{
 NA
 }
 
-\section{Method to treat outliers \code{\link{}}}{
+\section{Method to treat outliers}{
 NA
 }
 
-\section{Method to treat missing values \code{\link{}}}{
+\section{Method to treat missing values}{
 NA
 }
 
-\section{Method to treat noise \code{\link{}}}{
+\section{Method to treat noise}{
 NA
 }
 

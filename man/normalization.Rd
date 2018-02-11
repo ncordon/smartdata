@@ -4,16 +4,18 @@
 \alias{normalization}
 \title{Normalization wrapper}
 \usage{
-normalization(dataset, method = normalizationMethods, class_attr = "Class",
-  ...)
+normalization(dataset, method = c("min-max", "z-score", "decimal-scaling",
+  "sigmoidal", "softmax"), class_attr = "Class", ...)
 }
 \arguments{
 \item{dataset}{we want to perform normalization on}
 
 \item{method}{selected method of normalization}
 
-\item{classAttr}{\code{character}. Indicates the class attribute from
-\code{dataset}. Must exist in it.}
+\item{class_attr}{\code{character}. Indicates the class attribute or
+attributes from \code{dataset}. Must exist in it.}
+
+\item{...}{Further arguments for \code{method}}
 }
 \value{
 The normalized dataset
@@ -23,6 +25,8 @@ Normalization wrapper
 }
 \examples{
 library("amendr")
+library("imbalance")
+library("magrittr")
 data(iris0)
 
 super_iris <- iris0 \%>\% normalization(method = "min-max", class_attr = "Class")

@@ -5,16 +5,63 @@
 #' selection, normalization, discretization, space transformation and
 #' outliers/noise/missing values treatment
 #'
-#' @section Method to do oversampling \code{\link{}}
-#' @section Method to do instance selection \code{\link{}}
-#' @section Method to do feature selection \code{\link{}}
-#' @section Method to do normalization \code{\link{}}
-#' @section Method to do discretization \code{\link{}}
-#' @section Method to do space transformation \code{\link{}}
-#' @section Method to treat outliers \code{\link{}}
-#' @section Method to treat missing values \code{\link{}}
-#' @section Method to treat noise \code{\link{}}
+#' @section Method to do oversampling
+#' @section Method to do instance selection \code{\link{instance_selection}}
+#' @section Method to do feature selection
+#' @section Method to do normalization \code{\link{normalization}}
+#' @section Method to do discretization
+#' @section Method to do space transformation
+#' @section Method to treat outliers
+#' @section Method to treat missing values
+#' @section Method to treat noise
 #'
 #' @docType package
 #' @name amendr
 NULL
+
+
+#' @import imbalance
+#' @import magrittr
+#' @import unbalanced
+NULL
+
+preprocessingTask <- function(dataset, what, method, classAttr, ...){
+  classIndex <- which(names(dataset) %in% classAttr)
+  task <- list(dataset = dataset,
+               method = method,
+               classAttr = classAttr,
+               classIndex = classIndex,
+               args = list(...))
+  class(task) <- what
+  task
+}
+
+preprocess <- function(task){
+  UseMethod("preprocess")
+}
+
+preprocess.normalization <- function(task){
+  class(task) <- normalizationPackages[[task$method]]
+
+  doNormalization(task)
+}
+
+preprocess.instanceSelection <- function(task){
+  class(task) <- instSelectionPackages[[task$method]]
+
+  doInstSelection(task)
+}
+
+# dataType <- function(category, ...){
+#   dataType <- list(category, args = ...)
+#   class(dataType) <- category
+# }
+#
+# checkType <- function(dataType, value){
+#   UseMethod("checkType")
+# }
+#
+# checkType.integer <- function()
+
+
+

@@ -8,7 +8,7 @@ Authors@R: c(
 Maintainer: Ignacio Cordón <nacho.cordon.castillo@gmail.com>
 Description: Eases data preprocessing tasks, providing a data flow based 
    on a pipe operator which eases cleansing, transformation, oversampling, 
-   or instance/feature selection operations
+   or instance/feature selection operations.
 Depends: R (>= 3.4.3)
 Imports:
    magrittr,

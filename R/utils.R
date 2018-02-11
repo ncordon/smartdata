@@ -3,6 +3,7 @@ checkDatasetClass = getFromNamespace("checkDatasetClass", "imbalance")
 checkAllColumnsNumeric = getFromNamespace("checkAllColumnsNumeric", "imbalance")
 whichMinorityClass = getFromNamespace("whichMinorityClass", "imbalance")
 whichMinority = getFromNamespace("whichMinority", "imbalance")
+toNumeric <- getFromNamespace("toNumeric", "imbalance")
 #datasetStructure = getFromNamespace("datasetStructure", "imbalance")
 #normalizeNewSamples = getFromNamespace("normalizeNewSamples", "imbalance")
 
@@ -16,7 +17,10 @@ checkListArguments <- function(args, possibilities){
   wildcard <- names(args)[names(args) %in% names(possibilities)]
 
   sapply(wildcard, function(argName){
-    if(!args[[argName]] %in% possibilities[[argName]])
+    if(possibilities[[argName]] == "natural"){
+      if(!is.numeric(args[[argName]]) || !args[[argName]] > 0)
+        stop(paste(args[[argName]], "must be a positive integer"))
+    } else if(!args[[argName]] %in% possibilities[[argName]])
       stop(paste(args[[argName]], "must be one of ", possibilities[argName]))
   })
 }

@@ -15,7 +15,7 @@ doInstSelection.unbalanced <- function(task){
   classAttr <- task$classAttr
   classIndex <- task$classIndex
   dataset <- task$dataset
-  possibleArgs <- list(k = "natural")
+  possibleArgs <- list(k = argCheck("integer", min = 1))
   checkListArguments(task$args, possibleArgs)
 
   # CNN and ENN need minority class as 1, and majority one as 0
@@ -52,9 +52,9 @@ doInstSelection.class <- function(task){
   result <- NULL
 
   if(method == "multiedit"){
-    possibleArgs <- list(k = "natural",
-                         V = "natural",
-                         I = "natural")
+    possibleArgs <- list(k = argCheck("integer", min = 1),
+                         V = argCheck("natural", min = 1),
+                         I = argCheck("natural", min = 1))
     checkListArguments(task$args, possibleArgs)
     callArgs <- append(list(x = dataset[, -classIndex],
                             class = dataset[, classIndex],
@@ -77,10 +77,17 @@ doInstSelection.RoughSets <- function(task){
 
   if(method == "FRIS"){
     # Improve type checking
-    possibleArgs <- list(threshold.tau = "real",
-                         alpha = "real",
-                         type.aggregation = "real",
-                         t.implicator = "real")
+    possibleArgs <- list(threshold.tau = argCheck("real", min = 0, max = 1),
+                         alpha = argCheck("real", min = 0),
+                         type.aggregation = argCheck("other"),
+                         t.implicator = argCheck("discrete",
+                                                 values = c("kleene_dienes",
+                                                            "lukasiewicz", "zadeh",
+                                                            "gaines",
+                                                            "godel",
+                                                            "kleene_dienes_lukasiewicz",
+                                                            "mizumoto",
+                                                            "dubois_prade")))
     checkListArguments(task$args, possibleArgs)
     callArgs <- list(decision.table = decisionTable, control = task$args)
     rowsToKeep <- (do.call(RoughSets::IS.FRIS.FRST, callArgs))$indx.objects

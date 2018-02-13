@@ -27,7 +27,7 @@ doNormalization <- function(task){
 }
 
 doNormalization.clusterSim <- function(task){
-  possibleArgs <- list(normalization = c("column", "row"))
+  possibleArgs <- list(normalization = argCheck("discrete", c("column", "row")))
   checkListArguments(task$args, possibleArgs)
 
   type <- switch(task$method,

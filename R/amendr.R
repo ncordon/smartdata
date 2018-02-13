@@ -51,17 +51,3 @@ preprocess.instanceSelection <- function(task){
 
   doInstSelection(task)
 }
-
-# dataType <- function(category, ...){
-#   dataType <- list(category, args = ...)
-#   class(dataType) <- category
-# }
-#
-# checkType <- function(dataType, value){
-#   UseMethod("checkType")
-# }
-#
-# checkType.integer <- function()
-
-
-

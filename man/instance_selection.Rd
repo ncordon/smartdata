@@ -4,8 +4,7 @@
 \alias{instance_selection}
 \title{Instance selection wrapper}
 \usage{
-instance_selection(dataset, method = c("CNN", "ENN", "multiedit", "FRIS"),
-  class_attr = "Class", ...)
+instance_selection(dataset, method, class_attr = "Class", ...)
 }
 \arguments{
 \item{dataset}{we want to perform an instance selection on}

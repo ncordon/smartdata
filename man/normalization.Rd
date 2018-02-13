@@ -4,8 +4,7 @@
 \alias{normalization}
 \title{Normalization wrapper}
 \usage{
-normalization(dataset, method = c("min-max", "z-score", "decimal-scaling",
-  "sigmoidal", "softmax"), class_attr = "Class", ...)
+normalization(dataset, method, class_attr = "Class", ...)
 }
 \arguments{
 \item{dataset}{we want to perform normalization on}

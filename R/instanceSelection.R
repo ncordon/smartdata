@@ -3,6 +3,7 @@ instSelectionPackages <- list("CNN" = "unbalanced",
                               "multiedit" = "class",
                               "FRIS" = "RoughSets")
 
+instSelectionMethods <- names(instSelectionPackages)
 
 doInstSelection <- function(task){
   UseMethod("doInstSelection")
@@ -109,18 +110,13 @@ doInstSelection.RoughSets <- function(task){
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% instance_selection(method = "CNN")
-instance_selection <- function(dataset,
-                               method = c("CNN",
-                                          "ENN",
-                                          "multiedit",
-                                          "FRIS"),
-                               class_attr = "Class", ...){
+instance_selection <- function(dataset, method, class_attr = "Class", ...){
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
   dataset <- toNumeric(dataset, exclude = classAttr)
   checkAllColumnsNumeric(dataset, exclude = classAttr)
-  method <- match.arg(method)
+  method <- match.arg(method, instSelectionMethods)
 
   # Perform instance selection
   task <- preprocessingTask(dataset, "instanceSelection", method, classAttr, ...)

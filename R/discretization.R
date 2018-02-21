@@ -1,5 +1,5 @@
-discretizationPackages <- list("chi-merge" = "discretization",
-                              "chi2" = "discretization",
+discretizationPackages <- list("chi2" = "discretization",
+                              "chi-merge" = "discretization",
                               "extended-chi2" = "discretization",
                               "mod-chi2" = "discretization",
                               "CAIM" = "discretization",

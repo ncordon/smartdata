@@ -51,3 +51,10 @@ preprocess.instanceSelection <- function(task){
 
   doInstSelection(task)
 }
+
+preprocess.discretization <- function(task){
+  class(task) <- discretizationPackages[[task$method]]
+
+  doDiscretization(task)
+}
+

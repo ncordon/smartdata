@@ -18,7 +18,8 @@ Imports:
    class,
    clusterSim,
    dprep,
-   discretization
+   discretization,
+   infotheo
 License: GPL (>=2) | file LICENSE
 Encoding: UTF-8
 LazyData: true

@@ -5,7 +5,10 @@ discretizationPackages <- list("chi2" = "discretization",
                               "CAIM" = "discretization",
                               "CACC" = "discretization",
                               "ameva" = "discretization",
-                              "mdlp" = "discretization")
+                              "mdlp" = "discretization",
+                              "equalfreq" = "infotheo",
+                              "equalwidth" = "infotheo",
+                              "globalequalwidth" = "infotheo")
 
 discretizationMethods <- names(discretizationPackages)
 
@@ -15,6 +18,7 @@ doDiscretization <- function(task){
 
 doDiscretization.discretization <- function(task){
   type = NA
+  possibleArgs <- list()
 
   if(task$method == "chi-merge"){
     possibleArgs <- list(alpha = argCheck("real", min = 0, max = 1))
@@ -42,12 +46,22 @@ doDiscretization.discretization <- function(task){
     method <- "mdlp"
   }
 
+  checkListArguments(task$args, possibleArgs)
   method <- eval(parse(text = paste("discretization::", method, sep = "")))
-
 
   callArgs <- append(list(task$dataset), task$args)
   result <- do.call(method, callArgs)
   result$Disc.data
+}
+
+
+doDiscretization.infotheo <- function(task) {
+  type = NA
+  possibleArgs <- list(nbins = argCheck("integer", min = 2, max = nrow(task$dataset)))
+
+  checkListArguments(task$args, possibleArgs)
+  callArgs <- append(list(X = task$dataset, disc = task$method), task$args)
+  result <- do.call(infotheo::discretize, callArgs)
 }
 
 
@@ -69,7 +83,8 @@ doDiscretization.discretization <- function(task){
 #' data(iris0)
 #'
 #' super_iris <- iris0 %>% discretize(method = "chi2", class_attr = "Class")
-#' super_iris <- iris0 %>% discretize(method = "ameva")
+#' super_iris <- iris0 %>% discretize(method = "ameva", class_attr = "Class"
+#' super_iris <- iris0 %>% discretize(method = "equalwidth", class_attr = "Class")
 #'
 discretize <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase

@@ -24,25 +24,37 @@ checkListArguments <- function(args, checks){
   })
 }
 
-
+# TODO: improve types and available checks
+# Categories used so far in argCheck:
+# discrete, real, integer, natural, boolean
 
 argCheck <- function(category, values, min = -Inf, max = Inf){
-  if(category == "other"){
-    result <- list(check = function(){ TRUE }, values = c())
-  } else if(!category %in% c("discrete")){
-    mycheck <- function(arg){
-    is.numeric(arg) && (arg >= min) && (arg <= max)
-  }
+  # Numerical check
+  if(category %in% c("real", "integer", "natural")){
+    numberCheck <- function(arg){
+      is.numeric(arg) && (arg >= min) && (arg <= max)
+    }
 
-    result <- list(check = mycheck, values = paste(category, " in ",
-                                                   "]", min, ",", max, "[",
-                                                   sep = ""))
-  } else{
+    result <- list(check = numberCheck, values = paste(category, " in ",
+                                                       "]", min, ",", max, "[",
+                                                       sep = ""))
+  # Discrete values check (argument has to be among values)
+  } else if(category == "discrete"){
     mycheck <- function(arg){
       arg %in% values
     }
 
     result <- list(check = mycheck, values = values)
+  # Boolean category check (argument has to be either True or False)
+  } else if(category == "boolean"){
+    booleanCheck <- function(arg) {
+      class(arg) == "logical"
+    }
+
+    result <- list(check = booleanCheck, values = c("T", "F"))
+  # Default case: consider argument correct
+  } else{
+    result <- list(check = function(){ TRUE }, values = c())
   }
 
   result

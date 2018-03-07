@@ -58,3 +58,9 @@ preprocess.discretization <- function(task){
   doDiscretization(task)
 }
 
+preprocess.oversampling<- function(task){
+  class(task) <- oversamplingPackages[[task$method]]
+
+  doOversampling(task)
+}
+

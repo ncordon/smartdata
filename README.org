@@ -14,14 +14,15 @@
 ** polishr
 * List of package dependences
 ** Imbalance
-*** imbalance
+*** TODO imbalance
 ** Instance selection
 *** sampleSelection (1583 monthly downloads)
 *** dlm (569 monthly downloads)
-*** unbalanced (468 monthly downloads)
-*** Roughsets (269 monthly downloads)
+*** TODO unbalanced (468 monthly downloads)
+*** TODO Roughsets (269 monthly downloads)
 ** Normalization
-*** clusterSim (1206 monthly downloads)
+*** TODO clusterSim (1206 monthly downloads)
+*** TODO dprep (382 monthly downloads)
 ** Discretization
 *** arules (7430 monthly downloads)
 *** infotheo (887 monthly downloads)

@@ -82,9 +82,8 @@ doNormalization.dprep <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("imbalance")
 #' library("magrittr")
-#' data(iris0)
+#' data(iris0, package = "imbalance")
 #'
 #' super_iris <- iris0 %>% normalization(method = "min-max", class_attr = "Class")
 #' super_iris <- iris0 %>% normalization(method = "min-max", normalization = "row")

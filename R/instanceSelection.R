@@ -112,9 +112,8 @@ doInstSelection.RoughSets <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("imbalance")
 #' library("magrittr")
-#' data(iris0)
+#' data(iris0, package = "imbalance")
 #'
 #' super_iris <- iris0 %>% instance_selection(method = "CNN")
 instance_selection <- function(dataset, method, class_attr = "Class", ...){

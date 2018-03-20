@@ -24,12 +24,11 @@ Discretization wrapper
 }
 \examples{
 library("amendr")
-library("imbalance")
 library("magrittr")
-data(iris0)
+data(iris0, package = "imbalance")
 
 super_iris <- iris0 \%>\% discretize(method = "chi2", class_attr = "Class")
-super_iris <- iris0 \%>\% discretize(method = "ameva", class_attr = "Class"
+super_iris <- iris0 \%>\% discretize(method = "ameva", class_attr = "Class")
 super_iris <- iris0 \%>\% discretize(method = "equalwidth", class_attr = "Class")
 
 }

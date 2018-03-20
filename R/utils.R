@@ -51,7 +51,7 @@ argCheck <- function(category, values, min = -Inf, max = Inf){
       class(arg) == "logical"
     }
 
-    result <- list(check = booleanCheck, values = c("T", "F"))
+    result <- list(check = booleanCheck, values = c("TRUE", "FALSE"))
   # Default case: consider argument correct
   } else{
     result <- list(check = function(){ TRUE }, values = c())

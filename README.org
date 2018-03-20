@@ -24,8 +24,8 @@
 *** TODO clusterSim (1206 monthly downloads)
 *** TODO dprep (382 monthly downloads)
 ** Discretization
-*** arules (7430 monthly downloads)
-*** infotheo (887 monthly downloads)
+*** TODO arules (7430 monthly downloads)
+*** TODO infotheo (887 monthly downloads)
 *** funModeling (487 monthly downloads)
 *** discretization (304 monthly downloads)
 ** Outliers

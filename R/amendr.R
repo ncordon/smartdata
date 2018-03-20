@@ -23,6 +23,7 @@ NULL
 #' @import imbalance
 #' @import magrittr
 #' @import unbalanced
+#' @import discretization
 NULL
 
 preprocessingTask <- function(dataset, what, method, classAttr, ...){

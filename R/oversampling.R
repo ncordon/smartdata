@@ -46,11 +46,11 @@ doOversampling.imbalance <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("imbalance")
 #' library("magrittr")
-#' data(iris0)
+#' data(iris0, package = "imbalance")
 #'
-#' super_iris <- iris0 %>% oversample(dataset = iris0, method = "MWMOTE", class_attr = "Class", ratio = 0.8, filtering = T)
+#' super_iris <- iris0 %>% oversample(method = "MWMOTE", class_attr = "Class",
+#'                                    ratio = 0.8, filtering = TRUE)
 #' super_iris <- iris0 %>% oversample(method = "SMOTE", class_attr = "Class", ratio = 0.6)
 #' super_iris <- iris0 %>% oversample(method = "PDFOS", class_attr = "Class", ratio = 0.6)
 #'

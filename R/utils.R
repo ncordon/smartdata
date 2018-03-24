@@ -4,6 +4,7 @@ checkAllColumnsNumeric = getFromNamespace("checkAllColumnsNumeric", "imbalance")
 whichMinorityClass = getFromNamespace("whichMinorityClass", "imbalance")
 whichMinority = getFromNamespace("whichMinority", "imbalance")
 toNumeric <- getFromNamespace("toNumeric", "imbalance")
+colTypes <- getFromNamespace("colTypes", "imbalance")
 #datasetStructure = getFromNamespace("datasetStructure", "imbalance")
 #normalizeNewSamples = getFromNamespace("normalizeNewSamples", "imbalance")
 
@@ -28,34 +29,50 @@ checkListArguments <- function(args, checks){
 # Categories used so far in argCheck:
 # discrete, real, integer, natural, boolean
 
-argCheck <- function(category, values, min = -Inf, max = Inf){
+argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE){
+  mycheck <- function(arg) { TRUE }
+  myvalues <- c()
+
   # Numerical check
   if(category %in% c("real", "integer", "natural")){
-    numberCheck <- function(arg){
+    mycheck <- function(arg){
       is.numeric(arg) && (arg >= min) && (arg <= max)
     }
 
-    result <- list(check = numberCheck, values = paste(category, " in ",
-                                                       "]", min, ",", max, "[",
-                                                       sep = ""))
+    myvalues <- paste(category, " in ", "]", min, ",", max, "[", sep = "")
   # Discrete values check (argument has to be among values)
   } else if(category == "discrete"){
     mycheck <- function(arg){
       arg %in% values
     }
 
-    result <- list(check = mycheck, values = values)
+    myvalues <- values
   # Boolean category check (argument has to be either True or False)
   } else if(category == "boolean"){
-    booleanCheck <- function(arg) {
+    mycheck <- function(arg){
       class(arg) == "logical"
     }
 
-    result <- list(check = booleanCheck, values = c("TRUE", "FALSE"))
-  # Default case: consider argument correct
-  } else{
-    result <- list(check = function(){ TRUE }, values = c())
+    myvalues <- c("TRUE", "FALSE")
   }
+
+  # If argument is required, do check that it matches values provided.
+  # Otherwise, match it against provided values only if it is present
+  result <- list(check = function(arg){
+      if(required){
+        if(! is.null(arg)){
+          mycheck(arg)
+        }else{
+          FALSE
+        }
+      } else{
+        if(! is.null(arg)){
+          mycheck(arg)
+        } else{
+          TRUE
+        }
+      }
+    }, values = myvalues)
 
   result
 }

@@ -15,9 +15,9 @@ checkListArguments <- function(args, checks){
     stop(paste("Wrong arg for selected method. Valid args are:", names(checks)))
 
   # Name of arguments that are correctly passed to the function
-  wildcard <- names(args)[names(args) %in% names(checks)]
+  # wildcard <- names(args)[names(args) %in% names(checks)]
 
-  sapply(wildcard, function(argName){
+  sapply(names(checks), function(argName){
     goodArg <- checks[[argName]]$check
     if(!goodArg(args[[argName]]))
       stop(paste("Valid values for", argName, "are:",
@@ -29,14 +29,22 @@ checkListArguments <- function(args, checks){
 # Categories used so far in argCheck:
 # discrete, real, integer, natural, boolean
 
-argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE){
+argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE,
+                     minIncluded = TRUE, maxIncluded = TRUE){
   mycheck <- function(arg) { TRUE }
   myvalues <- c()
 
   # Numerical check
   if(category %in% c("real", "integer", "natural")){
     mycheck <- function(arg){
-      is.numeric(arg) && (arg >= min) && (arg <= max)
+      # If we have indicated that value can be maximum (maximum = TRUE),
+      # match argument against close interval, otherwise check that argument
+      # is strictly lower than maximum
+      minComparison <- ifelse(minIncluded, ">=", ">")
+      maxComparison <- ifelse(maxIncluded, "<=", "<")
+      minCondition <- parse(text = paste(arg, minComparison, min))
+      maxCondition <- parse(text = paste(arg, maxComparison, max))
+      is.numeric(arg) && eval(minCondition) && eval(maxCondition)
     }
 
     myvalues <- paste(category, " in ", "]", min, ",", max, "[", sep = "")

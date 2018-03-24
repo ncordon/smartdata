@@ -26,8 +26,13 @@ NULL
 #' @import discretization
 NULL
 
-preprocessingTask <- function(dataset, what, method, classAttr, ...){
-  classIndex <- which(names(dataset) %in% classAttr)
+preprocessingTask <- function(dataset, what, method, classAttr = NULL, ...){
+  if(is.null(classAttr)){
+    classIndex <- NULL
+  } else{
+    classIndex <- which(names(dataset) %in% classAttr)
+  }
+
   task <- list(dataset = dataset,
                method = method,
                classAttr = classAttr,

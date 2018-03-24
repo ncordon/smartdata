@@ -19,7 +19,9 @@ Imports:
    clusterSim,
    dprep,
    discretization,
-   infotheo
+   infotheo,
+   outliers,
+   MVN
 License: GPL (>=2) | file LICENSE
 Encoding: UTF-8
 LazyData: true

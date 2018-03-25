@@ -55,7 +55,30 @@ doOutliers.outliers <- function(task){
 
 
 doOutliers.MVN <- function(task){
+  dataset <- task$dataset
+  coltypes <- colTypes(dataset)
+  numericIndexes <- which(coltypes %in% c("numeric", "integer"))
+  # Strip non numeric columns from dataset
+  dataset <- dataset[, numericIndexes]
 
+  # Check list of arguments
+  possibleArgs <- list(multivariateOutlierMethod = argCheck("discrete", values = c("adj", "quan"), required = TRUE))
+  checkListArguments(task$args, possibleArgs)
+
+  # Compute outliers, disabling graphical effects from the functions that computes them
+  pdf(file = NULL)
+  outliers <- do.call(MVN::mvn, append(list(data = dataset, showOutliers = TRUE), task$args))
+  dummy <- capture.output(dev.off())
+
+  whichOutliers <- as.integer(as.character(outliers$multivariateOutliers$Observation))
+
+  # Remove outliers from original dataset
+  result <- task$dataset[-whichOutliers, ]
+
+  # Reconfigure id of observations
+  rownames(result) <- c()
+
+  result
 }
 
 
@@ -66,9 +89,27 @@ doOutliers.MVN <- function(task){
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The dataset without outliers
+#' @importFrom stats median
+#' @importFrom grDevices dev.off pdf
+#' @importFrom utils capture.output
 #' @export
 #'
 #' @examples
+#' library("amendr")
+#' data(ecoli1, package = "imbalance")
+#' data(iris0, package = "imbalance")
+#'
+#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", multivariateOutlierMethod = "adj")
+#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", multivariateOutlierMethod = "quan")
+#'
+#' # Use mean as method to substitute outliers
+#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, mean = TRUE)
+#' # Use median as method to substitute outliers
+#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, mean = FALSE)
+#' # Use chi-sq instead of z p-values
+#' outliers_clean(iris0, method = "univariate", type = "chisq", prob = 0.9, mean = FALSE)
+#' # Use interquartilic range instead (lim argument is mandatory when using it)
+#' outliers_clean(iris0, method = "univariate", type = "iqr", lim = 0.9, mean = FALSE)
 #'
 outliers_clean <- function(dataset, method, ...){
   checkDataset(dataset)

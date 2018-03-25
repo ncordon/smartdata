@@ -12,7 +12,8 @@ colTypes <- getFromNamespace("colTypes", "imbalance")
 checkListArguments <- function(args, checks){
   # Check that no non-existent argument has been passed to the function
   if(any(! names(args) %in% names(checks)))
-    stop(paste("Wrong arg for selected method. Valid args are:", names(checks)))
+    stop(paste("Wrong arg for selected method. Valid args are:",
+               paste(names(checks), collapse = ", ")))
 
   # Name of arguments that are correctly passed to the function
   # wildcard <- names(args)[names(args) %in% names(checks)]

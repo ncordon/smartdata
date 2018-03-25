@@ -13,10 +13,22 @@ doOutliers.outliers <- function(task){
   numericIndexes <- which(coltypes %in% c("numeric", "integer"))
   # Strip non numeric columns from dataset
   dataset <- dataset[, numericIndexes]
-  possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
-                       prob = argCheck("real", min = 0, max = 1, required = TRUE, maxIncluded = FALSE),
-                       mean = argCheck("boolean", values = c("TRUE", "FALSE"), required = TRUE))
-  checkListArguments(task$args, possibleArgs)
+  if("type" %in% names(task$args)){
+    if(task$args[["type"]] != "iqr"){
+      possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
+                           prob = argCheck("real", min = 0, max = 1, required = TRUE, maxIncluded = FALSE),
+                           mean = argCheck("boolean", values = c("TRUE", "FALSE"), required = TRUE))
+    } else{
+      possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
+                           lim = argCheck("real"),
+                           mean = argCheck("boolean", values = c("TRUE", "FALSE"), required = TRUE))
+    }
+
+    checkListArguments(task$args, possibleArgs)
+  } else{
+    stop("type argument must be present")
+  }
+
   scoresArguments <- task$args[names(task$args) != "mean"]
 
   # Compute which are the outliers per column
@@ -31,10 +43,9 @@ doOutliers.outliers <- function(task){
     if(col %in% names(whichOutliers)){
       newVal <- ifelse(task$args[["mean"]], mean(current), median(current))
       current[whichOutliers[, col]] <- newVal
-      current
-    } else{
-      current
     }
+
+    current
   }, USE.NAMES = TRUE, simplify = FALSE)
 
   result <- as.data.frame(result)

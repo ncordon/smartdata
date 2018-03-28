@@ -28,7 +28,7 @@ checkListArguments <- function(args, checks){
 
 # TODO: improve types and available checks
 # Categories used so far in argCheck:
-# discrete, real, integer, natural, boolean
+# discrete, real, integer, boolean
 
 argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE,
                      minIncluded = TRUE, maxIncluded = TRUE){
@@ -36,7 +36,7 @@ argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE,
   myvalues <- c()
 
   # Numerical check
-  if(category %in% c("real", "integer", "natural")){
+  if(category %in% c("real", "integer")){
     mycheck <- function(arg){
       # If we have indicated that value can be maximum (maximum = TRUE),
       # match argument against close interval, otherwise check that argument

@@ -52,9 +52,9 @@ doInstSelection.class <- function(task){
   result <- NULL
 
   if(method == "multiedit"){
-    possibleArgs <- list(k = argCheck("natural", min = 1),
-                         V = argCheck("natural", min = 1),
-                         I = argCheck("natural", min = 1))
+    possibleArgs <- list(k = argCheck("integer", min = 1),
+                         V = argCheck("integet", min = 1),
+                         I = argCheck("integer", min = 1))
     checkListArguments(task$args, possibleArgs)
     callArgs <- append(list(x = dataset[, -classIndex],
                             class = dataset[, classIndex],

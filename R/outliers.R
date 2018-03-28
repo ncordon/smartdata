@@ -17,11 +17,11 @@ doOutliers.outliers <- function(task){
     if(task$args[["type"]] != "iqr"){
       possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
                            prob = argCheck("real", min = 0, max = 1, required = TRUE, maxIncluded = FALSE),
-                           mean = argCheck("boolean", values = c("TRUE", "FALSE"), required = TRUE))
+                           fill = argCheck("discrete", values = c("median", "mean"), required = TRUE))
     } else{
       possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
                            lim = argCheck("real"),
-                           mean = argCheck("boolean", values = c("TRUE", "FALSE"), required = TRUE))
+                           fill = argCheck("discrete", values = c("median", "mean"), required = TRUE))
     }
 
     checkListArguments(task$args, possibleArgs)
@@ -29,7 +29,7 @@ doOutliers.outliers <- function(task){
     stop("type argument must be present")
   }
 
-  scoresArguments <- task$args[names(task$args) != "mean"]
+  scoresArguments <- task$args[names(task$args) != "fill"]
 
   # Compute which are the outliers per column
   whichOutliers <- do.call(outliers::scores, append(list(x = dataset), scoresArguments))
@@ -41,7 +41,7 @@ doOutliers.outliers <- function(task){
     current <- dataset[, col]
 
     if(col %in% names(whichOutliers)){
-      newVal <- ifelse(task$args[["mean"]], mean(current), median(current))
+      newVal <- ifelse(task$args[["fill"]] == "mean", mean(current), median(current))
       current[whichOutliers[, col]] <- newVal
     }
 
@@ -62,12 +62,13 @@ doOutliers.MVN <- function(task){
   dataset <- dataset[, numericIndexes]
 
   # Check list of arguments
-  possibleArgs <- list(multivariateOutlierMethod = argCheck("discrete", values = c("adj", "quan"), required = TRUE))
+  possibleArgs <- list(type = argCheck("discrete", values = c("adj", "quan"), required = TRUE))
   checkListArguments(task$args, possibleArgs)
 
   # Compute outliers, disabling graphical effects from the functions that computes them
   pdf(file = NULL)
-  outliers <- do.call(MVN::mvn, append(list(data = dataset, showOutliers = TRUE), task$args))
+  outliers <- do.call(MVN::mvn, append(list(data = dataset, showOutliers = TRUE),
+                                       list(multivariateOutlierMethod = task$args[["type"]])))
   dummy <- capture.output(dev.off())
 
   whichOutliers <- as.integer(as.character(outliers$multivariateOutliers$Observation))
@@ -85,8 +86,16 @@ doOutliers.MVN <- function(task){
 #' Outliers cleaning wrapper
 #'
 #' @param dataset we want to clean outliers on
-#' @param method selected method to clean outliers
-#' @param ... Further arguments for \code{method}
+#' @param method selected method to clean outliers. Possbilities are:
+#'  \itemize{
+#'   \item{"univariate"}{detects outliers column by column (an outlier will be an
+#'    abnormal value inside a column) and fills them with mean or median of the
+#'    corresponding column}
+#'   \item{"multivariate"}{detects outliers using a multicolumn approach, so that
+#'    an outlier will be a whole observation (row). And deletes those
+#'    observations}
+#'  }
+#' @param ... further arguments for the method
 #'
 #' @return The dataset without outliers
 #' @importFrom stats median
@@ -99,17 +108,17 @@ doOutliers.MVN <- function(task){
 #' data(ecoli1, package = "imbalance")
 #' data(iris0, package = "imbalance")
 #'
-#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", multivariateOutlierMethod = "adj")
-#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", multivariateOutlierMethod = "quan")
+#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "adj")
+#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "quan")
 #'
 #' # Use mean as method to substitute outliers
-#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, mean = TRUE)
+#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "mean")
 #' # Use median as method to substitute outliers
-#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, mean = FALSE)
+#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "median")
 #' # Use chi-sq instead of z p-values
-#' outliers_clean(iris0, method = "univariate", type = "chisq", prob = 0.9, mean = FALSE)
+#' outliers_clean(iris0, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
 #' # Use interquartilic range instead (lim argument is mandatory when using it)
-#' outliers_clean(iris0, method = "univariate", type = "iqr", lim = 0.9, mean = FALSE)
+#' outliers_clean(iris0, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
 #'
 outliers_clean <- function(dataset, method, ...){
   checkDataset(dataset)

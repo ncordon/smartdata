@@ -24,8 +24,10 @@ test_that("Correct discretization", {
   expect_error(discretize(iris0, method = "CACC", class_attr = "Class"), NA)
   expect_error(discretize(iris0, method = "ameva", class_attr = "Class"), NA)
   expect_error(discretize(iris0, method = "mdlp", class_attr = "Class"), NA)
-  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class"), NA)
-  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class", nbins = 3), NA)
-  # Wrong argument passed to discretized with equalwidth, correct-> nbins, used -> nbin
-  expect_error(discretize(glass0, method = "equalfreq", class_attr = "Class", nbin = 3))
+  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class",
+                          num_bins = ceiling(nrow(glass0) / 2)), NA)
+  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class",
+                          num_bins = ceiling(nrow(glass0) / 3)), NA)
+  # Wrong argument passed to discretized with equalwidth, correct -> num_bins, used -> nbin
+  expect_error(discretize(glass0, method = "equalfreq", class_attr = "Class", nbins = 3))
 })

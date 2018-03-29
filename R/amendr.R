@@ -24,6 +24,10 @@ NULL
 #' @import magrittr
 #' @import unbalanced
 #' @import discretization
+#' @importFrom functional Curry
+#' @importFrom checkmate expect_choice
+#' @importFrom checkmate matchArg
+#' @importFrom checkmate qexpect
 NULL
 
 preprocessingTask <- function(dataset, what, method, classAttr = NULL, ...){

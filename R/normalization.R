@@ -26,9 +26,15 @@ doNormalization <- function(task){
   UseMethod("doNormalization")
 }
 
+args.clusterSim <- list(
+  by = list(check = Curry(expect_choice, choices = c("column", "row"), label = "by"),
+            default = "column")
+)
+
+args.dprep <- list()
+
 doNormalization.clusterSim <- function(task){
-  possibleArgs <- list(normalization = argCheck("discrete", c("column", "row")))
-  checkListArguments(task$args, possibleArgs)
+  task$args <- checkListArguments(task$args, args.clusterSim)
 
   type <- switch(task$method,
                  "z-score" = "n1",
@@ -50,14 +56,13 @@ doNormalization.clusterSim <- function(task){
                  "pnorm" = "n12a",
                  "znorm" = "n13")
 
-  callArgs <- append(list(x = task$dataset, type = type), task$args)
+  callArgs <- list(x = task$dataset, type = type,
+                   normalization = task$args[["by"]])
   do.call(clusterSim::data.Normalization, callArgs)
 }
 
-
 doNormalization.dprep <- function(task){
-  possibleArgs <- list()
-  checkListArguments(task$args, possibleArgs)
+  task$args <- checkListArguments(task$args, args.dprep)
 
   if(task$method == "decimal-scaling"){
     dprep::decscale(task$dataset)
@@ -82,32 +87,49 @@ doNormalization.dprep <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("magrittr")
-#' data(iris0, package = "imbalance")
 #'
-#' super_iris <- iris0 %>% normalization(method = "min-max", class_attr = "Class")
-#' super_iris <- iris0 %>% normalization(method = "min-max", normalization = "row")
+#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "column")
+#' # Use default parameter by = "row"
+#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species")
+#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "z-score", class_attr = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "sd-quotient", class_attr = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "decimal-scaling", class_attr = "Species")
 #'
 normalization <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase
+  orig_dataset <- dataset
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
-  dataset <- toNumeric(dataset, exclude = classAttr)
-  checkAllColumnsNumeric(dataset, exclude = classAttr)
-  method <- match.arg(method, normalizationMethods)
-  classIndex <- which(names(dataset) %in% classAttr)
-  # Strip dataset from class attribute
-  datasetClass <- dataset[, classIndex]
-  dataset <- dataset[, -classIndex]
+
+  method <- matchArg(method, normalizationMethods)
+  colnames <- names(dataset)
+  dataset <- dataset[, -which(colnames %in% classAttr)]
+  nonNumericAttrs <- classAttr
+  coltypes <- colTypes(dataset)
+  nonNumeric <- which(! coltypes %in% c("numeric", "integer"))
+  numericNonClass <- names(dataset)[nonNumeric]
+
+  if(length(nonNumeric) > 0){
+    dataset <- dataset[, -nonNumeric]
+    nonNumericAttrs <- c(numericNonClass, nonNumericAttrs)
+  }
 
   # Perform normalization
-  task <- preprocessingTask(dataset, "normalization", method, classAttr, ...)
+  task <- preprocessingTask(dataset, "normalization", method, NULL, ...)
   dataset <- preprocess(task)
 
-  # Join class attribute again
-  dataset[, classIndex] <- datasetClass
-  names(dataset)[classIndex] <- classAttr
+  # Join non numeric attrs and class attribute again
+  result <- sapply(names(orig_dataset), function(name){
+    if(name %in% nonNumericAttrs){
+      orig_dataset[, name]
+    } else{
+      dataset[, name]
+    }
+  }, USE.NAMES = TRUE, simplify = FALSE)
 
-  dataset
+  result <- as.data.frame(result)
+
+  result
 }

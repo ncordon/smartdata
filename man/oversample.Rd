@@ -24,12 +24,12 @@ Oversampling wrapper
 }
 \examples{
 library("amendr")
-library("magrittr")
 data(iris0, package = "imbalance")
 
-super_iris <- iris0 \%>\% oversample(method = "MWMOTE", class_attr = "Class",
-                                   ratio = 0.8, filtering = TRUE)
-super_iris <- iris0 \%>\% oversample(method = "SMOTE", class_attr = "Class", ratio = 0.6)
-super_iris <- iris0 \%>\% oversample(method = "PDFOS", class_attr = "Class", ratio = 0.6)
+oversample(iris0, method = "MWMOTE", class_attr = "Class", ratio = 0.8, filtering = TRUE)
+oversample(iris0, method = "SMOTE", class_attr = "Class", ratio = 0.6)
+oversample(iris0, method = "PDFOS", class_attr = "Class", ratio = 0.6)
+oversample(iris0, method = "RWO", class_attr = "Class", ratio = 0.8)
+oversample(iris0, method = "SLMOTE", class_attr = "Class")
 
 }

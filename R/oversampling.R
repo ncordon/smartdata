@@ -17,18 +17,30 @@ doOversampling <- function(task){
   UseMethod("doOversampling")
 }
 
+args.imbalance <- list(
+  ratio = list(
+    check = Curry(qexpect, rules = "N1[0,1]"),
+    default = 0.8
+  ),
+  filtering = list(
+    check = Curry(qexpect, rules = "B1"),
+    default = FALSE
+  ),
+  wrapper = list(
+    check = Curry(expect_choice, choices = c("C5.0", "KNN")),
+    default = "KNN"
+  )
+)
+
 doOversampling.imbalance <- function(task){
-  possibleArgs <- list(ratio = argCheck("real", min = 0, max = 1),
-                       filtering = argCheck("boolean"),
-                       wrapper = argCheck("discrete", values = c("C5.0", "KNN")) )
   # Check correction of arguments passed to the method
-  checkListArguments(task$args, possibleArgs)
+  task$args <- checkListArguments(task$args, args.imbalance)
 
   # Prepare list of arguments for the methods
-  callArgs <- append(list(dataset = task$dataset,
-                          method = task$method,
-                          classAttr = task$classAttr),
-                     task$args)
+  callArgs <- c(list(dataset = task$dataset,
+                     method = task$method,
+                     classAttr = task$classAttr),
+                task$args)
   result <- do.call(imbalance::oversample, callArgs)
   result
 }
@@ -46,22 +58,21 @@ doOversampling.imbalance <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("magrittr")
 #' data(iris0, package = "imbalance")
 #'
-#' super_iris <- iris0 %>% oversample(method = "MWMOTE", class_attr = "Class",
-#'                                    ratio = 0.8, filtering = TRUE)
-#' super_iris <- iris0 %>% oversample(method = "SMOTE", class_attr = "Class", ratio = 0.6)
-#' super_iris <- iris0 %>% oversample(method = "PDFOS", class_attr = "Class", ratio = 0.6)
+#' oversample(iris0, method = "MWMOTE", class_attr = "Class", ratio = 0.8, filtering = TRUE)
+#' oversample(iris0, method = "SMOTE", class_attr = "Class", ratio = 0.6)
+#' oversample(iris0, method = "PDFOS", class_attr = "Class", ratio = 0.6)
+#' oversample(iris0, method = "RWO", class_attr = "Class", ratio = 0.8)
+#' oversample(iris0, method = "SLMOTE", class_attr = "Class")
 #'
 oversample <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
-  #dataset <- toNumeric(dataset, exclude = classAttr)
-  #checkAllColumnsNumeric(dataset, exclude = classAttr)
-  method <- match.arg(method, oversamplingMethods)
+
+  method <- matchArg(method, oversamplingMethods)
 
   # Perform discretization
   task <- preprocessingTask(dataset, "oversampling", method, classAttr, ...)

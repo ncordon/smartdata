@@ -1,14 +1,14 @@
 discretizationPackages <- list("chi2" = "discretization",
-                              "chi-merge" = "discretization",
-                              "extended-chi2" = "discretization",
-                              "mod-chi2" = "discretization",
-                              "CAIM" = "discretization",
-                              "CACC" = "discretization",
-                              "ameva" = "discretization",
-                              "mdlp" = "discretization",
-                              "equalfreq" = "infotheo",
-                              "equalwidth" = "infotheo",
-                              "globalequalwidth" = "infotheo")
+                               "chi-merge" = "discretization",
+                               "extended-chi2" = "discretization",
+                               "mod-chi2" = "discretization",
+                               "CAIM" = "discretization",
+                               "CACC" = "discretization",
+                               "ameva" = "discretization",
+                               "mdlp" = "discretization",
+                               "equalfreq" = "infotheo",
+                               "equalwidth" = "infotheo",
+                               "globalequalwidth" = "infotheo")
 
 discretizationMethods <- names(discretizationPackages)
 
@@ -16,52 +16,84 @@ doDiscretization <- function(task){
   UseMethod("doDiscretization")
 }
 
+args.discretization <- list(
+  alpha = list(
+    check = Curry(qexpect, rules = "N1[0,1]", label = "alpha",
+                  info = "Significance level between 0 and 1"),
+    default = 0.5
+  ),
+  delta = list(
+    check = Curry(qexpect, rules = "N1[0,1]", label = "delta",
+                  info = paste("Inconsistency level.",
+                               "Algorithm is performed until we exceed this level")),
+    default = 0.05
+  )
+)
+
+args.infotheo <- list(
+  num_bins = list(
+    check = Curry(qexpect, rules = "X1[2,Inf)", label = "num_bins",
+                  info = paste("Number of bin used, must be lower than rows of dataset",
+                               "eg. Half of the number of rows")),
+    default = 2
+  )
+)
+
 doDiscretization.discretization <- function(task){
-  type = NA
-  possibleArgs <- list()
+  callArgs <- list()
 
   if(task$method == "chi-merge"){
-    possibleArgs <- list(alpha = argCheck("real", min = 0, max = 1))
+    args.discretization <- args.discretization["alpha"]
+    callArgs <- checkListArguments(task$args, args.discretization)
     method <- "chiM"
   } else if(task$method == "chi2"){
-    possibleArgs <- list(alp = argCheck("real", min = 0, max = 1),
-                         del = argCheck("real", min = 0, max = 1))
+    args.discretization <- args.discretization[c("alpha", "delta")]
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(alp = task$args$alpha, del = task$args$del)
     method <- "chi2"
   } else if(task$method == "extended-chi2"){
-    possibleArgs <- list(alp = argCheck("real", min = 0, max = 1))
+    args.discretization <- args.discretization["alpha"]
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(alp = task$args$alpha)
     method <- "extendChi2"
   } else if(task$method == "mod-chi2"){
-    possibleArgs <- list(alp = argCheck("real", min = 0, max = 1))
+    args.discretization <- args.discretization["alpha"]
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(alp = task$args$alpha)
     method <- "modChi2"
   } else if(task$method == "CAIM"){
-    type <- 1
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(method = 1)
     method <- "disc.Topdown"
   } else if(task$method == "CACC"){
-    type <- 2
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(method = 2)
     method <- "disc.Topdown"
   } else if(task$method == "ameva"){
-    type <- 3
+    task$args <- checkListArguments(task$args, args.discretization)
+    callArgs <- list(method = 3)
     method <- "disc.Topdown"
   } else if(task$method == "mdlp"){
+    task$args <- checkListArguments(task$args, args.discretization)
     method <- "mdlp"
   }
 
-  checkListArguments(task$args, possibleArgs)
   method <- eval(parse(text = paste("discretization::", method, sep = "")))
 
-  callArgs <- append(list(task$dataset), task$args)
+  callArgs <- c(list(task$dataset), callArgs)
   result <- do.call(method, callArgs)
   result$Disc.data
 }
 
 
 doDiscretization.infotheo <- function(task) {
-  type = NA
-  possibleArgs <- list(nbins = argCheck("integer", min = 2, max = nrow(task$dataset)))
-
-  checkListArguments(task$args, possibleArgs)
-  callArgs <- append(list(X = task$dataset, disc = task$method), task$args)
+  args.infotheo <- checkListArguments(task$args, args.infotheo)
+  callArgs <- list(X = task$dataset,
+                   disc = task$method,
+                   nbins = task$args$num_bins)
   result <- do.call(infotheo::discretize, callArgs)
+
+  result
 }
 
 
@@ -78,21 +110,24 @@ doDiscretization.infotheo <- function(task) {
 #'
 #' @examples
 #' library("amendr")
-#' library("magrittr")
-#' data(iris0, package = "imbalance")
 #'
-#' super_iris <- iris0 %>% discretize(method = "chi2", class_attr = "Class")
-#' super_iris <- iris0 %>% discretize(method = "ameva", class_attr = "Class")
-#' super_iris <- iris0 %>% discretize(method = "equalwidth", class_attr = "Class")
+#' discretize(iris, method = "chi-merge", class_attr = "Species")
+#' discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
+#' discretize(iris, method = "chi2", class_attr = "Species", alpha = 0.7, delta = 0.1)
+#' discretize(iris, method = "chi2", class_attr = "Species")
+#' discretize(iris, method = "extended-chi2", class_attr = "Species")
+#' discretize(iris, method = "ameva", class_attr = "Species")
+#' discretize(iris, method = "CAIM", class_attr = "Species")
+#' discretize(iris, method = "CACC", class_attr = "Species")
+#' discretize(iris, method = "equalwidth", class_attr = "Species", num_bins = nrow(iris) / 2)
 #'
 discretize <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
-  #dataset <- toNumeric(dataset, exclude = classAttr)
-  #checkAllColumnsNumeric(dataset, exclude = classAttr)
-  method <- match.arg(method, discretizationMethods)
+
+  method <- matchArg(method, discretizationMethods)
   classIndex <- which(names(dataset) %in% classAttr)
   # Strip dataset from class attribute
   datasetClass <- dataset[, classIndex]

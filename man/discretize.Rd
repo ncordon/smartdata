@@ -24,11 +24,15 @@ Discretization wrapper
 }
 \examples{
 library("amendr")
-library("magrittr")
-data(iris0, package = "imbalance")
 
-super_iris <- iris0 \%>\% discretize(method = "chi2", class_attr = "Class")
-super_iris <- iris0 \%>\% discretize(method = "ameva", class_attr = "Class")
-super_iris <- iris0 \%>\% discretize(method = "equalwidth", class_attr = "Class")
+discretize(iris, method = "chi-merge", class_attr = "Species")
+discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
+discretize(iris, method = "chi2", class_attr = "Species", alpha = 0.7, delta = 0.1)
+discretize(iris, method = "chi2", class_attr = "Species")
+discretize(iris, method = "extended-chi2", class_attr = "Species")
+discretize(iris, method = "ameva", class_attr = "Species")
+discretize(iris, method = "CAIM", class_attr = "Species")
+discretize(iris, method = "CACC", class_attr = "Species")
+discretize(iris, method = "equalwidth", class_attr = "Species", num_bins = nrow(iris) / 2)
 
 }

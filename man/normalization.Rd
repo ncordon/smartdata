@@ -24,10 +24,13 @@ Normalization wrapper
 }
 \examples{
 library("amendr")
-library("magrittr")
-data(iris0, package = "imbalance")
 
-super_iris <- iris0 \%>\% normalization(method = "min-max", class_attr = "Class")
-super_iris <- iris0 \%>\% normalization(method = "min-max", normalization = "row")
+super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "column")
+# Use default parameter by = "row"
+super_iris <- normalization(iris, method = "min-max", class_attr = "Species")
+super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "row")
+super_iris <- normalization(iris, method = "z-score", class_attr = "Species", by = "row")
+super_iris <- normalization(iris, method = "sd-quotient", class_attr = "Species", by = "row")
+super_iris <- normalization(iris, method = "decimal-scaling", class_attr = "Species")
 
 }

@@ -9,14 +9,59 @@ doInstSelection <- function(task){
   UseMethod("doInstSelection")
 }
 
+args.unbalanced <- list(
+  k = list(
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k",
+                  info = "Number of nearest neighbors to perform CNN or ENN"),
+    default = 1
+  )
+)
+
+args.class <- list(
+  k = list(
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k",
+                  info = "Number of neighbors used in KNN"),
+    default = 1
+  ),
+  num_partitions = list(
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "num_partitions",
+                  info = "Number of partitions to make out of train set"),
+    default = 3
+  ),
+  null_passes = list(
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "null_passes",
+                  info = "Number of null passes to use in the algorithm"),
+    default = 5
+  )
+)
+
+args.Roughsets <- list(
+  threshold = list(
+    check = Curry(qexpect, rules = "N1(0,1)", label = "threshold",
+                  info = "Threshold between 0 and 1 determining wether an object can be removed or not"),
+    default = 0.95
+  ),
+  alpha = list(
+    check = Curry(qexpect, rules = "N1(0,Inf)", label = "alpha",
+                  info = "Granularity of fuzzy similarity measure"),
+    default = 1
+  ),
+  implicator_type = list(
+    check = Curry(expect_choice, choices = c("kleene_dienes", "lukasiewicz", "zadeh",
+                                             "gaines", "godel", "kleene_dienes_lukasiewicz",
+                                             "mizumoto", "dubois_prade"),
+                  label = "implicator_type",
+                  info = "Implicator function type"),
+    default = "lukasiewicz"
+  )
+)
 
 doInstSelection.unbalanced <- function(task){
   method <- task$method
   classAttr <- task$classAttr
   classIndex <- task$classIndex
   dataset <- task$dataset
-  possibleArgs <- list(k = argCheck("integer", min = 1))
-  checkListArguments(task$args, possibleArgs)
+  task$args <- checkListArguments(task$args, args.unbalanced)
 
   # CNN and ENN need minority class as 1, and majority one as 0
   minorityClass <- whichMinorityClass(dataset, classAttr)
@@ -39,7 +84,6 @@ doInstSelection.unbalanced <- function(task){
   # Reset rownames
   rownames(result) <- c()
 
-
   result
 }
 
@@ -52,17 +96,19 @@ doInstSelection.class <- function(task){
   result <- NULL
 
   if(method == "multiedit"){
-    possibleArgs <- list(k = argCheck("integer", min = 1),
-                         V = argCheck("integet", min = 1),
-                         I = argCheck("integer", min = 1))
-    checkListArguments(task$args, possibleArgs)
-    callArgs <- append(list(x = dataset[, -classIndex],
-                            class = dataset[, classIndex],
-                            trace = FALSE), task$args)
+    task$args <- checkListArguments(task$args, args.class)
+    callArgs <- list(x = dataset[, -classIndex],
+                     class = dataset[, classIndex],
+                     trace = FALSE,
+                     k = task$args$k,
+                     V = task$args$num_partitions,
+                     I = task$args$null_passes)
     rowsToKeep <- do.call(class::multiedit, callArgs)
     result <- dataset[rowsToKeep, ]
   }
 
+  # Reset rownames
+  rownames(result) <- c()
   result
 }
 
@@ -77,23 +123,17 @@ doInstSelection.RoughSets <- function(task){
 
   if(method == "FRIS"){
     # Improve type checking
-    possibleArgs <- list(threshold.tau = argCheck("real", min = 0, max = 1),
-                         alpha = argCheck("real", min = 0),
-                         type.aggregation = argCheck("other"),
-                         t.implicator = argCheck("discrete",
-                                                 values = c("kleene_dienes",
-                                                            "lukasiewicz", "zadeh",
-                                                            "gaines",
-                                                            "godel",
-                                                            "kleene_dienes_lukasiewicz",
-                                                            "mizumoto",
-                                                            "dubois_prade")))
-    checkListArguments(task$args, possibleArgs)
-    callArgs <- list(decision.table = decisionTable, control = task$args)
+    task$args <- checkListArguments(task$args, args.Roughsets)
+    callArgs <- list(decision.table = decisionTable,
+                     control = list(threshold.tau = task$args$threshold,
+                                    alpha = task$args$alpha,
+                                    t.implicator = task$args$implicator_type))
     rowsToKeep <- (do.call(RoughSets::IS.FRIS.FRST, callArgs))$indx.objects
     result <- dataset[rowsToKeep, ]
   }
 
+  # Reset rownames
+  rownames(result) <- c()
   result
 }
 
@@ -112,17 +152,30 @@ doInstSelection.RoughSets <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' library("magrittr")
-#' data(iris0, package = "imbalance")
 #'
-#' super_iris <- iris0 %>% instance_selection(method = "CNN")
+#' instance_selection(iris, method = "CNN", class_attr = "Species")
+#' # Use k = 2 instead of default k
+#' instance_selection(iris, method = "CNN", class_attr = "Species", k = 2)
+#' # Use Edited Nearest Neighbor as method to select observations
+#' instance_selection(iris, method = "ENN", class_attr = "Species", k = 3)
+#' instance_selection(iris, method = "multiedit", class_attr = "Species",
+#'                    k = 3, num_partitions = 5, null_passes = 8)
+#' # Use default arguments for multiedit
+#' instance_selection(iris, method = "multiedit", class_attr = "Species")
+#' instance_selection(iris, method = "FRIS", class_attr = "Species")
+#' # FRIS method with fuzzy granularity of 2
+#' instance_selection(iris, method = "FRIS", class_attr = "Species", alpha = 2)
+#' # FRIS method with Dubois Prade implicator
+#' instance_selection(iris, method = "FRIS", class_attr = "Species", implicator_type = "dubois_prade")
+#' # FRIS method with lower threshold (that is, less observations are removed)
+#' instance_selection(iris, method = "FRIS", class_attr = "Species", threshold = 0.6)
+#'
 instance_selection <- function(dataset, method, class_attr = "Class", ...){
   classAttr <- class_attr
   checkDataset(dataset)
   checkDatasetClass(dataset, classAttr)
-  dataset <- toNumeric(dataset, exclude = classAttr)
-  checkAllColumnsNumeric(dataset, exclude = classAttr)
-  method <- match.arg(method, instSelectionMethods)
+
+  method <- matchArg(method, instSelectionMethods)
 
   # Perform instance selection
   task <- preprocessingTask(dataset, "instanceSelection", method, classAttr, ...)

@@ -7,24 +7,34 @@ doOutliers <- function(task){
   UseMethod("doOutliers")
 }
 
+args.outliers <- list(
+  type = list(check = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
+                            label = "type")),
+  prob = list(check = Curry(qexpect, rules = "N1(0,1)", label = "prob")),
+  fill = list(check = Curry(expect_choice, choices = c("median", "mean")), label = "fill"),
+  lim  = list(check = Curry(qexpect, rules = "N1"), label = "lim")
+)
+
+args.MVN <- list(
+  type = list(check = Curry(expect_choice, choices = c("adj", "quan"),
+                            label = "type"))
+)
+
 doOutliers.outliers <- function(task){
   dataset <- task$dataset
   coltypes <- colTypes(dataset)
   numericIndexes <- which(coltypes %in% c("numeric", "integer"))
   # Strip non numeric columns from dataset
   dataset <- dataset[, numericIndexes]
+
   if("type" %in% names(task$args)){
     if(task$args[["type"]] != "iqr"){
-      possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
-                           prob = argCheck("real", min = 0, max = 1, required = TRUE, maxIncluded = FALSE),
-                           fill = argCheck("discrete", values = c("median", "mean"), required = TRUE))
+      possibleArgs <- args.outliers[c("type", "prob", "fill")]
     } else{
-      possibleArgs <- list(type = argCheck("discrete", values = c("z", "t", "chisq", "iqr", "mad"), required = TRUE),
-                           lim = argCheck("real"),
-                           fill = argCheck("discrete", values = c("median", "mean"), required = TRUE))
+      possibleArgs <- args.outliers[c("type", "lim", "fill")]
     }
 
-    checkListArguments(task$args, possibleArgs)
+    task$args <- checkListArguments(task$args, possibleArgs)
   } else{
     stop("type argument must be present")
   }
@@ -62,8 +72,7 @@ doOutliers.MVN <- function(task){
   dataset <- dataset[, numericIndexes]
 
   # Check list of arguments
-  possibleArgs <- list(type = argCheck("discrete", values = c("adj", "quan"), required = TRUE))
-  checkListArguments(task$args, possibleArgs)
+  task$args <- checkListArguments(task$args, args.MVN)
 
   # Compute outliers, disabling graphical effects from the functions that computes them
   pdf(file = NULL)
@@ -105,24 +114,22 @@ doOutliers.MVN <- function(task){
 #'
 #' @examples
 #' library("amendr")
-#' data(ecoli1, package = "imbalance")
-#' data(iris0, package = "imbalance")
 #'
-#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "adj")
-#' super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "quan")
+#' outliers_clean(iris, method = "multivariate", type = "adj")
+#' outliers_clean(iris, method = "multivariate", type = "quan")
 #'
 #' # Use mean as method to substitute outliers
-#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "mean")
+#' outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
 #' # Use median as method to substitute outliers
-#' outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "median")
+#' outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
 #' # Use chi-sq instead of z p-values
-#' outliers_clean(iris0, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
+#' outliers_clean(iris, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
 #' # Use interquartilic range instead (lim argument is mandatory when using it)
-#' outliers_clean(iris0, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
+#' outliers_clean(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
 #'
 outliers_clean <- function(dataset, method, ...){
   checkDataset(dataset)
-  method <- match.arg(method, outliersMethods)
+  method <- matchArg(method, outliersMethods)
 
   # Clean outliers
   task <- preprocessingTask(dataset, "outliers", method, ...)

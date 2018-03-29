@@ -29,19 +29,17 @@ Outliers cleaning wrapper
 }
 \examples{
 library("amendr")
-data(ecoli1, package = "imbalance")
-data(iris0, package = "imbalance")
 
-super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "adj")
-super_ecoli <- outliers_clean(ecoli1, method = "multivariate", type = "quan")
+outliers_clean(iris, method = "multivariate", type = "adj")
+outliers_clean(iris, method = "multivariate", type = "quan")
 
 # Use mean as method to substitute outliers
-outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "mean")
+outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
 # Use median as method to substitute outliers
-outliers_clean(iris0, method = "univariate", type = "z", prob = 0.9, fill = "median")
+outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
 # Use chi-sq instead of z p-values
-outliers_clean(iris0, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
+outliers_clean(iris, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
 # Use interquartilic range instead (lim argument is mandatory when using it)
-outliers_clean(iris0, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
+outliers_clean(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
 
 }

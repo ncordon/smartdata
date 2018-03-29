@@ -11,6 +11,8 @@ Description: Eases data preprocessing tasks, providing a data flow based
    or instance/feature selection operations.
 Depends: R (>= 3.4.3)
 Imports:
+   functional,
+   checkmate,
    magrittr,
    imbalance,
    unbalanced,

@@ -24,10 +24,10 @@
 *** DONE clusterSim (1206 monthly downloads)
 *** DONE dprep (382 monthly downloads)
 ** Discretization
-*** DONE arules (7430 monthly downloads)
+*** CANCELED arules (7430 monthly downloads)
 *** DONE infotheo (887 monthly downloads)
 *** funModeling (487 monthly downloads)
-*** discretization (304 monthly downloads)
+*** DONE discretization (304 monthly downloads)
 ** Outliers
 *** DONE outliers (2197 monthly downloads)
 *** DONE MVN (4696 monthly downloads)

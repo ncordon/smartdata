@@ -31,7 +31,7 @@ instance_selection(iris, method = "CNN", class_attr = "Species", k = 2)
 # Use Edited Nearest Neighbor as method to select observations
 instance_selection(iris, method = "ENN", class_attr = "Species", k = 3)
 instance_selection(iris, method = "multiedit", class_attr = "Species",
-                   k = 3, num_partitions = 5, null_passes = 8)
+                   k = 3, num_folds = 5, null_passes = 8)
 # Use default arguments for multiedit
 instance_selection(iris, method = "multiedit", class_attr = "Species")
 instance_selection(iris, method = "FRIS", class_attr = "Species")

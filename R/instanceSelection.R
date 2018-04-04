@@ -23,9 +23,9 @@ args.class <- list(
                   info = "Number of neighbors used in KNN"),
     default = 1
   ),
-  num_partitions = list(
-    check = Curry(qexpect, rules = "X1[1,Inf)", label = "num_partitions",
-                  info = "Number of partitions to make out of train set"),
+  num_folds = list(
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "num_folds",
+                  info = "Number of partitions the train set is split in"),
     default = 3
   ),
   null_passes = list(
@@ -101,7 +101,7 @@ doInstSelection.class <- function(task){
                      class = dataset[, classIndex],
                      trace = FALSE,
                      k = task$args$k,
-                     V = task$args$num_partitions,
+                     V = task$args$num_folds,
                      I = task$args$null_passes)
     rowsToKeep <- do.call(class::multiedit, callArgs)
     result <- dataset[rowsToKeep, ]
@@ -159,7 +159,7 @@ doInstSelection.RoughSets <- function(task){
 #' # Use Edited Nearest Neighbor as method to select observations
 #' instance_selection(iris, method = "ENN", class_attr = "Species", k = 3)
 #' instance_selection(iris, method = "multiedit", class_attr = "Species",
-#'                    k = 3, num_partitions = 5, null_passes = 8)
+#'                    k = 3, num_folds = 5, null_passes = 8)
 #' # Use default arguments for multiedit
 #' instance_selection(iris, method = "multiedit", class_attr = "Species")
 #' instance_selection(iris, method = "FRIS", class_attr = "Species")

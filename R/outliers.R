@@ -3,24 +3,33 @@ outliersPackages <- list("multivariate" = "MVN",
 
 outliersMethods <- names(outliersPackages)
 
-doOutliers <- function(task){
-  UseMethod("doOutliers")
+doOutliersClean <- function(task){
+  UseMethod("doOutliersClean")
 }
 
 args.outliers <- list(
-  type = list(check = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
-                            label = "type")),
-  prob = list(check = Curry(qexpect, rules = "N1(0,1)", label = "prob")),
-  fill = list(check = Curry(expect_choice, choices = c("median", "mean")), label = "fill"),
-  lim  = list(check = Curry(qexpect, rules = "N1"), label = "lim")
+  type = list(
+    check = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
+                  label = "type")
+  ),
+  prob = list(
+    check = Curry(qexpect, rules = "N1(0,1)", label = "prob")
+  ),
+  fill = list(
+    check = Curry(expect_choice, choices = c("median", "mean"), label = "fill")
+  ),
+  lim  = list(
+    check = Curry(qexpect, rules = "N1", label = "lim")
+  )
 )
 
 args.MVN <- list(
-  type = list(check = Curry(expect_choice, choices = c("adj", "quan"),
-                            label = "type"))
+  type = list(
+    check = Curry(expect_choice, choices = c("adj", "quan"), label = "type")
+  )
 )
 
-doOutliers.outliers <- function(task){
+doOutliersClean.outliers <- function(task){
   dataset <- task$dataset
   coltypes <- colTypes(dataset)
   numericIndexes <- which(coltypes %in% c("numeric", "integer"))
@@ -64,7 +73,7 @@ doOutliers.outliers <- function(task){
 }
 
 
-doOutliers.MVN <- function(task){
+doOutliersClean.MVN <- function(task){
   dataset <- task$dataset
   coltypes <- colTypes(dataset)
   numericIndexes <- which(coltypes %in% c("numeric", "integer"))
@@ -106,7 +115,7 @@ doOutliers.MVN <- function(task){
 #'  }
 #' @param ... further arguments for the method
 #'
-#' @return The dataset without outliers
+#' @return The treated dataset (either with outliers replaced or erased)
 #' @importFrom stats median
 #' @importFrom grDevices dev.off pdf
 #' @importFrom utils capture.output
@@ -115,19 +124,19 @@ doOutliers.MVN <- function(task){
 #' @examples
 #' library("amendr")
 #'
-#' outliers_clean(iris, method = "multivariate", type = "adj")
-#' outliers_clean(iris, method = "multivariate", type = "quan")
+#' clean_outliers(iris, method = "multivariate", type = "adj")
+#' clean_outliers(iris, method = "multivariate", type = "quan")
 #'
 #' # Use mean as method to substitute outliers
-#' outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
+#' clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
 #' # Use median as method to substitute outliers
-#' outliers_clean(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
+#' clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
 #' # Use chi-sq instead of z p-values
-#' outliers_clean(iris, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
+#' clean_outliers(iris, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
 #' # Use interquartilic range instead (lim argument is mandatory when using it)
-#' outliers_clean(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
+#' clean_outliers(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
 #'
-outliers_clean <- function(dataset, method, ...){
+clean_outliers <- function(dataset, method, ...){
   checkDataset(dataset)
   method <- matchArg(method, outliersMethods)
 

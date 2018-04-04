@@ -77,7 +77,12 @@ preprocess.oversampling <- function(task){
 preprocess.outliers <- function(task){
   class(task) <- outliersPackages[[task$method]]
 
-  doOutliers(task)
+  doOutliersClean(task)
 }
 
+preprocess.noise <- function(task){
+  class(task) <- noisePackages[[task$method]]
+
+  doNoiseClean(task)
+}
 

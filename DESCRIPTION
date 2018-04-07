@@ -23,7 +23,8 @@ Imports:
    discretization,
    infotheo,
    outliers,
-   MVN
+   MVN,
+   NoiseFiltersR
 License: GPL (>=2) | file LICENSE
 Encoding: UTF-8
 LazyData: true

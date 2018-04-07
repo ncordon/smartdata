@@ -24,6 +24,7 @@ NULL
 #' @import magrittr
 #' @import unbalanced
 #' @import discretization
+#' @import NoiseFiltersR
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg

@@ -35,6 +35,57 @@ checkListArguments <- function(args, checks){
   }, simplify = FALSE, USE.NAMES = TRUE)
 }
 
+mapArguments <- function(args, checks){
+  # Check that no non-existent argument has been passed to the function
+  if(any(! names(args) %in% names(checks))){
+    if(length(names(checks)) == 0){
+      validArgs <- "no arguments"
+    } else{
+      validArgs <- paste(names(checks), collapse = ", ")
+    }
+    stop(paste("Wrong arg for selected method. Valid args are:", validArgs))
+  }
+
+  mappedNames <- sapply(names(checks), function(argName){
+    mapped <- checks[[argName]]$map
+    result <- argName
+
+    if(!is.null(mapped))
+      result <- mapped
+
+    result
+  })
+  # Name of arguments that are correctly passed to the function
+  # wildcard <- names(args)[names(args) %in% names(checks)]
+  result <- sapply(names(checks), function(argName){
+    arg <- args[[argName]]
+    # If argument is not present and default value for the argument exists,
+    # substitute argument by default value
+    if(is.null(arg) && !is.null(checks[[argName]]$default)){
+      arg <- checks[[argName]]$default
+    } else{
+      checks[[argName]]$check(arg)
+    }
+
+    arg
+  }, simplify = FALSE)
+
+  names(result) <- mappedNames
+
+  result
+}
+
+mapMethod <- function(methodsInfo, method){
+  result <- method
+  pkg    <- methodsInfo[[method]]$pkg
+  mapped <- methodsInfo[[method]]$map
+
+  if(!is.null(mapped))
+    result <- mapped
+
+  eval(parse(text = paste(pkg, "::", result , sep = "")))
+}
+
 # TODO: improve types and available checks
 # Categories used so far in argCheck:
 # discrete, real, integer, boolean

@@ -82,7 +82,7 @@ preprocess.outliers <- function(task){
 }
 
 preprocess.noise <- function(task){
-  class(task) <- noisePackages[[task$method]]
+  class(task) <- noisePackages[[task$method]]$pkg
 
   doNoiseClean(task)
 }

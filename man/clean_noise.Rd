@@ -25,22 +25,25 @@ Noise cleaning wrapper
 \examples{
 library("amendr")
 
-clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
-clean_noise(iris, "AENN", class_attr = "Species")
-clean_noise(iris, "GE", class_attr = "Species", k = 5, relabel_th = 2)
-clean_noise(iris, "HARF", class_attr = "Species", num_folds = 10, agree_level = 0.7, num_trees = 5)
-clean_noise(iris, "hybrid", class_attr = "Species", consensus = FALSE, action = "repair")
-clean_noise(iris, "INFFC", class_attr = "Species", consensus = FALSE,
-            prob_noisy = 0.2, stop_iterations = 3, k = 5, threshold = 0)
-clean_noise(iris, "IPF", class_attr = "Species", consensus = FALSE, num_folds = 3,
-            prob_noisy = 0.2, prob_good = 0.5, stop_iterations = 3)
-clean_noise(iris, "Mode", class_attr = "Species", type = "iterative", action = "repair",
-            epsilon = 0.05, max_iterations = 200, alpha = 1, beta = 1)
-clean_noise(iris, "Mode", class_attr = "Species", type = "iterative", action = "repair",
-            epsilon = 0.05, max_iterations = 200, alpha = 1, beta = 1)
-clean_noise(iris, "ORBoost", class_attr = "Species", num_boosting = 20,
-            threshold = 11, num_adaboost = 20)
-clean_noise(iris, "PF", class_attr = "Species", prob_noisy = 0.01,
-            stop_iterations = 5, prob_good = 0.5, theta = 0.8)
+super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
+super_iris <- clean_noise(iris, "AENN", class_attr = "Species")
+super_iris <- clean_noise(iris, "GE", class_attr = "Species", k = 5, relabel_th = 2)
+super_iris <- clean_noise(iris, "HARF", class_attr = "Species",
+                          num_folds = 10, agree_level = 0.7, num_trees = 5)
+super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
+                          consensus = FALSE, action = "repair")
+super_iris <- clean_noise(iris, "INFFC", class_attr = "Species", consensus = FALSE,
+                          prob_noisy = 0.2, stop_iterations = 3, k = 5, threshold = 0)
+super_iris <- clean_noise(iris, "IPF", class_attr = "Species", consensus = FALSE,
+                          num_folds = 3, prob_noisy = 0.2,
+                          prob_good = 0.5, stop_iterations = 3)
+super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",
+                          action = "repair", epsilon = 0.05,
+                          max_iterations = 200, alpha = 1, beta = 1)
+super_iris <- clean_noise(iris, "ORBoost", class_attr = "Species",
+                          num_boosting = 20, threshold = 11, num_adaboost = 20)
+super_iris <- clean_noise(iris, "PF", class_attr = "Species", prob_noisy = 0.01,
+                          stop_iterations = 5, prob_good = 0.5, theta = 0.8)
+super_iris <- clean_noise(iris, "C45robust", class_attr = "Species", num_folds = 5)
 
 }

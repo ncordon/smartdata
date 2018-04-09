@@ -153,22 +153,22 @@ doInstSelection.RoughSets <- function(task){
 #' @examples
 #' library("amendr")
 #'
-#' instance_selection(iris, method = "CNN", class_attr = "Species")
+#' super_iris <- instance_selection(iris, method = "CNN", class_attr = "Species")
 #' # Use k = 2 instead of default k
-#' instance_selection(iris, method = "CNN", class_attr = "Species", k = 2)
+#' super_iris <- instance_selection(iris, method = "CNN", class_attr = "Species", k = 2)
 #' # Use Edited Nearest Neighbor as method to select observations
-#' instance_selection(iris, method = "ENN", class_attr = "Species", k = 3)
-#' instance_selection(iris, method = "multiedit", class_attr = "Species",
+#' super_iris <- instance_selection(iris, method = "ENN", class_attr = "Species", k = 3)
+#' super_iris <- instance_selection(iris, method = "multiedit", class_attr = "Species",
 #'                    k = 3, num_folds = 5, null_passes = 8)
 #' # Use default arguments for multiedit
-#' instance_selection(iris, method = "multiedit", class_attr = "Species")
-#' instance_selection(iris, method = "FRIS", class_attr = "Species")
+#' super_iris <- instance_selection(iris, method = "multiedit", class_attr = "Species")
+#' super_iris <- instance_selection(iris, method = "FRIS", class_attr = "Species")
 #' # FRIS method with fuzzy granularity of 2
-#' instance_selection(iris, method = "FRIS", class_attr = "Species", alpha = 2)
+#' super_iris <- instance_selection(iris, method = "FRIS", class_attr = "Species", alpha = 2)
 #' # FRIS method with Dubois Prade implicator
-#' instance_selection(iris, method = "FRIS", class_attr = "Species", implicator_type = "dubois_prade")
+#' super_iris <- instance_selection(iris, method = "FRIS", "Species", implicator_type = "dubois_prade")
 #' # FRIS method with lower threshold (that is, less observations are removed)
-#' instance_selection(iris, method = "FRIS", class_attr = "Species", threshold = 0.6)
+#' super_iris <- instance_selection(iris, method = "FRIS", class_attr = "Species", threshold = 0.6)
 #'
 instance_selection <- function(dataset, method, class_attr = "Class", ...){
   classAttr <- class_attr

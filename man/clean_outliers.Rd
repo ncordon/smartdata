@@ -9,15 +9,12 @@ clean_outliers(dataset, method, ...)
 \arguments{
 \item{dataset}{we want to clean outliers on}
 
-\item{method}{selected method to clean outliers. Possbilities are:
-\itemize{
- \item{"univariate"}{detects outliers column by column (an outlier will be an
-  abnormal value inside a column) and fills them with mean or median of the
-  corresponding column}
- \item{"multivariate"}{detects outliers using a multicolumn approach, so that
-  an outlier will be a whole observation (row). And deletes those
-  observations}
-}}
+\item{method}{selected method to clean outliers. Possbilities are: \itemize{
+\item{"univariate"}{detects outliers column by column (an outlier will be
+an abnormal value inside a column) and fills them with mean or median of
+the corresponding column} \item{"multivariate"}{detects outliers using a
+multicolumn approach, so that an outlier will be a whole observation (row).
+And deletes those observations} }}
 
 \item{...}{further arguments for the method}
 }
@@ -30,16 +27,17 @@ Outliers cleaning wrapper
 \examples{
 library("amendr")
 
-clean_outliers(iris, method = "multivariate", type = "adj")
-clean_outliers(iris, method = "multivariate", type = "quan")
+super_iris <- clean_outliers(iris, method = "multivariate", type = "adj")
+super_iris <- clean_outliers(iris, method = "multivariate", type = "quan")
 
 # Use mean as method to substitute outliers
-clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
+super_iris <- clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "mean")
 # Use median as method to substitute outliers
-clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
+super_iris <- clean_outliers(iris, method = "univariate", type = "z", prob = 0.9, fill = "median")
 # Use chi-sq instead of z p-values
-clean_outliers(iris, method = "univariate", type = "chisq", prob = 0.9, fill = "median")
+super_iris <- clean_outliers(iris, method = "univariate", type = "chisq",
+                             prob = 0.9, fill = "median")
 # Use interquartilic range instead (lim argument is mandatory when using it)
-clean_outliers(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
+super_iris <- clean_outliers(iris, method = "univariate", type = "iqr", lim = 0.9, fill = "median")
 
 }

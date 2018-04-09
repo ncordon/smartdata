@@ -111,15 +111,15 @@ doDiscretization.infotheo <- function(task) {
 #' @examples
 #' library("amendr")
 #'
-#' discretize(iris, method = "chi-merge", class_attr = "Species")
-#' discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
-#' discretize(iris, method = "chi2", class_attr = "Species", alpha = 0.7, delta = 0.1)
-#' discretize(iris, method = "chi2", class_attr = "Species")
-#' discretize(iris, method = "extended-chi2", class_attr = "Species")
-#' discretize(iris, method = "ameva", class_attr = "Species")
-#' discretize(iris, method = "CAIM", class_attr = "Species")
-#' discretize(iris, method = "CACC", class_attr = "Species")
-#' discretize(iris, method = "equalwidth", class_attr = "Species", num_bins = nrow(iris) / 2)
+#' super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
+#' super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
+#' super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "extended-chi2", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
 #'
 discretize <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase

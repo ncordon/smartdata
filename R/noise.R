@@ -122,7 +122,7 @@ args.dynamic <- list(
   ),
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   ),
   num_ensemble <- list(
@@ -142,7 +142,7 @@ args.C45robust <- list(
   ),
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   )
 )
@@ -174,13 +174,12 @@ args.edgeBoost <- list(
 args.hybrid <- list(
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   ),
   action    = list(
     check   = Curry(expect_choice, choices = c("remove", "repair", "hybrid"), label = "action"),
-    info    = paste("Strategy to treat noise: remove all or remove only some of them",
-                 "depending on a proper measure"),
+    info    = "Strategy to treat noisy instances: 'remove', 'repair', 'hybrid'",
     default = "remove"
   )
 )
@@ -193,8 +192,7 @@ args.edgeWeight <- list(
   ),
   action    = list(
     check   = Curry(expect_choice, choices = c("remove", "hybrid"), label = "action"),
-    info    = paste("Strategy to treat noise: remove all or remove only some of them",
-                    "depending on a proper measure"),
+    info    = "Strategy to treat noisy instances: 'remove', 'hybrid'",
     default = "remove"
   )
 )
@@ -202,6 +200,8 @@ args.edgeWeight <- list(
 args.ENG <- list(
   graph     = list(
     check   = Curry(expect_choice, choices = c("GG", "RNG"), label = "graph"),
+    info    = paste("Character indicating the type of graph to be constructed. It can be",
+                    "chosen between 'GG' (Gabriel Graph) and 'RNG' (Relative Neighborhood Graph"),
     default = "GG"
   )
 )
@@ -209,8 +209,7 @@ args.ENG <- list(
 args.edgeWeight <- list(
   action    = list(
     check   = Curry(expect_choice, choices = c("remove", "hybrid"), label = "action"),
-    info    = paste("Strategy to treat noise: remove all or remove only some of them",
-                    "depending on a proper measure"),
+    info    = "Strategy to treat noisy instances: 'remove' or 'hybrid'",
     default = "remove",
     map     = "noiseAction"
   ),
@@ -261,7 +260,7 @@ args.HARF <- list(
 args.INFFC <- list(
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   ),
   prob_noisy = list(
@@ -284,7 +283,7 @@ args.INFFC <- list(
   ),
   threshold = list(
     check   = Curry(qexpect, rules = "N1[-1,1]", label = "threshold"),
-    info    = "Number between -1 and 1. Noise score value above which an instance is removed",
+    info    = "Real between -1 and 1. Noise score value above which an instance is removed",
     default = 0
   )
 )
@@ -317,7 +316,7 @@ args.IPF <- list(
   ),
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   )
 )
@@ -325,7 +324,7 @@ args.IPF <- list(
 args.Mode <- list(
   action    = list(
     check   = Curry(expect_choice, choices = c("remove", "repair"), label = "action"),
-    info    = "Strategy to treat noise: remove instance or repair it",
+    info    = "Strategy to treat noise: 'remove' or 'repair' it",
     default = "remove",
     map     = "noiseAction"
   ),
@@ -336,8 +335,8 @@ args.Mode <- list(
   ),
   epsilon   = list(
     check   = Curry(qexpect, rules = "N1[0,1]", label = "epsilon"),
-    info    = paste("If 'iterative' type is used, the loop will be stopped if the proportion",
-                    "of modified instances is less or equal than this threshold"),
+    info    = paste("Real between 0 and 1. If 'iterative' type is used, the loop will be stopped if",
+                    "the proportion of modified instances is less or equal than this threshold"),
     default = 0.05
   ),
   max_iterations = list(
@@ -347,13 +346,14 @@ args.Mode <- list(
     map     = "maxIter"
   ),
   alpha     = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "alpha"),
-    info    = "Parameter used in the computation of the similarity between two instances",
+    check   = Curry(qexpect, rules = "N1[0,Inf)", label = "alpha"),
+    info    = paste("Real positive number. Parameter used in the computation of the",
+                    "similarity between two instances"),
     default = 1
   ),
   beta      = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "beta"),
-    info    = paste("Influence of the similarity metric in the",
+    check   = Curry(qexpect, rules = "N1[0,Inf)", label = "beta"),
+    info    = paste("Real positive number. Influence of the similarity metric in the",
                     "estimation of a new label for an instance"),
     default = 1
   )
@@ -416,7 +416,7 @@ args.PF <- list(
   ),
   consensus = list(
     check   = Curry(qexpect, rules = "B1", label = "consensus"),
-    info    = "Use consensus vote. Else, use majority vote",
+    info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   ),
   theta     = list(

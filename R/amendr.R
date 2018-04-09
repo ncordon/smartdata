@@ -31,6 +31,49 @@ NULL
 #' @importFrom checkmate qexpect
 NULL
 
+
+#' Prints options for a certain preprocessing method
+#'
+#' @param preprocess Possible preprocessing: \code{'clean_noise'}
+#' @param method For the preprocessing method
+#'
+#' @return Prints options for the selected preprocessing
+#' @examples
+#' options("clean_noise", method = "edgeWeight")
+#' options("clean_noise", method = "ENG")
+#'
+options <- function(preprocess, method){
+  pkgs <- list(
+    "clean_noise" = "NoisePackages"
+  )
+
+  if(!preprocess %in% names(pkgs))
+    stop(paste("Selected preprocessing doesn't exist. Valid preprocessings are: ",
+               paste(names(pkgs), collapse = ", ")))
+
+  methodArgs <- paste("args.", method, sep = "")
+
+  if(!exists(methodArgs))
+    stop("Wrong method")
+
+  args <- eval(parse(text = methodArgs))
+  argNames <- names(args)
+
+  cat("Parameters for", method, "are: \n")
+
+  for(argName in argNames){
+    mysep <- "  * "
+    innersep <- ": "
+    cat(mysep, argName, innersep, sep = "")
+    for(line in strwrap(args[[argName]]$info,
+                        exdent = nchar(argName) + nchar(mysep) + nchar(innersep))){
+      cat(line, "\n")
+    }
+  }
+
+  invisible()
+}
+
 preprocessingTask <- function(dataset, what, method, classAttr = NULL, ...){
   if(is.null(classAttr)){
     classIndex <- NULL

@@ -130,3 +130,9 @@ preprocess.noise <- function(task){
   doNoiseClean(task)
 }
 
+preprocess.featureSelection <- function(task){
+  class(task) <- featSelectionPackages[[task$method]]$pkg
+
+  doFeatSelection(task)
+}
+

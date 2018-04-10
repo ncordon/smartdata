@@ -3,6 +3,7 @@
 export(clean_noise)
 export(clean_outliers)
 export(discretize)
+export(feature_selection)
 export(instance_selection)
 export(normalization)
 export(oversample)

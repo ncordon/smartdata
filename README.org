@@ -46,5 +46,5 @@
 *** missMDA (588 monthly downloads)
 *** mRMRe (359 monthly downloads)
 ** Noise
-*** NoiseFiltersR (101 monthly downloads)
-*** denoiseR (91 monthly downloads)
+*** DONE NoiseFiltersR (101 monthly downloads)
+*** CANCELED denoiseR (91 monthly downloads)

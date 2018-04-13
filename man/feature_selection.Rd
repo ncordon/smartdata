@@ -24,6 +24,17 @@ Feature selection wrapper
 }
 \examples{
 library("amendr")
+data(ecoli1, package = "imbalance")
 
 super_iris <- feature_selection(iris, "Boruta", class_attr = "Species")
+super_iris <- feature_selection(iris, "chi_squared",
+                                class_attr = "Species", num_attrs = 3)
+# Pick 3 attributes from the continuous ones
+super_iris <- feature_selection(ecoli1, "information_gain",
+                                class_attr = "Class", num_attrs = 3)
+super_iris <- feature_selection(ecoli1, "gain_ratio",
+                                class_attr = "Class", num_attrs = 3)
+super_iris <- feature_selection(ecoli1, "sym_uncertainty",
+                                class_attr = "Class", num_attrs = 3)
+
 }

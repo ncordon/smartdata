@@ -25,6 +25,8 @@ NULL
 #' @import unbalanced
 #' @import discretization
 #' @import NoiseFiltersR
+#' @import Fselector
+#' @import Boruta
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg

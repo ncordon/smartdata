@@ -46,7 +46,7 @@ NULL
 #'
 options <- function(preprocess, method){
   pkgs <- list(
-    "clean_noise" = "NoisePackages",
+    "clean_noise" = "noisePackages",
     "feature_selection" = "featSelectionPackages"
   )
 
@@ -54,20 +54,29 @@ options <- function(preprocess, method){
     stop(paste("Selected preprocessing doesn't exist. Valid preprocessings are: ",
                paste(names(pkgs), collapse = ", ")))
 
+  pkgs <- eval(parse(text = pkgs[[preprocess]]))
+  map_method <- pkgs[[method]]$map
+  map_method <- paste(pkgs[[method]]$pkg, "::",
+                      ifelse(is.null(map_method), method, map_method), sep = "")
+
   methodArgs <- paste("args.", method, sep = "")
 
-  if(!exists(methodArgs))
-    stop("Wrong method")
+  if(is.null(pkgs[[method]]))
+    stop(paste("Wrong method for", preprocess))
 
   args <- eval(parse(text = methodArgs))
   argNames <- names(args)
 
+  cat("For more information do:", paste("?", map_method, sep = ""), "\n")
   cat("Parameters for", method, "are: \n")
 
   for(argName in argNames){
     mysep <- "  * "
     innersep <- ": "
     cat(mysep, argName, innersep, sep = "")
+    # map <- args[[argName]]$map
+    # map <- ifelse(is.null(map), argName, map)
+
     for(line in strwrap(args[[argName]]$info,
                         exdent = nchar(argName) + nchar(mysep) + nchar(innersep))){
       cat(line, "\n")

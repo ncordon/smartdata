@@ -17,6 +17,35 @@ featSelectionPackages <- list(
   "sym_uncertainty" = list(
     pkg = "FSelector",
     map = "symmetrical.uncertainty"
+  ),
+  "oneR" = list(
+    pkg = "FSelector"
+  ),
+  "RF_importance" = list(
+    pkg = "FSelector",
+    map = "random.forest.importance"
+  ),
+  "best_first_search" = list(
+    pkg = "FSelector",
+    map = "best.first.search"
+  ),
+  "forward_search"  = list(
+    pkg = "FSelector",
+    map = "forward.search"
+  ),
+  "backward_search" = list(
+    pkg = "FSelector",
+    map = "backward.search"
+  ),
+  "hill_climbing" = list(
+    pkg = "FSelector",
+    map = "hill.climbing.search"
+  ),
+  "cfs" = list(
+    pkg = "FSelector"
+  ),
+  "consistency" = list(
+    pkg = "FSelector"
   )
 )
 
@@ -50,7 +79,39 @@ args.chi_squared <- list(
 args.information_gain <- args.chi_squared
 args.gain_ratio <- args.chi_squared
 args.sym_uncertainty <- args.chi_squared
+args.oneR <- args.chi_squared
 
+args.RF_importance <- list(
+  num_attrs = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_attrs"),
+    info    = paste("Number of attributes to pick. Should be lower than number of",
+                    "features in the dataset"),
+    default = 1
+  ),
+  type      = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_attrs"),
+    info    = paste("Type of importance measure (1 = mean decrease in accuracy,",
+                    "2 = mean decrease in node impurity)"),
+    default = 1,
+    map     = "importance.type"
+  )
+)
+
+args.best_first_search <- list(
+  eval_fun = list(
+    check  = function(x) { TRUE },
+    info   = paste("Function taking as first parameter a character vector of all",
+                   "attributes and returning a numeric indicating how important a",
+                   "given subset is"),
+    map    = "eval.fun"
+  )
+)
+
+args.forward_search  <- args.best_first_search
+args.backward_search <- args.best_first_search
+args.hill_climbing   <- args.best_first_search
+args.cfs             <- list()
+args.consistency     <- list()
 
 doFeatSelection.Boruta <- function(task){
   callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
@@ -95,11 +156,25 @@ doFeatSelection.FSelector <- function(task){
     dataset <- task$dataset
   }
 
-  # Method needs dataset and class attr to be filled separately
-  args <- list(formula = as.formula(paste(classAttr, "~.")),
-               data    = dataset)
-  weights <- do.call(method, args)
-  attrs <- FSelector::cutoff.k(weights, callArgs$num_attrs)
+  num_attrs <- callArgs$num_attrs
+  callArgs <- callArgs[names(callArgs) != "num_attrs"]
+
+  if(task$method %in% c("best_first_search", "backward_search",
+                         "forward_search", "hill_climbing")){
+    args  <- c(list(attributes = original_attrs[original_attrs != classAttr]),
+               callArgs)
+    attrs <- do.call(method, args)
+  } else{
+    args <- c(list(formula = as.formula(paste(classAttr, "~.")),
+                   data    = dataset),
+              callArgs)
+    if(task$method %in% c("cfs", "consistency")){
+      attrs <- do.call(method, args)
+    } else{
+      weights <- do.call(method, args)
+      attrs <- FSelector::cutoff.k(weights, num_attrs)
+    }
+  }
 
   attrs <- c(attrs, task$classAttr, nonNumeric)
   attrs <- original_attrs[original_attrs %in% attrs]
@@ -121,18 +196,52 @@ doFeatSelection.FSelector <- function(task){
 #' @importFrom stats as.formula
 #' @examples
 #' library("amendr")
+#' library("rpart")
 #' data(ecoli1, package = "imbalance")
+#' data(HouseVotes84, package = "mlbench")
+#'
+#' # Extracted from FSelector::best.first.search documentation
+#' evaluator <- function(subset) {
+#'   k <- 5
+#'   splits <- runif(nrow(iris))
+#'   results = sapply(1:k, function(i) {
+#'     test.idx <- (splits >= (i - 1) / k) & (splits < i / k)
+#'     train.idx <- !test.idx
+#'     test <- iris[test.idx, , drop=FALSE]
+#'     train <- iris[train.idx, , drop=FALSE]
+#'     tree <- rpart(FSelector::as.simple.formula(subset, "Species"), train)
+#'     error.rate = sum(test$Species != predict(tree, test, type="c")) / nrow(test)
+#'     return(1 - error.rate)
+#'   })
+#'   print(subset)
+#'   print(mean(results))
+#'   return(mean(results))
+#' }
+#'
+#'
 #'
 #' super_iris <- feature_selection(iris, "Boruta", class_attr = "Species")
 #' super_iris <- feature_selection(iris, "chi_squared",
 #'                                 class_attr = "Species", num_attrs = 3)
 #' # Pick 3 attributes from the continuous ones
-#' super_iris <- feature_selection(ecoli1, "information_gain",
-#'                                 class_attr = "Class", num_attrs = 3)
-#' super_iris <- feature_selection(ecoli1, "gain_ratio",
-#'                                 class_attr = "Class", num_attrs = 3)
-#' super_iris <- feature_selection(ecoli1, "sym_uncertainty",
-#'                                 class_attr = "Class", num_attrs = 3)
+#' super_ecoli <- feature_selection(ecoli1, "information_gain",
+#'                                  class_attr = "Class", num_attrs = 3)
+#' super_ecoli <- feature_selection(ecoli1, "gain_ratio",
+#'                                  class_attr = "Class", num_attrs = 3)
+#' super_ecoli <- feature_selection(ecoli1, "sym_uncertainty",
+#'                                  class_attr = "Class", num_attrs = 3)
+#' super_votes <- feature_selection(HouseVotes84, "oneR", class_attr = "Class", num_attrs = 3)
+#' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species", num_attrs = 3)
+#' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species",
+#'                                  num_attrs = 3, type = 2)
+#' super_iris  <- feature_selection(iris, "best_first_search", class_attr = "Species",
+#'                                  eval_fun = evaluator)
+#' super_iris  <- feature_selection(iris, "forward_search", class_attr = "Species",
+#'                                  eval_fun = evaluator)
+#' super_iris  <- feature_selection(iris, "backward_search", class_attr = "Species",
+#'                                  eval_fun = evaluator)
+#' super_iris  <- feature_selection(iris, "cfs", class_attr = "Species")
+#' super_iris  <- feature_selection(iris, "consistency", class_attr = "Species")
 #'
 feature_selection <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase

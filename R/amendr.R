@@ -25,7 +25,7 @@ NULL
 #' @import unbalanced
 #' @import discretization
 #' @import NoiseFiltersR
-#' @import Fselector
+#' @import FSelector
 #' @import Boruta
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
@@ -46,7 +46,8 @@ NULL
 #'
 options <- function(preprocess, method){
   pkgs <- list(
-    "clean_noise" = "NoisePackages"
+    "clean_noise" = "NoisePackages",
+    "feature_selection" = "featSelectionPackages"
   )
 
   if(!preprocess %in% names(pkgs))

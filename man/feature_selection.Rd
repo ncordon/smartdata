@@ -24,17 +24,51 @@ Feature selection wrapper
 }
 \examples{
 library("amendr")
+library("rpart")
 data(ecoli1, package = "imbalance")
+data(HouseVotes84, package = "mlbench")
+
+# Extracted from FSelector::best.first.search documentation
+evaluator <- function(subset) {
+  k <- 5
+  splits <- runif(nrow(iris))
+  results = sapply(1:k, function(i) {
+    test.idx <- (splits >= (i - 1) / k) & (splits < i / k)
+    train.idx <- !test.idx
+    test <- iris[test.idx, , drop=FALSE]
+    train <- iris[train.idx, , drop=FALSE]
+    tree <- rpart(FSelector::as.simple.formula(subset, "Species"), train)
+    error.rate = sum(test$Species != predict(tree, test, type="c")) / nrow(test)
+    return(1 - error.rate)
+  })
+  print(subset)
+  print(mean(results))
+  return(mean(results))
+}
+
+
 
 super_iris <- feature_selection(iris, "Boruta", class_attr = "Species")
 super_iris <- feature_selection(iris, "chi_squared",
                                 class_attr = "Species", num_attrs = 3)
 # Pick 3 attributes from the continuous ones
-super_iris <- feature_selection(ecoli1, "information_gain",
-                                class_attr = "Class", num_attrs = 3)
-super_iris <- feature_selection(ecoli1, "gain_ratio",
-                                class_attr = "Class", num_attrs = 3)
-super_iris <- feature_selection(ecoli1, "sym_uncertainty",
-                                class_attr = "Class", num_attrs = 3)
+super_ecoli <- feature_selection(ecoli1, "information_gain",
+                                 class_attr = "Class", num_attrs = 3)
+super_ecoli <- feature_selection(ecoli1, "gain_ratio",
+                                 class_attr = "Class", num_attrs = 3)
+super_ecoli <- feature_selection(ecoli1, "sym_uncertainty",
+                                 class_attr = "Class", num_attrs = 3)
+super_votes <- feature_selection(HouseVotes84, "oneR", class_attr = "Class", num_attrs = 3)
+super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species", num_attrs = 3)
+super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species",
+                                 num_attrs = 3, type = 2)
+super_iris  <- feature_selection(iris, "best_first_search", class_attr = "Species",
+                                 eval_fun = evaluator)
+super_iris  <- feature_selection(iris, "forward_search", class_attr = "Species",
+                                 eval_fun = evaluator)
+super_iris  <- feature_selection(iris, "backward_search", class_attr = "Species",
+                                 eval_fun = evaluator)
+super_iris  <- feature_selection(iris, "cfs", class_attr = "Species")
+super_iris  <- feature_selection(iris, "consistency", class_attr = "Species")
 
 }

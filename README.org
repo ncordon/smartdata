@@ -36,7 +36,7 @@
 *** adaptativeGPCA (146 monthly downloads)
 ** Feature selection
 *** DONE Boruta (1066 monthly downloads)
-*** FSelector (1035 monthly downloads)
+*** DONE FSelector (1035 monthly downloads)
 ** Missing values
 *** mice(7695 monthly downloads)
 *** VIM (3533 monthly downloads)

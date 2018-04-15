@@ -1,5 +1,13 @@
-outliersPackages <- list("multivariate" = "MVN",
-                         "univariate" = "outliers")
+outliersPackages <- list(
+  "multivariate" = list(
+    pkg = "MVN",
+    map = "mvn"
+  ),
+  "univariate"  = list(
+    pkg = "outliers",
+    map = "scores"
+  )
+)
 
 outliersMethods <- names(outliersPackages)
 
@@ -7,25 +15,40 @@ doOutliersClean <- function(task){
   UseMethod("doOutliersClean")
 }
 
-args.outliers <- list(
-  type = list(
-    check = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
-                  label = "type")
+args.univariate <- list(
+  type      = list(
+    check   = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
+                  label = "type"),
+    info    = paste("'z' calculates normal scores, 't' calculates t-Student scores",
+                    "'chisq' gives chi-squared scores",
+                    "For the 'iqr' type, all values lower than first and greater than third quartile are considered",
+                    "and difference between them and nearest quartile divided by IQR are calculated",
+                    "'mad' gives differences between each value and median, divided by median absolute deviation")
   ),
-  prob = list(
-    check = Curry(qexpect, rules = "N1(0,1)", label = "prob")
+  prob      = list(
+    check   = Curry(qexpect, rules = "N1(0,1)", label = "prob"),
+    info    = "Noise are values exceeding this specified probability",
+    default = 0.75
   ),
-  fill = list(
-    check = Curry(expect_choice, choices = c("median", "mean"), label = "fill")
+  fill      = list(
+    check   = Curry(expect_choice, choices = c("median", "mean"), label = "fill"),
+    info    = paste("Possible values are: 'median' or 'mean', indicating which value is going to be used to fill",
+                   "the outliers. 'median' and 'mean' are calculated with respect to each column")
   ),
-  lim  = list(
-    check = Curry(qexpect, rules = "N1", label = "lim")
+  lim       = list(
+    check   = Curry(qexpect, rules = "N1", label = "lim"),
+    info    = "This value can be set for 'iqr' type of scores, to form logical vector, which values has this limit exceeded",
+    default = NA
   )
 )
 
-args.MVN <- list(
-  type = list(
-    check = Curry(expect_choice, choices = c("adj", "quan"), label = "type")
+args.multivariate <- list(
+  type      = list(
+    check   = Curry(expect_choice, choices = c("adj", "quan"), label = "type"),
+    info    = paste("Multivariate outlier detection method: 'quan' quantile method based on Mahalanobis distance",
+                    "and 'adj' adjusted quantile method based on Mahalanobis distance"),
+    default = "adj",
+    map     = "multivariateOutlierMethod"
   )
 )
 
@@ -36,22 +59,24 @@ doOutliersClean.outliers <- function(task){
   # Strip non numeric columns from dataset
   dataset <- dataset[, numericIndexes]
 
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(outliersPackages, task$method)
+
   if("type" %in% names(task$args)){
     if(task$args[["type"]] != "iqr"){
-      possibleArgs <- args.outliers[c("type", "prob", "fill")]
+      callArgs <- callArgs[c("type", "prob", "fill")]
     } else{
-      possibleArgs <- args.outliers[c("type", "lim", "fill")]
+      callArgs <- callArgs[c("type", "lim", "fill")]
     }
-
-    task$args <- checkListArguments(task$args, possibleArgs)
   } else{
     stop("type argument must be present")
   }
 
-  scoresArguments <- task$args[names(task$args) != "fill"]
+  args <- callArgs[names(callArgs) != "fill"]
 
   # Compute which are the outliers per column
-  whichOutliers <- do.call(outliers::scores, append(list(x = dataset), scoresArguments))
+  whichOutliers <- do.call(method, c(list(x = dataset), args))
 
   dataset <- task$dataset
 
@@ -78,15 +103,16 @@ doOutliersClean.MVN <- function(task){
   coltypes <- colTypes(dataset)
   numericIndexes <- which(coltypes %in% c("numeric", "integer"))
   # Strip non numeric columns from dataset
-  dataset <- dataset[, numericIndexes]
 
-  # Check list of arguments
-  task$args <- checkListArguments(task$args, args.MVN)
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  dataset  <- dataset[, numericIndexes]
+  method   <- mapMethod(outliersPackages, task$method)
 
   # Compute outliers, disabling graphical effects from the functions that computes them
   pdf(file = NULL)
-  outliers <- do.call(MVN::mvn, append(list(data = dataset, showOutliers = TRUE),
-                                       list(multivariateOutlierMethod = task$args[["type"]])))
+  outliers <- do.call(method, c(list(data = dataset, showOutliers = TRUE), callArgs))
+
   dummy <- capture.output(dev.off())
 
   whichOutliers <- as.integer(as.character(outliers$multivariateOutliers$Observation))

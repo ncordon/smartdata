@@ -44,9 +44,10 @@ NULL
 #' options("clean_noise", method = "edgeWeight")
 #' options("clean_noise", method = "ENG")
 #'
-options <- function(preprocess, method){
+options <- function(preprocess, method = NULL){
   pkgs <- list(
-    "clean_noise" = "noisePackages",
+    "clean_outliers"    = "outliersPackages",
+    "clean_noise"       = "noisePackages",
     "feature_selection" = "featSelectionPackages"
   )
 
@@ -55,31 +56,39 @@ options <- function(preprocess, method){
                paste(names(pkgs), collapse = ", ")))
 
   pkgs <- eval(parse(text = pkgs[[preprocess]]))
-  map_method <- pkgs[[method]]$map
-  map_method <- paste(pkgs[[method]]$pkg, "::",
-                      ifelse(is.null(map_method), method, map_method), sep = "")
 
-  methodArgs <- paste("args.", method, sep = "")
+  if(is.null(method)){
+    pkgsNames <- sapply(names(pkgs), function(p){
+      paste("\'", p, "\'", sep = "")
+    })
+    cat("Possible methods are:", paste(pkgsNames, collapse = ", "), "\n")
+  } else{
+    map_method <- pkgs[[method]]$map
+    map_method <- paste(pkgs[[method]]$pkg, "::",
+                        ifelse(is.null(map_method), method, map_method), sep = "")
 
-  if(is.null(pkgs[[method]]))
-    stop(paste("Wrong method for", preprocess))
+    methodArgs <- paste("args.", method, sep = "")
 
-  args <- eval(parse(text = methodArgs))
-  argNames <- names(args)
+    if(is.null(pkgs[[method]]))
+      stop(paste("Wrong method for", preprocess))
 
-  cat("For more information do:", paste("?", map_method, sep = ""), "\n")
-  cat("Parameters for", method, "are: \n")
+    args <- eval(parse(text = methodArgs))
+    argNames <- names(args)
 
-  for(argName in argNames){
-    mysep <- "  * "
-    innersep <- ": "
-    cat(mysep, argName, innersep, sep = "")
-    # map <- args[[argName]]$map
-    # map <- ifelse(is.null(map), argName, map)
+    cat("For more information do:", paste("?", map_method, sep = ""), "\n")
+    cat("Parameters for", method, "are: \n")
 
-    for(line in strwrap(args[[argName]]$info,
-                        exdent = nchar(argName) + nchar(mysep) + nchar(innersep))){
-      cat(line, "\n")
+    for(argName in argNames){
+      mysep <- "  * "
+      innersep <- ": "
+      cat(mysep, argName, innersep, sep = "")
+      # map <- args[[argName]]$map
+      # map <- ifelse(is.null(map), argName, map)
+
+      for(line in strwrap(args[[argName]]$info,
+                          exdent = nchar(argName) + nchar(mysep) + nchar(innersep))){
+        cat(line, "\n")
+      }
     }
   }
 

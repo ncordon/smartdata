@@ -4,7 +4,7 @@
 \alias{options}
 \title{Prints options for a certain preprocessing method}
 \usage{
-options(preprocess, method)
+options(preprocess, method = NULL)
 }
 \arguments{
 \item{preprocess}{Possible preprocessing: \code{'clean_noise'}}

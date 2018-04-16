@@ -1,14 +1,49 @@
-discretizationPackages <- list("chi2" = "discretization",
-                               "chi-merge" = "discretization",
-                               "extended-chi2" = "discretization",
-                               "mod-chi2" = "discretization",
-                               "CAIM" = "discretization",
-                               "CACC" = "discretization",
-                               "ameva" = "discretization",
-                               "mdlp" = "discretization",
-                               "equalfreq" = "infotheo",
-                               "equalwidth" = "infotheo",
-                               "globalequalwidth" = "infotheo")
+discretizationPackages <- list(
+  "chi2"      = list(
+    pkg       = "discretization",
+    map       = "chi2"
+  ),
+  "chi_merge" = list(
+    pkg       = "discretization",
+    map       = "chiM"
+  ),
+  "extended_chi2" = list(
+    pkg           = "discretization",
+    map           = "extendChi2"
+  ),
+  "mod_chi2"  = list(
+    pkg       = "discretization",
+    map       = "modChi2"
+  ),
+  "CAIM"      = list(
+    pkg       = "discretization",
+    map       = "disc.Topdown"
+  ),
+  "CACC"      = list(
+    pkg       = "discretization",
+    map       = "disc.Topdown"
+  ),
+  "ameva"     = list(
+    pkg       = "discretization",
+    map       = "disc.Topdown"
+  ),
+  "mdlp"      = list(
+    pkg       = "discretization",
+    map       = "mdlp"
+  ),
+  "equalfreq" = list(
+    pkg       = "infotheo",
+    map       = "discretize"
+  ),
+  "equalwidth" = list(
+    pkg        = "infotheo",
+    map        = "discretize"
+  ),
+  "globalequalwidth" = list(
+    pkg              = "infotheo",
+    map              = "discretize"
+  )
+)
 
 discretizationMethods <- names(discretizationPackages)
 
@@ -16,82 +51,83 @@ doDiscretization <- function(task){
   UseMethod("doDiscretization")
 }
 
-args.discretization <- list(
-  alpha = list(
-    check = Curry(qexpect, rules = "N1[0,1]", label = "alpha",
-                  info = "Significance level between 0 and 1"),
-    default = 0.5
-  ),
-  delta = list(
-    check = Curry(qexpect, rules = "N1[0,1]", label = "delta",
-                  info = paste("Inconsistency level.",
-                               "Algorithm is performed until we exceed this level")),
-    default = 0.05
+args.chi_merge <- list(
+  alpha        = list(
+    check      = Curry(qexpect, rules = "N1[0,1]", label = "alpha"),
+    info       = "Significance level between 0 and 1",
+    default    = 0.5
   )
 )
 
-args.infotheo <- list(
-  num_bins = list(
-    check = Curry(qexpect, rules = "X1[2,Inf)", label = "num_bins",
-                  info = paste("Number of bin used, must be lower than rows of dataset",
-                               "eg. Half of the number of rows")),
-    default = 2
+args.extended_chi2 <- list(
+  alpha            = list(
+    check          = Curry(qexpect, rules = "N1[0,1]", label = "alpha"),
+    info           = "Significance level between 0 and 1",
+    default        = 0.5,
+    map            = "alp"
   )
 )
+
+args.mod_chi2 <- args.extended_chi2
+
+args.chi2     <- list(
+  alpha       = list(
+    check     = Curry(qexpect, rules = "N1[0,1]", label = "alpha"),
+    info      = "Significance level between 0 and 1",
+    default   = 0.5,
+    map       = "alp"
+  ),
+  delta       = list(
+    check     = Curry(qexpect, rules = "N1[0,1]", label = "delta"),
+    info      = "Inconsistency level. Algorithm is performed until we exceed this level",
+    default   = 0.05,
+    map       = "del"
+  )
+)
+
+args.mdlp  <- list()
+args.CAIM  <- list()
+args.CACC  <- list()
+args.ameva <- list()
+
+args.equalfreq <- list(
+  num_bins    = list(
+    check     = Curry(qexpect, rules = "X1[2,Inf)", label = "num_bins"),
+    info      = paste("Number of bins used, must be lower than rows of dataset",
+                      "eg. Half of the number of rows"),
+    default   = 2,
+    map       = "nbins"
+  )
+)
+
+args.equalwidth       <- args.equalfreq
+args.globalequalwidth <- args.equalfreq
 
 doDiscretization.discretization <- function(task){
-  callArgs <- list()
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  callArgs <- c(list(task$dataset), callArgs)
+  method   <- mapMethod(discretizationPackages, task$method)
 
-  if(task$method == "chi-merge"){
-    args.discretization <- args.discretization["alpha"]
-    callArgs <- checkListArguments(task$args, args.discretization)
-    method <- "chiM"
-  } else if(task$method == "chi2"){
-    args.discretization <- args.discretization[c("alpha", "delta")]
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(alp = task$args$alpha, del = task$args$del)
-    method <- "chi2"
-  } else if(task$method == "extended-chi2"){
-    args.discretization <- args.discretization["alpha"]
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(alp = task$args$alpha)
-    method <- "extendChi2"
-  } else if(task$method == "mod-chi2"){
-    args.discretization <- args.discretization["alpha"]
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(alp = task$args$alpha)
-    method <- "modChi2"
-  } else if(task$method == "CAIM"){
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(method = 1)
-    method <- "disc.Topdown"
+
+  if(task$method == "CAIM"){
+    callArgs <- c(callArgs, method = 1)
   } else if(task$method == "CACC"){
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(method = 2)
-    method <- "disc.Topdown"
+    callArgs <- c(callArgs, method = 2)
   } else if(task$method == "ameva"){
-    task$args <- checkListArguments(task$args, args.discretization)
-    callArgs <- list(method = 3)
-    method <- "disc.Topdown"
-  } else if(task$method == "mdlp"){
-    task$args <- checkListArguments(task$args, args.discretization)
-    method <- "mdlp"
+    callArgs <- c(callArgs, method = 3)
   }
 
-  method <- eval(parse(text = paste("discretization::", method, sep = "")))
-
-  callArgs <- c(list(task$dataset), callArgs)
   result <- do.call(method, callArgs)
   result$Disc.data
 }
 
 
 doDiscretization.infotheo <- function(task) {
-  args.infotheo <- checkListArguments(task$args, args.infotheo)
-  callArgs <- list(X = task$dataset,
-                   disc = task$method,
-                   nbins = task$args$num_bins)
-  result <- do.call(infotheo::discretize, callArgs)
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  callArgs <- c(list(X = task$dataset, disc = task$method), callArgs)
+  result   <- do.call(infotheo::discretize, callArgs)
 
   result
 }
@@ -111,15 +147,16 @@ doDiscretization.infotheo <- function(task) {
 #' @examples
 #' library("amendr")
 #'
-#' super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
+#' super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species", alpha = 0.7)
 #' super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
 #' super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "extended-chi2", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "extended_chi2", class_attr = "Species")
 #' super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
 #' super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
 #' super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
 #' super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
+#' super_iris <- discretize(iris, method = "equalfreq", "Species", num_bins = nrow(iris) / 2)
 #'
 discretize <- function(dataset, method, class_attr = "Class", ...){
   # Convert all not camelCase arguments to camelCase

@@ -48,7 +48,8 @@ options <- function(preprocess, method = NULL){
   pkgs <- list(
     "clean_outliers"    = "outliersPackages",
     "clean_noise"       = "noisePackages",
-    "feature_selection" = "featSelectionPackages"
+    "feature_selection" = "featSelectionPackages",
+    "discretization"    = "discretizationPackages"
   )
 
   if(!preprocess %in% names(pkgs))

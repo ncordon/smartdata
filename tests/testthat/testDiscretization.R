@@ -17,9 +17,9 @@ names(modecoli)[ncol(modecoli)] <- "my_class"
 
 test_that("Correct discretization", {
   expect_error(discretize(iris0, method = "chi2", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "chi-merge", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "extended-chi2", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "mod-chi2", class_attr = "Class"), NA)
+  expect_error(discretize(iris0, method = "chi_merge", class_attr = "Class"), NA)
+  expect_error(discretize(iris0, method = "extended_chi2", class_attr = "Class"), NA)
+  expect_error(discretize(iris0, method = "mod_chi2", class_attr = "Class"), NA)
   expect_error(discretize(iris0, method = "CAIM", class_attr = "Class"), NA)
   expect_error(discretize(iris0, method = "CACC", class_attr = "Class"), NA)
   expect_error(discretize(iris0, method = "ameva", class_attr = "Class"), NA)

@@ -25,14 +25,15 @@ Discretization wrapper
 \examples{
 library("amendr")
 
-super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species")
-super_iris <- discretize(iris, method = "chi-merge", class_attr = "Species", alpha = 0.7)
+super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species")
+super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species", alpha = 0.7)
 super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
 super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
-super_iris <- discretize(iris, method = "extended-chi2", class_attr = "Species")
+super_iris <- discretize(iris, method = "extended_chi2", class_attr = "Species")
 super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
 super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
 super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
 super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
+super_iris <- discretize(iris, method = "equalfreq", "Species", num_bins = nrow(iris) / 2)
 
 }

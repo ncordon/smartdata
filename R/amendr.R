@@ -158,3 +158,9 @@ preprocess.featureSelection <- function(task){
   doFeatSelection(task)
 }
 
+preprocess.spaceTransformation <- function(task){
+  class(task) <- spaceTransformationPackages[[task$method]]$pkg
+
+  doSpaceTransformation(task)
+}
+

@@ -32,7 +32,7 @@
 *** DONE outliers (2197 monthly downloads)
 *** DONE MVN (4696 monthly downloads)
 ** Space transformation
-*** lle (182 monthly downloads)
+*** DONE lle (182 monthly downloads)
 *** adaptativeGPCA (146 monthly downloads)
 ** Feature selection
 *** DONE Boruta (1066 monthly downloads)

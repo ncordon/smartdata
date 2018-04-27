@@ -6,6 +6,10 @@ spaceTransformationPackages <- list(
   "lle_epsilon" = list(
     pkg = "lle",
     map = "lle"
+  ),
+  "adaptative_gpca" = list(
+    pkg = "adaptiveGPCA",
+    map = "adaptivegpca"
   )
 )
 
@@ -29,7 +33,7 @@ args.lle_knn <- list(
   ),
   num_features = list(
     check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_features"),
-    info    = "Desired number of numeric features to achieve",
+    info    = "Desired number of numeric features to return",
     map     = "m"
   )
 )
@@ -49,8 +53,24 @@ args.lle_epsilon <- list(
   ),
   num_features = list(
     check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_features"),
-    info    = "Desired number of numeric features to achieve",
+    info    = "Desired number of numeric features to return",
     map     = "m"
+  )
+)
+
+args.adaptative_gpca <- list(
+  similarity = list(
+    check   = function(x){
+      if(class(x) != "matrix")
+        stop("similarity parameter needs a matrix of similarities of the dataset variabless")
+    },
+    info    = "A p \times p similarity matrix on the variables defining an inner product on the rows of X",
+    map     = "Q"
+  ),
+  num_features = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_features"),
+    info    = "Desired number of numeric features to return",
+    map     = "k"
   )
 )
 
@@ -88,6 +108,32 @@ doSpaceTransformation.lle <- function(task){
   result
 }
 
+doSpaceTransformation.adaptative_gpca <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+
+  method <- mapMethod(spaceTransformationPackages, task$method)
+
+  classAttr  <- task$classAttr
+  dataset    <- task$dataset
+  colnames   <- names(dataset)
+  dataset    <- dataset[, -which(colnames %in% classAttr)]
+  coltypes   <- colTypes(dataset)
+  nonNumeric <- which(! coltypes %in% c("numeric", "integer"))
+  nonNumericAttrs <- c(names(dataset)[nonNumeric], classAttr)
+
+  if(length(nonNumeric) > 0){
+    dataset <- dataset[, -nonNumeric]
+  }
+
+  # Method needs dataset and class attr to be filled separately
+  callArgs <- c(list(X = as.matrix(dataset)), callArgs)
+  result <- do.call(method, callArgs)$U
+  result <- data.frame(result)
+  result <- cbind(result, task$dataset[, nonNumericAttrs])
+
+  result
+}
 
 #' Space transformation wrapper
 #'

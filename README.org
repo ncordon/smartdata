@@ -38,9 +38,9 @@
 *** DONE Boruta (1066 monthly downloads)
 *** DONE FSelector (1035 monthly downloads)
 ** Missing values
-*** mice(7695 monthly downloads)
+*** DONE mice(7695 monthly downloads)
 *** VIM (3533 monthly downloads)
-*** Amelia (2870 monthly downloads)
+*** DONE Amelia (2870 monthly downloads)
 *** DMwR (3052 monthly downloads)
 *** missForest (1775 monthly downloads)
 *** missMDA (588 monthly downloads)

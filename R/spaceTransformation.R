@@ -137,15 +137,14 @@ doSpaceTransformation.adaptative_gpca <- function(task){
 
 #' Space transformation wrapper
 #'
-#' @param dataset we want to do feature selection on
-#' @param method selected method of feature selection
+#' @param dataset we want to do space transformation on
+#' @param method selected method of space transformation
 #' @param class_attr \code{character}. Indicates the class attribute or
 #'   attributes from \code{dataset}. Must exist in it.
 #' @param ... Further arguments for \code{method}
 #'
-#' @return The treated dataset (either with noisy instances replaced or erased)
+#' @return The transformed dataset
 #' @export
-#' @importFrom stats as.formula
 #' @examples
 #' library("amendr")
 #' data(ecoli1, package = "imbalance")

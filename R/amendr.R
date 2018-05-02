@@ -27,6 +27,8 @@ NULL
 #' @import NoiseFiltersR
 #' @import FSelector
 #' @import Boruta
+#' @import mice
+#' @import Amelia
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg
@@ -162,5 +164,11 @@ preprocess.spaceTransformation <- function(task){
   class(task) <- spaceTransformationPackages[[task$method]]$pkg
 
   doSpaceTransformation(task)
+}
+
+preprocess.missingValues <- function(task){
+  class(task) <- missingValuesPackages[[task$method]]$pkg
+
+  doMissingValues(task)
 }
 

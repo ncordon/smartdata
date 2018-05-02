@@ -7,9 +7,9 @@
 space_transformation(dataset, method, class_attr = "Class", ...)
 }
 \arguments{
-\item{dataset}{we want to do feature selection on}
+\item{dataset}{we want to do space transformation on}
 
-\item{method}{selected method of feature selection}
+\item{method}{selected method of space transformation}
 
 \item{class_attr}{\code{character}. Indicates the class attribute or
 attributes from \code{dataset}. Must exist in it.}
@@ -17,7 +17,7 @@ attributes from \code{dataset}. Must exist in it.}
 \item{...}{Further arguments for \code{method}}
 }
 \value{
-The treated dataset (either with noisy instances replaced or erased)
+The transformed dataset
 }
 \description{
 Space transformation wrapper

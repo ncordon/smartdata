@@ -18,6 +18,9 @@ r_github_packages:
   # Temporary until new version is in CRAN
   - ncordon/imbalance
 
+before_script:
+  - Rscript - e 'source("http://bioconductor.org/biocLite.R"); biocLite("BiocInstaller", suppressUpdates = TRUE)'
+  
 script:
   - R CMD build . ${R_BUILD_ARGS}
   - R CMD check `ls -1t *.tar.gz | head -n 1` ${R_CHECK_ARGS}$

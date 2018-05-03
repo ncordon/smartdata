@@ -24,5 +24,9 @@ library("amendr")
 data(africa, package = "Amelia")
 data(nhanes, package = "mice")
 
-super_nhanes<- impute_missing(nhanes, "gibbs_sampling")
+super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
+# Use a different method for every column
+impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
+super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)
+
 }

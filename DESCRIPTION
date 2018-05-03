@@ -12,7 +12,6 @@ Description: Eases data preprocessing tasks, providing a data flow based
 Depends: R (>= 3.4.3),
          mice (>= 2.46.0)
 Imports:
-   BiocInstaller,
    functional,
    checkmate,
    magrittr,

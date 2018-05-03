@@ -45,13 +45,15 @@ NULL
 #' @examples
 #' options("clean_noise", method = "edgeWeight")
 #' options("clean_noise", method = "ENG")
+#' options("impute_missing, method = "gibbs_sampling")
 #'
 options <- function(preprocess, method = NULL){
   pkgs <- list(
     "clean_outliers"    = "outliersPackages",
     "clean_noise"       = "noisePackages",
     "feature_selection" = "featSelectionPackages",
-    "discretization"    = "discretizationPackages"
+    "discretization"    = "discretizationPackages",
+    "impute_missing"    = "missingValuesPackages"
   )
 
   if(!preprocess %in% names(pkgs))
@@ -87,10 +89,19 @@ options <- function(preprocess, method = NULL){
       cat(mysep, argName, innersep, sep = "")
       # map <- args[[argName]]$map
       # map <- ifelse(is.null(map), argName, map)
+      info   <- args[[argName]]$info
+      exdent <- nchar(argName) + nchar(mysep) + nchar(innersep)
 
-      for(line in strwrap(args[[argName]]$info,
-                          exdent = nchar(argName) + nchar(mysep) + nchar(innersep))){
-        cat(line, "\n")
+      for(n in 1:length(info)){
+        if (n == 1){
+          indent <- 0
+        } else{
+          indent <- exdent
+        }
+
+        for(line in strwrap(info[n], indent = indent, exdent = exdent)){
+          cat(line, "\n")
+        }
       }
     }
   }

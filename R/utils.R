@@ -86,63 +86,14 @@ mapMethod <- function(methodsInfo, method){
   eval(parse(text = paste(pkg, "::", result , sep = "")))
 }
 
-# TODO: improve types and available checks
-# Categories used so far in argCheck:
-# discrete, real, integer, boolean
-#
-# argCheck <- function(category, values, min = -Inf, max = Inf, required = FALSE,
-#                      minIncluded = TRUE, maxIncluded = TRUE){
-#   mycheck <- function(arg) { TRUE }
-#   myvalues <- c()
-#
-#   # Numerical check
-#   if(category %in% c("real", "integer")){
-#     mycheck <- function(arg){
-#       # If we have indicated that value can be maximum (maximum = TRUE),
-#       # match argument against close interval, otherwise check that argument
-#       # is strictly lower than maximum
-#       minComparison <- ifelse(minIncluded, ">=", ">")
-#       maxComparison <- ifelse(maxIncluded, "<=", "<")
-#       minCondition <- parse(text = paste(arg, minComparison, min))
-#       maxCondition <- parse(text = paste(arg, maxComparison, max))
-#       is.numeric(arg) && eval(minCondition) && eval(maxCondition)
-#     }
-#
-#     myvalues <- paste(category, " in ", "]", min, ",", max, "[", sep = "")
-#   # Discrete values check (argument has to be among values)
-#   } else if(category == "discrete"){
-#     mycheck <- function(arg){
-#       arg %in% values
-#     }
-#
-#     myvalues <- values
-#   # Boolean category check (argument has to be either True or False)
-#   } else if(category == "boolean"){
-#     mycheck <- function(arg){
-#       class(arg) == "logical"
-#     }
-#
-#     myvalues <- c("TRUE", "FALSE")
-#   }
-#
-#   # If argument is required, do check that it matches values provided.
-#   # Otherwise, match it against provided values only if it is present
-#   result <- list(check = function(arg){
-#       if(required){
-#         if(! is.null(arg)){
-#           mycheck(arg)
-#         }else{
-#           FALSE
-#         }
-#       } else{
-#         if(! is.null(arg)){
-#           mycheck(arg)
-#         } else{
-#           TRUE
-#         }
-#       }
-#     }, values = myvalues)
-#
-#   result
-# }
-#
+mergeDatasets <- function(orig, new, nonNumericAttrs){
+  result <- sapply(names(orig), function(name){
+    if(name %in% nonNumericAttrs){
+      orig[, name]
+    } else{
+      new[, name]
+    }
+  }, USE.NAMES = TRUE, simplify = FALSE)
+
+  data.frame(result)
+}

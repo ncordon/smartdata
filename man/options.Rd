@@ -17,8 +17,3 @@ Prints options for the selected preprocessing
 \description{
 Prints options for a certain preprocessing method
 }
-\examples{
-options("clean_noise", method = "edgeWeight")
-options("clean_noise", method = "ENG")
-
-}

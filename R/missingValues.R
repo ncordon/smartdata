@@ -17,6 +17,7 @@ doMissingValues <- function(task){
 
 args.gibbs_sampling <- list(
   imputation   = list(
+    # Needs to be adjusted the imputation method of every single column
     check      = Curry(expect_choice, choices =
                      c(
                         "pmm",
@@ -42,7 +43,7 @@ args.gibbs_sampling <- list(
                         "2lonly_mean",
                         "2lonly_pmm"
                       ), label = "imputation"),
-    info       = paste("Imputation method:",
+    info       = c( "Imputation method (one of the above or a vector containing as much as number of columns in dataset):",
                          "pmm: Predictive mean matching",
                          "midastouch: Weighted predictive mean matching",
                          "sample: Random sample from observed values",
@@ -65,9 +66,9 @@ args.gibbs_sampling <- list(
                          "2l_pan: Level-1 normal homoscedastic, pan",
                          "2lonly_mean: Level-2 class mean",
                          "2lonly_norm: Level-2 class normal",
-                         "2lonly_pmm: Level-2 class predictive mean matching",
-                       sep = "\n"),
-    default  = "",
+                         "2lonly_pmm: Level-2 class predictive mean matching"
+                   ),
+    default  = "pmm",
     map      = "method"
   ),
   num_iterations = list(
@@ -107,6 +108,14 @@ args.expect_maximization <- list(
 
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
+  # Adjust check function to test the imputation method for all the columns,
+  # in case more than one is passed to the function
+  checkfn <- callArgs$imputation$check
+  callArgs$imputation$check <- function(x){
+    for(arg in x){
+      checkfn(arg)
+    }
+  }
   callArgs   <- mapArguments(task$args, callArgs)
   callArgs$m <- 1
   method     <- mapMethod(missingValuesPackages, task$method)
@@ -116,8 +125,10 @@ doMissingValues.mice <- function(task){
   # Substitute _ by . in method to use
   callArgs$method <- sub("_", "\\.", callArgs$method)
 
+  dataset    <- task$dataset
+
   # Method needs dataset and class attr to be filled separately
-  callArgs <- c(list(data = task$dataset), callArgs)
+  callArgs <- c(list(data = dataset), callArgs)
   result   <- do.call(mice::mice, callArgs)
   result   <- mice::complete(result, 1)
 
@@ -160,7 +171,11 @@ doMissingValues.amelia <- function(task){
 #' data(africa, package = "Amelia")
 #' data(nhanes, package = "mice")
 #'
-#' super_nhanes<- impute_missing(nhanes, "gibbs_sampling")
+#' super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
+#' # Use a different method for every column
+#' impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
+#' super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)
+#'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)
 

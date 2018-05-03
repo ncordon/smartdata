@@ -1,5 +1,5 @@
 language: r
-r: devel
+r: bioc-devel
 cache: packages
 dist: trusty
 sudo: required
@@ -18,9 +18,7 @@ r_github_packages:
   # Temporary until new version is in CRAN
   - ncordon/imbalance
 
-# To install Bioconductor utilities
-use_bioc: true
-  
+
 script:
   - R CMD build . ${R_BUILD_ARGS}
   - R CMD check `ls -1t *.tar.gz | head -n 1` ${R_CHECK_ARGS}$

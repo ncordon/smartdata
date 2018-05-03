@@ -18,8 +18,8 @@ r_github_packages:
   # Temporary until new version is in CRAN
   - ncordon/imbalance
 
-before_script:
-  - Rscript - e 'source("http://bioconductor.org/biocLite.R"); biocLite("BiocInstaller", suppressUpdates = TRUE)'
+# To install Bioconductor utilities
+use_bioc: true
   
 script:
   - R CMD build . ${R_BUILD_ARGS}

@@ -41,7 +41,7 @@
 *** DONE mice(7695 monthly downloads)
 *** VIM (3533 monthly downloads)
 *** DONE Amelia (2870 monthly downloads)
-*** DMwR (3052 monthly downloads)
+*** DONE DMwR (3052 monthly downloads)
 *** missForest (1775 monthly downloads)
 *** missMDA (588 monthly downloads)
 *** mRMRe (359 monthly downloads)

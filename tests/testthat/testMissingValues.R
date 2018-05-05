@@ -1,5 +1,6 @@
 library(testthat)
 data(nhanes, package = "mice")
+data(africa, package = "Amelia")
 
 context("Missing values testing")
 
@@ -9,4 +10,6 @@ nhanes <- nhanes[, 5:1]
 test_that("Correct imputation of missing values", {
   expect_error(impute_missing(nhanes, "gibbs_sampling"), NA)
   expect_equal(names(impute_missing(nhanes, "gibbs_sampling")), names(nhanes))
+  expect_error(impute_missing(africa, "expect_maximization", exclude = "country"), NA)
+  expect_error(impute_missing(africa, "expect_maximization", exclude = "country", ts_class = "year"), NA)
 })

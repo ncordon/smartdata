@@ -32,5 +32,5 @@ super_nhanes <- impute_missing(nhanes, "central_imputation")
 super_africa <- impute_missing(africa, "knn_imputation")
 # Execute knn imputation with non default value for k
 super_africa <- impute_missing(africa, "knn_imputation", k = 5)
-
+super_africa <- impute_missing(africa, "expect_maximization", exclude = "country")
 }

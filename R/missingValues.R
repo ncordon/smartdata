@@ -92,24 +92,28 @@ args.expect_maximization <- list(
     check   = NA,
     info    = paste("Attribute that represents time series class",
                     "Should be passed when variables vary smoothly with respect to this argument"),
-    map     = "ts"
+    map     = "ts",
+    default = NULL
   ),
   ordinals  = list(
     check   = NA,
     info    = paste("Ordinal attributes in the dataset.",
                     "If not included, continuous imputations could happen"),
-    map     = "ords"
+    map     = "ords",
+    default = NULL
   ),
   nominals  = list(
     check   = NA,
     info    = paste("Nominal attributes in the dataset.",
                     "If not included, continuous imputations could happen"),
-    map     = "noms"
+    map     = "noms",
+    default = NULL
   ),
   exclude   = list(
     check   = NA,
     info    = paste("Attributes we need to retain but will not be used in the imputation model"),
-    map     = "idvars"
+    map     = "idvars",
+    default = NULL
   )
 )
 
@@ -161,13 +165,18 @@ doMissingValues.mice <- function(task){
   result
 }
 
-doMissingValues.amelia <- function(task){
-  callArgs     <- eval(parse(text = paste("args.", task$method, sep = "")))
+doMissingValues.Amelia <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  colnames <- names(task$dataset)
+
   # Adjust check functions for arguments
   for(argName in c("ts_class", "ordinals", "nominals", "exclude")){
     callArgs[[argName]]$check <- function(x){
-      if(!x %in% colnames)
-        stop(paste(argName, "should be present as a variable(s) in the dataset"))
+      if(!is.null(x)){
+        if(!x %in% colnames){
+          stop(paste(argName, "should be present as a variable(s) in the dataset"))
+        }
+      }
     }
   }
 
@@ -177,8 +186,9 @@ doMissingValues.amelia <- function(task){
   method       <- mapMethod(missingValuesPackages, task$method)
 
   # Method needs dataset and class attr to be filled separately
-  callArgs <- c(list(data = task$dataset), callArgs)
+  callArgs <- c(list(x = task$dataset), callArgs)
   result <- do.call(method, callArgs)
+  result <- result$imputations[[1]]
 
   result
 }
@@ -192,6 +202,7 @@ doMissingValues.DMwR <- function(task){
   # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(data = task$dataset), callArgs)
   result <- do.call(method, callArgs)
+  result <- result$imputations[[1]]
 
   result
 }
@@ -218,7 +229,7 @@ doMissingValues.DMwR <- function(task){
 #' super_africa <- impute_missing(africa, "knn_imputation")
 #' # Execute knn imputation with non default value for k
 #' super_africa <- impute_missing(africa, "knn_imputation", k = 5)
-#'
+#' super_africa <- impute_missing(africa, "expect_maximization", exclude = "country")
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)
 

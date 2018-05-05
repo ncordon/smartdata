@@ -28,5 +28,9 @@ super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 # Use a different method for every column
 impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
 super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)
+super_nhanes <- impute_missing(nhanes, "central_imputation")
+super_africa <- impute_missing(africa, "knn_imputation")
+# Execute knn imputation with non default value for k
+super_africa <- impute_missing(africa, "knn_imputation", k = 5)
 
 }

@@ -6,6 +6,14 @@ missingValuesPackages <- list(
   "expect_maximization" = list(
     pkg = "Amelia",
     map = "amelia"
+  ),
+  "central_imputation"  = list(
+    pkg = "DMwR",
+    map = "centralImputation"
+  ),
+  "knn_imputation"      = list(
+    pkg = "DMwR",
+    map = "knnImputation"
   )
 )
 
@@ -105,6 +113,24 @@ args.expect_maximization <- list(
   )
 )
 
+args.central_imputation <- list()
+
+args.knn_imputation <- list(
+  k  = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "k"),
+    info    = "Number of nearest neighbours to use",
+    default = 10
+  ),
+  imputation  = list(
+    check   = Curry(expect_choice, choices = c("weighAvg", "median"), label = "imputation"),
+    info    = c("Imputation method to use:",
+                  "weighAvg: weighted average of the values of the neighbours",
+                  "median: use median for numeric variables or the most frequent value for factors"),
+    map     = "meth",
+    default = "weightAvg"
+  )
+)
+
 
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
@@ -158,6 +184,19 @@ doMissingValues.amelia <- function(task){
 }
 
 
+doMissingValues.DMwR <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(missingValuesPackages, task$method)
+
+  # Method needs dataset and class attr to be filled separately
+  callArgs <- c(list(data = task$dataset), callArgs)
+  result <- do.call(method, callArgs)
+
+  result
+}
+
+
 #' Missing values imputation wrapper
 #'
 #' @param dataset we want to impute missing values on
@@ -175,6 +214,10 @@ doMissingValues.amelia <- function(task){
 #' # Use a different method for every column
 #' impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
 #' super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)
+#' super_nhanes <- impute_missing(nhanes, "central_imputation")
+#' super_africa <- impute_missing(africa, "knn_imputation")
+#' # Execute knn imputation with non default value for k
+#' super_africa <- impute_missing(africa, "knn_imputation", k = 5)
 #'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)

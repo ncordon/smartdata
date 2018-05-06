@@ -29,6 +29,8 @@ NULL
 #' @import Boruta
 #' @import mice
 #' @import Amelia
+#' @import DMwR
+#' @import missForest
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg

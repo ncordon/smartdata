@@ -31,7 +31,8 @@ Imports:
    clusterSim,
    Amelia,
    imbalance,
-   DMwR
+   DMwR,
+   missForest
 Suggests:
    testthat,
    mlbench,

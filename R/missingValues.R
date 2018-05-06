@@ -1,5 +1,5 @@
 missingValuesPackages <- list(
-  "gibbs_sampling"  = list(
+  "gibbs_sampling"      = list(
     pkg = "mice",
     map = "mice"
   ),
@@ -14,6 +14,10 @@ missingValuesPackages <- list(
   "knn_imputation"      = list(
     pkg = "DMwR",
     map = "knnImputation"
+  ),
+  "rf_imputation"       = list(
+    pkg = "missForest",
+    map = "missForest"
   )
 )
 
@@ -135,6 +139,26 @@ args.knn_imputation <- list(
   )
 )
 
+args.rf_imputation <- list(
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "Desired number of iterations",
+    default = 10,
+    map     = "maxiter"
+  ),
+  num_trees = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_trees"),
+    info    = "Number of trees to grow in each forest",
+    default = 100,
+    map     = "ntree"
+  ),
+  bootstrap = list(
+    check   = Curry(qexpect, rules = "B1", label = "bootstrap"),
+    info    = "Use either bootstrap sampling or subsampling",
+    default = TRUE,
+    map     = "replace"
+  )
+)
 
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
@@ -157,7 +181,6 @@ doMissingValues.mice <- function(task){
 
   dataset    <- task$dataset
 
-  # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(data = dataset), callArgs)
   result   <- do.call(mice::mice, callArgs)
   result   <- mice::complete(result, 1)
@@ -185,7 +208,6 @@ doMissingValues.Amelia <- function(task){
   callArgs$p2s <- 0
   method       <- mapMethod(missingValuesPackages, task$method)
 
-  # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(x = task$dataset), callArgs)
   result <- do.call(method, callArgs)
   result <- result$imputations[[1]]
@@ -199,7 +221,6 @@ doMissingValues.DMwR <- function(task){
   callArgs <- mapArguments(task$args, callArgs)
   method   <- mapMethod(missingValuesPackages, task$method)
 
-  # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(data = task$dataset), callArgs)
   result <- do.call(method, callArgs)
   result <- result$imputations[[1]]
@@ -207,6 +228,17 @@ doMissingValues.DMwR <- function(task){
   result
 }
 
+doMissingValues.missForest <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(missingValuesPackages, task$method)
+
+  callArgs <- c(list(xmis = task$dataset), callArgs)
+  result <- do.call(method, callArgs)
+  result <- result$ximp
+
+  result
+}
 
 #' Missing values imputation wrapper
 #'
@@ -230,6 +262,10 @@ doMissingValues.DMwR <- function(task){
 #' # Execute knn imputation with non default value for k
 #' super_africa <- impute_missing(africa, "knn_imputation", k = 5)
 #' super_africa <- impute_missing(africa, "expect_maximization", exclude = "country")
+#' super_africa <- impute_missing(africa, "rf_imputation")
+#' super_africa <- impute_missing(africa, "rf_imputation", num_iterations = 15,
+#'                                num_trees = 200, bootstrap = FALSE)
+#'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)
 

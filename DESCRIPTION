@@ -32,7 +32,8 @@ Imports:
    Amelia,
    imbalance,
    DMwR,
-   missForest
+   missForest,
+   missMDA
 Suggests:
    testthat,
    mlbench,

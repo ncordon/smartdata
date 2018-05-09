@@ -31,6 +31,7 @@ NULL
 #' @import Amelia
 #' @import DMwR
 #' @import missForest
+#' @import missMDA
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg

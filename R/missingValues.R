@@ -18,6 +18,18 @@ missingValuesPackages <- list(
   "rf_imputation"       = list(
     pkg = "missForest",
     map = "missForest"
+  ),
+  "PCA_imputation"      = list(
+    pkg = "missMDA",
+    map = "imputePCA"
+  ),
+  "MCA_imputation"      = list(
+    pkg = "missMDA",
+    map = "imputeMCA"
+  ),
+  "FAMD_imputation"     = list(
+    pkg = "missMDA",
+    map = "imputeFAMD"
   )
 )
 
@@ -160,6 +172,31 @@ args.rf_imputation <- list(
   )
 )
 
+args.PCA_imputation <- list(
+  num_dimensions = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_dimensions"),
+    info    = "Number of dimensions used to predict missing values",
+    default = 2,
+    map     = "ncp"
+  ),
+  imputation  = list(
+    check   = Curry(expect_choice, choices = c("Regularized", "EM"), label = "imputation"),
+    info    = "Imputation method to use: Regularized or EM",
+    map     = "method",
+    default = "Regularized"
+  ),
+  random_init = list(
+    check   = Curry(qexpect, rules = "B1", label = "random_init"),
+    info    = "Random initializatoin of missing values",
+    map     = "seed",
+    default = FALSE
+  )
+)
+
+args.MCA_imputation <- args.PCA_imputation
+
+args.FAMD_imputation <- args.PCA_imputation
+
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
   # Adjust check function to test the imputation method for all the columns,
@@ -240,6 +277,24 @@ doMissingValues.missForest <- function(task){
   result
 }
 
+doMissingValues.missMDA <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(missingValuesPackages, task$method)
+
+  if(callArgs$seed == FALSE){
+    callArgs$seed <- NULL
+  } else{
+    callArgs$seed <- 1234567
+  }
+
+  callArgs <- c(list(task$dataset), callArgs)
+  result <- do.call(method, callArgs)
+  result <- result$completeObs
+
+  result
+}
+
 #' Missing values imputation wrapper
 #'
 #' @param dataset we want to impute missing values on
@@ -252,6 +307,9 @@ doMissingValues.missForest <- function(task){
 #' library("amendr")
 #' data(africa, package = "Amelia")
 #' data(nhanes, package = "mice")
+#' data(ozone,  package = "missMDA")
+#' data(vnf,    package = "missMDA")
+#' data(orange, package = "missMDA")
 #'
 #' super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 #' # Use a different method for every column
@@ -265,6 +323,27 @@ doMissingValues.missForest <- function(task){
 #' super_africa <- impute_missing(africa, "rf_imputation")
 #' super_africa <- impute_missing(africa, "rf_imputation", num_iterations = 15,
 #'                                num_trees = 200, bootstrap = FALSE)
+#' # Examples of calls to 'PCA imputation' with wholly numeric datasets
+#' super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+#'                                imputation = "EM")
+#' super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized")
+#' super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized", random_init = TRUE)
+#' # Examples of calls to 'MCA imputation' with wholly categorical datasets
+#' super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+#'                                imputation = "EM")
+#' super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized")
+#' super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized", random_init = TRUE)
+#' # Examples of calls to 'FAMD imputation' with hybrid datasets
+#' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+#'                                imputation = "EM")
+#' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized")
+#' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+#'                                imputation = "Regularized", random_init = TRUE)
 #'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)

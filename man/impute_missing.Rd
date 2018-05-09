@@ -23,6 +23,9 @@ Missing values imputation wrapper
 library("amendr")
 data(africa, package = "Amelia")
 data(nhanes, package = "mice")
+data(ozone,  package = "missMDA")
+data(vnf,    package = "missMDA")
+data(orange, package = "missMDA")
 
 super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 # Use a different method for every column
@@ -36,5 +39,26 @@ super_africa <- impute_missing(africa, "expect_maximization", exclude = "country
 super_africa <- impute_missing(africa, "rf_imputation")
 super_africa <- impute_missing(africa, "rf_imputation", num_iterations = 15,
                                num_trees = 200, bootstrap = FALSE)
+# Examples of calls to 'PCA imputation' with wholly numeric datasets
+super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+                               imputation = "EM")
+super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+                               imputation = "Regularized")
+super_orange <- impute_missing(orange, "PCA_imputation", num_dimensions = 5,
+                               imputation = "Regularized", random_init = TRUE)
+# Examples of calls to 'MCA imputation' with wholly categorical datasets
+super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+                               imputation = "EM")
+super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+                               imputation = "Regularized")
+super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
+                               imputation = "Regularized", random_init = TRUE)
+# Examples of calls to 'FAMD imputation' with hybrid datasets
+super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+                               imputation = "EM")
+super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+                               imputation = "Regularized")
+super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
+                               imputation = "Regularized", random_init = TRUE)
 
 }

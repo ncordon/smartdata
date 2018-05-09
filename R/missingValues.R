@@ -30,6 +30,18 @@ missingValuesPackages <- list(
   "FAMD_imputation"     = list(
     pkg = "missMDA",
     map = "imputeFAMD"
+  ),
+  "hotdeck"  = list(
+    pkg = "VIM",
+    map = "hotdeck"
+  ),
+  "iterative_robust"    = list(
+    pkg = "VIM",
+    map = "irmi"
+  ),
+  "regression_imputation" = list(
+    pkg = "VIM",
+    map = "regressionImp"
   )
 )
 
@@ -197,6 +209,8 @@ args.MCA_imputation <- args.PCA_imputation
 
 args.FAMD_imputation <- args.PCA_imputation
 
+args.hotdeck <- list()
+
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
   # Adjust check function to test the imputation method for all the columns,
@@ -295,6 +309,21 @@ doMissingValues.missMDA <- function(task){
   result
 }
 
+doMissingValues.VIM <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(missingValuesPackages, task$method)
+
+  if(task$method == "hotdeck"){
+    callArgs$imp_var = FALSE
+  }
+
+  callArgs <- c(list(task$dataset), callArgs)
+  result <- do.call(method, callArgs)
+
+  result
+}
+
 #' Missing values imputation wrapper
 #'
 #' @param dataset we want to impute missing values on
@@ -310,6 +339,7 @@ doMissingValues.missMDA <- function(task){
 #' data(ozone,  package = "missMDA")
 #' data(vnf,    package = "missMDA")
 #' data(orange, package = "missMDA")
+#' data(sleep,  package = "VIM")
 #'
 #' super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 #' # Use a different method for every column
@@ -344,6 +374,9 @@ doMissingValues.missMDA <- function(task){
 #'                                imputation = "Regularized")
 #' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
 #'                                imputation = "Regularized", random_init = TRUE)
+#'
+#' # Example of hotdeck imputation
+#' super_sleep <- impute_missing(sleep, "hotdeck")
 #'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)

@@ -34,7 +34,7 @@ super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
                           consensus = FALSE, action = "repair")
 super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",
                           action = "repair", epsilon = 0.05,
-                          max_iterations = 200, alpha = 1, beta = 1)
+                          num_iterations = 200, alpha = 1, beta = 1)
 \dontrun{
 super_iris <- clean_noise(iris, "INFFC", class_attr = "Species", consensus = FALSE,
                           prob_noisy = 0.2, stop_iterations = 3, k = 5, threshold = 0)

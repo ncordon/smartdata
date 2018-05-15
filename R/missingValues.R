@@ -42,6 +42,10 @@ missingValuesPackages <- list(
   "regression_imputation" = list(
     pkg = "VIM",
     map = "regressionImp"
+  ),
+  "ATN" = list(
+    pkg   = "denoiseR",
+    map   = "imputeada"
   )
 )
 
@@ -252,6 +256,36 @@ args.regression_imputation <- list(
   )
 )
 
+args.ATN <- list(
+  lambda = list(
+    check   = Curry(qexpect, rules = "N1(0,Inf)", label = "lambda"),
+    info    = "Real value to be used in the iterative ATN algorithm",
+    default = 0.025
+  ),
+  gamma = list(
+    check   = Curry(qexpect, rules = "N1(0,Inf)", label = "gamma"),
+    info    = "Real value to be used in the iterative ATN algorithm",
+    default = 2.5
+  ),
+  sigma = list(
+    check   = Curry(qexpect, rules = "N1(0,Inf)", label = "sigma"),
+    info    = "Real value that represents standard deviation of the Gaussian noise",
+    default = NA
+  ),
+  tune = list(
+    check   = Curry(expect_choice, choices = c("GSURE", "SURE"), label = "tune"),
+    info    = "Method to select the two tunning parameters lambda and gamma",
+    default = "GSURE",
+    map     = "method"
+  ),
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "N1[1,Inf)", label = "num_iterations"),
+    info    = "Maximum number of iterations of the algorithm",
+    default = 1000,
+    map     = "maxiter"
+  )
+)
+
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
   # Adjust check function to test the imputation method for all the columns,
@@ -370,6 +404,28 @@ doMissingValues.VIM <- function(task){
   result
 }
 
+doMissingValues.denoiseR <- function(task){
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method <- mapMethod(missingValuesPackages, task$method)
+
+  dataset    <- task$dataset
+  colnames   <- names(dataset)
+  coltypes   <- colTypes(dataset)
+  nonNumeric <- which(! coltypes == "numeric")
+  nonNumericAttrs <- names(dataset)[nonNumeric]
+
+  # Strip dataset from non numeric attributes
+  dataset <- dataset[, -nonNumeric]
+
+  callArgs <- c(list(X = dataset), callArgs)
+  result <- do.call(method, callArgs)$completeObs
+
+  result <- mergeDatasets(task$dataset, result, nonNumericAttrs)
+
+  result
+}
+
 #' Missing values imputation wrapper
 #'
 #' @param dataset we want to impute missing values on
@@ -421,11 +477,17 @@ doMissingValues.VIM <- function(task){
 #' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
 #'                                imputation = "Regularized", random_init = TRUE)
 #'
-#' # Example of hotdeck imputation
+#' # Examples of hotdeck, iterative robust and reggresion imputations
 #' super_sleep <- impute_missing(sleep, "hotdeck")
 #' super_sleep <- impute_missing(sleep, "iterative_robust", initialization = "median",
 #'                               num_iterations = 1000)
-#' super_sleep <- impute_missing(sleep, "regression_imputation", formula = Dream+NonD~BodyWgt+BrainWgt)
+#' super_sleep <- impute_missing(sleep, "regression_imputation",
+#'                               formula = Dream+NonD~BodyWgt+BrainWgt)
+#'
+#' # Examples of adaptative shrinkage imputation
+#' super_ozone <- impute_missing(ozone, "ATN", sigma = 2.2)
+#' super_ozone <- impute_missing(ozone, "ATN", lambda = 0.025, gamma = 2.5)
+#' super_ozone <- impute_missing(ozone, "ATN", tune = "SURE")
 #'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)

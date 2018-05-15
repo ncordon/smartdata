@@ -62,10 +62,16 @@ super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
 super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
                                imputation = "Regularized", random_init = TRUE)
 
-# Example of hotdeck imputation
+# Examples of hotdeck, iterative robust and reggresion imputations
 super_sleep <- impute_missing(sleep, "hotdeck")
 super_sleep <- impute_missing(sleep, "iterative_robust", initialization = "median",
                               num_iterations = 1000)
-super_sleep <- impute_missing(sleep, "regression_imputation", formula = Dream+NonD~BodyWgt+BrainWgt)
+super_sleep <- impute_missing(sleep, "regression_imputation",
+                              formula = Dream+NonD~BodyWgt+BrainWgt)
+
+# Examples of adaptative shrinkage imputation
+super_ozone <- impute_missing(ozone, "ATN", sigma = 2.2)
+super_ozone <- impute_missing(ozone, "ATN", lambda = 0.025, gamma = 2.5)
+super_ozone <- impute_missing(ozone, "ATN", tune = "SURE")
 
 }

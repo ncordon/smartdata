@@ -39,12 +39,12 @@
 *** DONE FSelector (1035 monthly downloads)
 ** Missing values
 *** DONE mice(7695 monthly downloads)
-*** VIM (3533 monthly downloads)
+*** DONE VIM (3533 monthly downloads)
 *** DONE Amelia (2870 monthly downloads)
 *** DONE DMwR (3052 monthly downloads)
 *** DONE missForest (1775 monthly downloads)
 *** DONE missMDA (588 monthly downloads)
-*** mRMRe (359 monthly downloads)
+*** DONE denoiseR (91 monthly downloads)
+*** CANCELED mRMRe (359 monthly downloads)
 ** Noise
 *** DONE NoiseFiltersR (101 monthly downloads)
-*** CANCELED denoiseR (91 monthly downloads)

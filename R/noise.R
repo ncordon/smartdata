@@ -339,8 +339,8 @@ args.Mode <- list(
                     "the proportion of modified instances is less or equal than this threshold"),
     default = 0.05
   ),
-  max_iterations = list(
-    check   = Curry(qexpect, rules = "N1[1,Inf)", label = "max_iterations"),
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "N1[1,Inf)", label = "num_iterations"),
     info    = "Maximum number of iterations in 'iterative' type",
     default = 1,
     map     = "maxIter"
@@ -373,7 +373,7 @@ args.ORBoost <- list(
     map     = "d"
   ),
   num_adaboost = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "threshold"),
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_adaboost"),
     info    = paste("Number of boosting iterations for AdaBoost when",
                     "computing the optimal threshold"),
     default = 20,
@@ -473,8 +473,10 @@ args.classificationSF <- list(
 
 
 args.PRISM <- list()
-args.RNN   <- list()
-args.TomekLinks   <- list()
+
+args.RNN <- list()
+
+args.TomekLinks <- list()
 
 doNoiseClean.NoiseFiltersR <- function(task){
   callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
@@ -513,7 +515,7 @@ doNoiseClean.NoiseFiltersR <- function(task){
 #'                           consensus = FALSE, action = "repair")
 #' super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",
 #'                           action = "repair", epsilon = 0.05,
-#'                           max_iterations = 200, alpha = 1, beta = 1)
+#'                           num_iterations = 200, alpha = 1, beta = 1)
 #' \dontrun{
 #' super_iris <- clean_noise(iris, "INFFC", class_attr = "Species", consensus = FALSE,
 #'                           prob_noisy = 0.2, stop_iterations = 3, k = 5, threshold = 0)

@@ -26,6 +26,7 @@ data(nhanes, package = "mice")
 data(ozone,  package = "missMDA")
 data(vnf,    package = "missMDA")
 data(orange, package = "missMDA")
+data(sleep,  package = "VIM")
 
 super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 # Use a different method for every column
@@ -60,5 +61,11 @@ super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
                                imputation = "Regularized")
 super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
                                imputation = "Regularized", random_init = TRUE)
+
+# Example of hotdeck imputation
+super_sleep <- impute_missing(sleep, "hotdeck")
+super_sleep <- impute_missing(sleep, "iterative_robust", initialization = "median",
+                              num_iterations = 1000)
+super_sleep <- impute_missing(sleep, "regression_imputation", formula = Dream+NonD~BodyWgt+BrainWgt)
 
 }

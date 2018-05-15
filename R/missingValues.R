@@ -211,6 +211,47 @@ args.FAMD_imputation <- args.PCA_imputation
 
 args.hotdeck <- list()
 
+args.iterative_robust <- list(
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "Maximum number of iterations",
+    default = 100,
+    map     = "maxit"
+  ),
+  initialization = list(
+    check   = Curry(expect_choice, choices = c("kNN", "median"), label = "initialization"),
+    info    = "Initialization with 'median' or 'kNN'",
+    map     = "init.method",
+    default = "kNN"
+  )
+)
+
+args.iterative_robust <- list(
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "Maximum number of iterations",
+    default = 100,
+    map     = "maxit"
+  ),
+  initialization = list(
+    check   = Curry(expect_choice, choices = c("kNN", "median"), label = "initialization"),
+    info    = "Initialization with 'median' or 'kNN'",
+    map     = "init.method",
+    default = "kNN"
+  )
+)
+
+args.regression_imputation <- list(
+  formula = list(
+    check   = function(x) {
+      if(!class(x) == "formula")
+        stop("formula should be of class 'formula'")
+    },
+    info    = "Formula to use for imputation",
+    map     = "formula"
+  )
+)
+
 doMissingValues.mice <- function(task){
   callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
   # Adjust check function to test the imputation method for all the columns,
@@ -314,11 +355,16 @@ doMissingValues.VIM <- function(task){
   callArgs <- mapArguments(task$args, callArgs)
   method   <- mapMethod(missingValuesPackages, task$method)
 
-  if(task$method == "hotdeck"){
+  if(task$method %in% c("hotdeck", "regression_imputation")){
     callArgs$imp_var = FALSE
   }
 
-  callArgs <- c(list(task$dataset), callArgs)
+  if(task$method == "regression_imputation"){
+    callArgs <- c(list(data = task$dataset), callArgs)
+  } else{
+    callArgs <- c(list(task$dataset), callArgs)
+  }
+
   result <- do.call(method, callArgs)
 
   result
@@ -377,6 +423,9 @@ doMissingValues.VIM <- function(task){
 #'
 #' # Example of hotdeck imputation
 #' super_sleep <- impute_missing(sleep, "hotdeck")
+#' super_sleep <- impute_missing(sleep, "iterative_robust", initialization = "median",
+#'                               num_iterations = 1000)
+#' super_sleep <- impute_missing(sleep, "regression_imputation", formula = Dream+NonD~BodyWgt+BrainWgt)
 #'
 impute_missing <- function(dataset, method, ...){
   checkDataset(dataset)

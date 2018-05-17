@@ -1,7 +1,20 @@
-instSelectionPackages <- list("CNN" = "unbalanced",
-                              "ENN" = "unbalanced",
-                              "multiedit" = "class",
-                              "FRIS" = "RoughSets")
+instSelectionPackages <- list(
+  "CNN" = list(
+    pkg = "unbalanced",
+    map = "ubCNN"
+  ),
+  "ENN" = list(
+    pkg = "unbalanced",
+    map = "ubENN"
+  ),
+  "multiedit" = list(
+    pkg       = "class"
+  ),
+  "FRIS" = list(
+    pkg  = "RoughSets",
+    map  = "IS.FRIS.FRST"
+  )
+)
 
 instSelectionMethods <- names(instSelectionPackages)
 
@@ -9,59 +22,75 @@ doInstSelection <- function(task){
   UseMethod("doInstSelection")
 }
 
-args.unbalanced <- list(
+args.CNN <- list(
   k = list(
-    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k",
-                  info = "Number of nearest neighbors to perform CNN or ENN"),
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k"),
+    info = "Number of nearest neighbors to perform CNN or ENN",
     default = 1
   )
 )
 
-args.class <- list(
+args.ENN <- args.CNN
+
+args.multiedit <- list(
   k = list(
-    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k",
-                  info = "Number of neighbors used in KNN"),
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "k"),
+    info = "Number of neighbors used in KNN",
     default = 1
   ),
   num_folds = list(
-    check = Curry(qexpect, rules = "X1[1,Inf)", label = "num_folds",
-                  info = "Number of partitions the train set is split in"),
-    default = 3
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "num_folds"),
+    info = "Number of partitions the train set is split in",
+    default = 3,
+    map = "V"
   ),
   null_passes = list(
-    check = Curry(qexpect, rules = "X1[1,Inf)", label = "null_passes",
-                  info = "Number of null passes to use in the algorithm"),
-    default = 5
+    check = Curry(qexpect, rules = "X1[1,Inf)", label = "null_passes"),
+    info = "Number of null passes to use in the algorithm",
+    default = 5,
+    map = "I"
   )
 )
 
-args.Roughsets <- list(
+args.FRIS <- list(
   threshold = list(
-    check = Curry(qexpect, rules = "N1(0,1)", label = "threshold",
-                  info = "Threshold between 0 and 1 determining wether an object can be removed or not"),
-    default = 0.95
+    check = Curry(qexpect, rules = "N1(0,1)", label = "threshold"),
+    info = "Threshold (real between 0 and 1) determining wether an object can be removed or not",
+    default = 0.95,
+    map = "threshold.tau"
   ),
   alpha = list(
-    check = Curry(qexpect, rules = "N1(0,Inf)", label = "alpha",
-                  info = "Granularity of fuzzy similarity measure"),
+    check = Curry(qexpect, rules = "N1(0,Inf)", label = "alpha"),
+    info = "Granularity of fuzzy similarity measure (real greater than 0)",
     default = 1
   ),
   implicator_type = list(
     check = Curry(expect_choice, choices = c("kleene_dienes", "lukasiewicz", "zadeh",
                                              "gaines", "godel", "kleene_dienes_lukasiewicz",
                                              "mizumoto", "dubois_prade"),
-                  label = "implicator_type",
-                  info = "Implicator function type"),
-    default = "lukasiewicz"
+                  label = "implicator_type"),
+    info = c("Implicator function type:",
+             "'kleene_dienes'",
+             "'lukasiewicz'",
+             "'zadeh'",
+             "'gaines'",
+             "'godel'",
+             "'kleene_dienes_lukasiewicz'",
+             "'mizumoto'",
+             "'dubois_prade'"),
+    default = "lukasiewicz",
+    map = "t.implicator"
   )
 )
 
 doInstSelection.unbalanced <- function(task){
-  method <- task$method
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
   classAttr <- task$classAttr
   classIndex <- task$classIndex
   dataset <- task$dataset
-  task$args <- checkListArguments(task$args, args.unbalanced)
+
+  method <- mapMethod(instSelectionPackages, task$method)
 
   # CNN and ENN need minority class as 1, and majority one as 0
   minorityClass <- whichMinorityClass(dataset, classAttr)
@@ -72,10 +101,9 @@ doInstSelection.unbalanced <- function(task){
   new_levels[old_levels != minorityClass] <- 0
   levels(dataset[, classIndex]) <- as.numeric(new_levels)
 
-  selectedMethod <- eval(parse(text = paste("unbalanced::ub", method, sep = "")))
-  callArgs <- append(list(X = dataset[, -classIndex], Y = dataset[, classIndex],
-                          verbose = FALSE), task$args)
-  result <- do.call(selectedMethod, callArgs)
+  callArgs <- c(list(X = dataset[, -classIndex], Y = dataset[, classIndex], verbose = FALSE),
+                callArgs)
+  result <- do.call(method, callArgs)
   result <- cbind(result$X, result$Y)
   # Assign original classAttr name to class column
   names(result)[classIndex] <- classAttr
@@ -89,23 +117,20 @@ doInstSelection.unbalanced <- function(task){
 
 
 doInstSelection.class <- function(task){
-  method <- task$method
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
   classAttr <- task$classAttr
   classIndex <- task$classIndex
   dataset <- task$dataset
-  result <- NULL
 
-  if(method == "multiedit"){
-    task$args <- checkListArguments(task$args, args.class)
-    callArgs <- list(x = dataset[, -classIndex],
-                     class = dataset[, classIndex],
-                     trace = FALSE,
-                     k = task$args$k,
-                     V = task$args$num_folds,
-                     I = task$args$null_passes)
-    rowsToKeep <- do.call(class::multiedit, callArgs)
-    result <- dataset[rowsToKeep, ]
-  }
+  method <- mapMethod(instSelectionPackages, task$method)
+
+  callArgs <- c(list(x = dataset[, -classIndex],
+                    class = dataset[, classIndex],
+                    trace = FALSE),
+                callArgs)
+  rowsToKeep <- do.call(method, callArgs)
+  result <- dataset[rowsToKeep, ]
 
   # Reset rownames
   rownames(result) <- c()
@@ -114,23 +139,20 @@ doInstSelection.class <- function(task){
 
 
 doInstSelection.RoughSets <- function(task){
-  method <- task$method
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
   classAttr <- task$classAttr
   classIndex <- task$classIndex
   dataset <- task$dataset
-  decisionTable <- RoughSets::SF.asDecisionTable(dataset, decision.attr = classIndex)
-  result <- NULL
 
-  if(method == "FRIS"){
-    # Improve type checking
-    task$args <- checkListArguments(task$args, args.Roughsets)
-    callArgs <- list(decision.table = decisionTable,
-                     control = list(threshold.tau = task$args$threshold,
-                                    alpha = task$args$alpha,
-                                    t.implicator = task$args$implicator_type))
-    rowsToKeep <- (do.call(RoughSets::IS.FRIS.FRST, callArgs))$indx.objects
-    result <- dataset[rowsToKeep, ]
-  }
+  method <- mapMethod(instSelectionPackages, task$method)
+  decisionTable <- RoughSets::SF.asDecisionTable(dataset, decision.attr = classIndex)
+
+
+  callArgs <- list(decision.table = decisionTable,
+                   control = callArgs)
+  rowsToKeep <- (do.call(method, callArgs))$indx.objects
+  result <- dataset[rowsToKeep, ]
 
   # Reset rownames
   rownames(result) <- c()

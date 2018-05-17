@@ -33,7 +33,8 @@ Imports:
    imbalance,
    DMwR,
    missForest,
-   missMDA
+   missMDA,
+   denoiseR
 Suggests:
    testthat,
    mlbench,

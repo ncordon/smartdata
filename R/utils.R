@@ -9,6 +9,14 @@ colTypes <- getFromNamespace("colTypes", "imbalance")
 #normalizeNewSamples = getFromNamespace("normalizeNewSamples", "imbalance")
 
 
+checkInDataset <- function(dataset, vars){
+  attrs <- names(dataset)
+
+  if(any(!vars %in% attrs)){
+    stop("All names should represent variables in the dataset")
+  }
+}
+
 checkListArguments <- function(args, checks){
   # Check that no non-existent argument has been passed to the function
   if(any(! names(args) %in% names(checks))){

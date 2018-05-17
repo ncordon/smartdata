@@ -32,6 +32,7 @@ NULL
 #' @import DMwR
 #' @import missForest
 #' @import missMDA
+#' @import VIM
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg
@@ -55,6 +56,7 @@ options <- function(preprocess, method = NULL){
     "clean_outliers"    = "outliersPackages",
     "clean_noise"       = "noisePackages",
     "feature_selection" = "featSelectionPackages",
+    "instance_selection"= "instSelectionPackages",
     "discretization"    = "discretizationPackages",
     "impute_missing"    = "missingValuesPackages"
   )

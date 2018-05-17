@@ -57,7 +57,7 @@ doFeatSelection <- function(task){
 
 args.Boruta <- list(
   num_iterations = list(
-    check   = Curry(qexpect, rules = "X1[100,Inf)", label = "k"),
+    check   = Curry(qexpect, rules = "X1[100,Inf)", label = "num_iterations"),
     info    = paste("Maximal  number  of  importance  source  runs.",
                     "By default, the algorithm will pick attributes it is sure about",
                     "and possible important ones. Increase this parameter to be more",
@@ -89,7 +89,7 @@ args.RF_importance <- list(
     default = 1
   ),
   type      = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_attrs"),
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "type"),
     info    = paste("Type of importance measure (1 = mean decrease in accuracy,",
                     "2 = mean decrease in node impurity)"),
     default = 1,

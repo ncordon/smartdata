@@ -55,7 +55,7 @@ args.chi_merge <- list(
   alpha        = list(
     check      = Curry(qexpect, rules = "N1[0,1]", label = "alpha"),
     info       = "Significance level between 0 and 1",
-    default    = 0.5
+    default    = 0.05
   )
 )
 
@@ -137,8 +137,8 @@ doDiscretization.infotheo <- function(task) {
 #'
 #' @param dataset we want to perform discretization on
 #' @param method selected method of discretization
-#' @param class_attr \code{character}. Indicates the class attribute or
-#'   attributes from \code{dataset}. Must exist in it.
+#' @param exclude \code{character}. Vector of attributes to exclude from the
+#'   discretization
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The discretized dataset
@@ -147,36 +147,39 @@ doDiscretization.infotheo <- function(task) {
 #' @examples
 #' library("amendr")
 #'
-#' super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "chi_merge", class_attr = "Species", alpha = 0.7)
+#' super_iris <- discretize(iris, method = "chi_merge", exclude = c("Species", "Sepal.Length"))
+#' super_iris <- discretize(iris, method = "chi_merge", exclude = "Species", alpha = 0.7)
 #' super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
-#' super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "extended_chi2", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
-#' super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "chi2", exclude = "Species")
+#' super_iris <- discretize(iris, method = "extended_chi2", exclude = "Species")
+#' super_iris <- discretize(iris, method = "ameva", exclude = "Species")
+#' super_iris <- discretize(iris, method = "CAIM", exclude = "Species")
+#' super_iris <- discretize(iris, method = "CACC", exclude = "Species")
 #' super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
 #' super_iris <- discretize(iris, method = "equalfreq", "Species", num_bins = nrow(iris) / 2)
 #'
-discretize <- function(dataset, method, class_attr = "Class", ...){
-  # Convert all not camelCase arguments to camelCase
-  classAttr <- class_attr
+discretize <- function(dataset, method, exclude = NULL, ...){
+  orig_dataset <- dataset
   checkDataset(dataset)
-  checkDatasetClass(dataset, classAttr)
+  checkInDataset(dataset, exclude)
 
-  method <- matchArg(method, discretizationMethods)
-  classIndex <- which(names(dataset) %in% classAttr)
-  # Strip dataset from class attribute
-  datasetClass <- dataset[, classIndex]
-  dataset <- dataset[, -classIndex]
+  method   <- matchArg(method, discretizationMethods)
+  colnames <- names(dataset)
+  coltypes <- colTypes(dataset)
+  nonNumeric <- names(dataset)[! coltypes %in% c("numeric", "integer")]
+
+  exclude <- unique(c(exclude, nonNumeric))
+
+  if(length(exclude) > 0){
+    dataset <- dataset[, -which(colnames %in% exclude)]
+  }
 
   # Perform discretization
-  task <- preprocessingTask(dataset, "discretization", method, classAttr, ...)
-  dataset <- preprocess(task)
+  task   <- preprocessingTask(dataset, "discretization", method, NULL, ...)
+  result <- preprocess(task)
 
-  # Join class attribute again
-  dataset[, classIndex] <- datasetClass
-  names(dataset)[classIndex] <- classAttr
+  # Join excluded attrs again
+  result <- mergeDatasets(orig_dataset, result, exclude)
 
-  dataset
+  result
 }

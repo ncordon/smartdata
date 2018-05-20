@@ -16,18 +16,18 @@ modecoli <- ecoli1
 names(modecoli)[ncol(modecoli)] <- "my_class"
 
 test_that("Correct discretization", {
-  expect_error(discretize(iris0, method = "chi2", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "chi_merge", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "extended_chi2", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "mod_chi2", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "CAIM", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "CACC", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "ameva", class_attr = "Class"), NA)
-  expect_error(discretize(iris0, method = "mdlp", class_attr = "Class"), NA)
-  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class",
+  expect_error(discretize(iris0, method = "chi2", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "chi_merge", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "extended_chi2", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "mod_chi2", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "CAIM", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "CACC", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "ameva", exclude = "Class"), NA)
+  expect_error(discretize(iris0, method = "mdlp", exclude = "Class"), NA)
+  expect_error(discretize(glass0, method = "equalwidth", exclude = "Class",
                           num_bins = ceiling(nrow(glass0) / 2)), NA)
-  expect_error(discretize(glass0, method = "equalwidth", class_attr = "Class",
+  expect_error(discretize(glass0, method = "equalwidth", exclude = "Class",
                           num_bins = ceiling(nrow(glass0) / 3)), NA)
   # Wrong argument passed to discretized with equalwidth, correct -> num_bins, used -> nbin
-  expect_error(discretize(glass0, method = "equalfreq", class_attr = "Class", nbins = 3))
+  expect_error(discretize(glass0, method = "equalfreq", exclude = "Class", nbins = 3))
 })

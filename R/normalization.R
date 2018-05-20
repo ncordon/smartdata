@@ -1,24 +1,89 @@
-normalizationPackages <- list("z-score" = "clusterSim",
-                              "pos-standardization" = "clusterSim",
-                              "unitization" = "clusterSim",
-                              "pos-unitization" = "clusterSim",
-                              "min-max" = "clusterSim",
-                              "rnorm" = "clusterSim",
-                              "rpnorm" = "clusterSim",
-                              "sd-quotient" = "clusterSim",
-                              "mad-quotient" = "clusterSim",
-                              "range-quotient" = "clusterSim",
-                              "max-quotient" = "clusterSim",
-                              "mean-quotient" = "clusterSim",
-                              "median-quotient" = "clusterSim",
-                              "sum-quotient" = "clusterSim",
-                              "ssq-quotient" = "clusterSim",
-                              "norm" = "clusterSim",
-                              "pnorm" = "clusterSim",
-                              "znorm" = "clusterSim",
-                              "decimal-scaling" = "dprep",
-                              "sigmoidal" = "dprep",
-                              "softmax" = "dprep")
+normalizationPackages <- list(
+  "z_score" = list(
+    pkg     = "clusterSim",
+    map     = "data.Normalization"
+  ),
+  "pos_standardization" = list(
+    pkg                 = "clusterSim",
+    map                 = "data.Normalization"
+  ),
+  "unitization" = list(
+    pkg         = "clusterSim",
+    map         = "data.Normalization"
+  ),
+  "pos_unitization"     = list(
+    pkg                 = "clusterSim",
+    map                 = "data.Normalization"
+  ),
+  "min_max" = list(
+    pkg     = "clusterSim",
+    map     = "data.Normalization"
+  ),
+  "rnorm"   = list(
+    pkg     = "clusterSim",
+    map     = "data.Normalization"
+  ),
+  "rpnorm"  = list(
+    pkg     = "clusterSim",
+    map     = "data.Normalization"
+  ),
+  "sd_quotient" = list(
+    pkg         = "clusterSim",
+    map         = "data.Normalization"
+  ),
+  "mad_quotient" = list(
+    pkg          = "clusterSim",
+    map          = "data.Normalization"
+  ),
+  "range_quotient" = list(
+    pkg            = "clusterSim",
+    map            = "data.Normalization"
+  ),
+  "max_quotient"   = list(
+    pkg            = "clusterSim",
+    map            = "data.Normalization"
+  ),
+  "mean_quotient"  = list(
+    pkg            = "clusterSim",
+    map            = "data.Normalization"
+  ),
+  "median_quotient" = list(
+    pkg             = "clusterSim",
+    map             = "data.Normalization"
+  ),
+  "sum_quotient"    = list(
+    pkg             = "clusterSim",
+    map             = "data.Normalization"
+  ),
+  "ssq_quotient"    = list(
+    pkg             = "clusterSim",
+    map             = "data.Normalization"
+  ),
+  "norm" = list(
+    pkg  = "clusterSim",
+    map  = "data.Normalization"
+  ),
+  "pnorm" = list(
+    pkg  = "clusterSim",
+    map  = "data.Normalization"
+  ),
+  "znorm" = list(
+    pkg  = "clusterSim",
+    map  = "data.Normalization"
+  ),
+  "decimal_scaling" = list(
+    pkg             = "dprep",
+    map             = "decscale"
+  ),
+  "sigmoidal" = list(
+    pkg       = "dprep",
+    map       = "signorm"
+  ),
+  "softmax"   = list(
+    pkg       = "dprep",
+    map       = "softmaxnorm"
+  )
+)
 
 normalizationMethods <- names(normalizationPackages)
 
@@ -26,51 +91,75 @@ doNormalization <- function(task){
   UseMethod("doNormalization")
 }
 
-args.clusterSim <- list(
-  by = list(check = Curry(expect_choice, choices = c("column", "row"), label = "by"),
-            default = "column")
+args.z_score <- list(
+  by = list(
+    check   = Curry(expect_choice, choices = c("column", "row"), label = "by"),
+    info    = "Normalization type: 'column' or 'row'",
+    default = "column",
+    map     = "normalization"
+  )
 )
 
-args.dprep <- list()
+args.pos_standardization <- args.z_score
+args.unitization         <- args.z_score
+args.pos_unitization     <- args.z_score
+args.min_max <- args.z_score
+args.rnorm   <- args.z_score
+args.rpnorm  <- args.z_score
+args.sd_quotient     <- args.z_score
+args.mad_quotient    <- args.z_score
+args.range_quotient  <- args.z_score
+args.max_quotient    <- args.z_score
+args.mean_quotient   <- args.z_score
+args.median_quotient <- args.z_score
+args.sum_quotient    <- args.z_score
+args.ssq_quotient    <- args.z_score
+args.norm            <- args.z_score
+args.pnorm           <- args.z_score
+args.znorm           <- args.z_score
+args.decimal_scaling <- list()
+args.sigmoidal       <- list()
+args.softmax         <- list()
+
 
 doNormalization.clusterSim <- function(task){
-  task$args <- checkListArguments(task$args, args.clusterSim)
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(normalizationPackages, task$method)
 
   type <- switch(task$method,
-                 "z-score" = "n1",
-                 "pos-standardization" = "n2",
+                 "z_score" = "n1",
+                 "pos_standardization" = "n2",
                  "unitization" = "n3",
-                 "pos-unitization" = "n3a",
-                 "min-max" = "n4",
+                 "pos_unitization" = "n3a",
+                 "min_max" = "n4",
                  "rnorm" = "n5",
                  "rpnorm" = "n5a",
-                 "sd-quotient" = "n6",
-                 "mad-quotient" = "n6a",
-                 "range-quotient" = "n7",
-                 "max-quotient" = "n8",
-                 "mean-quotient" = "n9",
-                 "median-quotient" = "n9a",
-                 "sum-quotient" = "n10",
-                 "ssq-quotient" = "n11",
+                 "sd_quotient" = "n6",
+                 "mad_quotient" = "n6a",
+                 "range_quotient" = "n7",
+                 "max_quotient" = "n8",
+                 "mean_quotient" = "n9",
+                 "median_quotient" = "n9a",
+                 "sum_quotient" = "n10",
+                 "ssq_quotient" = "n11",
                  "norm" = "n12",
                  "pnorm" = "n12a",
                  "znorm" = "n13")
 
-  callArgs <- list(x = task$dataset, type = type,
-                   normalization = task$args[["by"]])
-  do.call(clusterSim::data.Normalization, callArgs)
+  callArgs <- c(list(x = task$dataset, type = type), callArgs)
+  result <- do.call(method, callArgs)
+  result
 }
 
 doNormalization.dprep <- function(task){
-  task$args <- checkListArguments(task$args, args.dprep)
+  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs <- mapArguments(task$args, callArgs)
+  method   <- mapMethod(normalizationPackages, task$method)
 
-  if(task$method == "decimal-scaling"){
-    dprep::decscale(task$dataset)
-  } else if(task$method == "sigmoidal"){
-    dprep::signorm(task$dataset)
-  } else if(task$method == "softmax"){
-    dprep::softmaxnorm(task$dataset)
-  }
+  callArgs <- c(list(task$dataset), callArgs)
+  result <- do.call(method, callArgs)
+  result
 }
 
 
@@ -78,8 +167,8 @@ doNormalization.dprep <- function(task){
 #'
 #' @param dataset we want to perform normalization on
 #' @param method selected method of normalization
-#' @param class_attr \code{character}. Indicates the class attribute or
-#'   attributes from \code{dataset}. Must exist in it.
+#' @param exclude \code{character}. Vector of attributes to exclude from the
+#'   normalization
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The normalized dataset
@@ -88,48 +177,36 @@ doNormalization.dprep <- function(task){
 #' @examples
 #' library("amendr")
 #'
-#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "column")
+#' super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "column")
 #' # Use default parameter by = "row"
-#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species")
-#' super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "z-score", class_attr = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "sd-quotient", class_attr = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "decimal-scaling", class_attr = "Species")
+#' super_iris <- normalization(iris, method = "min_max", exclude = c("Sepal.Length", "Species"))
+#' super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "z_score", exclude = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "sd_quotient", exclude = "Species", by = "row")
+#' super_iris <- normalization(iris, method = "decimal_scaling", exclude = "Species")
 #'
-normalization <- function(dataset, method, class_attr = "Class", ...){
-  # Convert all not camelCase arguments to camelCase
+normalization <- function(dataset, method, exclude = NULL, ...){
   orig_dataset <- dataset
-  classAttr <- class_attr
   checkDataset(dataset)
-  checkDatasetClass(dataset, classAttr)
+  checkInDataset(dataset, exclude)
 
-  method <- matchArg(method, normalizationMethods)
+  method   <- matchArg(method, normalizationMethods)
   colnames <- names(dataset)
-  dataset <- dataset[, -which(colnames %in% classAttr)]
-  nonNumericAttrs <- classAttr
   coltypes <- colTypes(dataset)
-  nonNumeric <- which(! coltypes %in% c("numeric", "integer"))
-  numericNonClass <- names(dataset)[nonNumeric]
+  nonNumeric <- names(dataset)[! coltypes %in% c("numeric", "integer")]
 
-  if(length(nonNumeric) > 0){
-    dataset <- dataset[, -nonNumeric]
-    nonNumericAttrs <- c(numericNonClass, nonNumericAttrs)
+  exclude <- unique(c(exclude, nonNumeric))
+
+  if(length(exclude) > 0){
+    dataset <- dataset[, -which(colnames %in% exclude)]
   }
 
   # Perform normalization
-  task <- preprocessingTask(dataset, "normalization", method, NULL, ...)
-  dataset <- preprocess(task)
+  task    <- preprocessingTask(dataset, "normalization", method, NULL, ...)
+  result  <- preprocess(task)
 
-  # Join non numeric attrs and class attribute again
-  result <- sapply(names(orig_dataset), function(name){
-    if(name %in% nonNumericAttrs){
-      orig_dataset[, name]
-    } else{
-      dataset[, name]
-    }
-  }, USE.NAMES = TRUE, simplify = FALSE)
-
-  result <- as.data.frame(result)
+  # Join excluded attrs again
+  result <- mergeDatasets(orig_dataset, result, exclude)
 
   result
 }

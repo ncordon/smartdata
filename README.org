@@ -48,3 +48,10 @@
 *** CANCELED mRMRe (359 monthly downloads)
 ** Noise
 *** DONE NoiseFiltersR (101 monthly downloads)
+* Tasks
+** Noise: integration OK, labels OK
+** Missing values: integration OK, labels OK
+** Feature selection: integration OK, labels OK
+** Instance selection: integration OK, labels OK
+** Discretization: integration OK, labels OK
+** 

@@ -34,7 +34,8 @@ Imports:
    DMwR,
    missForest,
    missMDA,
-   denoiseR
+   denoiseR,
+   VIM
 Suggests:
    testthat,
    mlbench,

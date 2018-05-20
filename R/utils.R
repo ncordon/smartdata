@@ -94,9 +94,9 @@ mapMethod <- function(methodsInfo, method){
   eval(parse(text = paste(pkg, "::", result , sep = "")))
 }
 
-mergeDatasets <- function(orig, new, nonNumericAttrs){
+mergeDatasets <- function(orig, new, excluded){
   result <- sapply(names(orig), function(name){
-    if(name %in% nonNumericAttrs){
+    if(name %in% excluded){
       orig[, name]
     } else{
       new[, name]

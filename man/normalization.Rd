@@ -4,15 +4,15 @@
 \alias{normalization}
 \title{Normalization wrapper}
 \usage{
-normalization(dataset, method, class_attr = "Class", ...)
+normalization(dataset, method, exclude = NULL, ...)
 }
 \arguments{
 \item{dataset}{we want to perform normalization on}
 
 \item{method}{selected method of normalization}
 
-\item{class_attr}{\code{character}. Indicates the class attribute or
-attributes from \code{dataset}. Must exist in it.}
+\item{exclude}{\code{character}. Vector of attributes to exclude from the
+normalization}
 
 \item{...}{Further arguments for \code{method}}
 }
@@ -25,12 +25,12 @@ Normalization wrapper
 \examples{
 library("amendr")
 
-super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "column")
+super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "column")
 # Use default parameter by = "row"
-super_iris <- normalization(iris, method = "min-max", class_attr = "Species")
-super_iris <- normalization(iris, method = "min-max", class_attr = "Species", by = "row")
-super_iris <- normalization(iris, method = "z-score", class_attr = "Species", by = "row")
-super_iris <- normalization(iris, method = "sd-quotient", class_attr = "Species", by = "row")
-super_iris <- normalization(iris, method = "decimal-scaling", class_attr = "Species")
+super_iris <- normalization(iris, method = "min_max", exclude = c("Sepal.Length", "Species"))
+super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "row")
+super_iris <- normalization(iris, method = "z_score", exclude = "Species", by = "row")
+super_iris <- normalization(iris, method = "sd_quotient", exclude = "Species", by = "row")
+super_iris <- normalization(iris, method = "decimal_scaling", exclude = "Species")
 
 }

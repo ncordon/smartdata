@@ -4,7 +4,7 @@
 \alias{feature_selection}
 \title{Feature selection wrapper}
 \usage{
-feature_selection(dataset, method, class_attr = "Class", ...)
+feature_selection(dataset, method, class_attr = NULL, exclude = NULL, ...)
 }
 \arguments{
 \item{dataset}{we want to do feature selection on}
@@ -13,6 +13,9 @@ feature_selection(dataset, method, class_attr = "Class", ...)
 
 \item{class_attr}{\code{character}. Indicates the class attribute or
 attributes from \code{dataset}. Must exist in it.}
+
+\item{exclude}{\code{character}. Vector of attributes to exclude from the
+feature selection process}
 
 \item{...}{Further arguments for \code{method}}
 }
@@ -59,14 +62,16 @@ super_ecoli <- feature_selection(ecoli1, "gain_ratio",
 super_ecoli <- feature_selection(ecoli1, "sym_uncertainty",
                                  class_attr = "Class", num_attrs = 3)
 super_votes <- feature_selection(HouseVotes84, "oneR", class_attr = "Class", num_attrs = 3)
+super_votes <- feature_selection(HouseVotes84, "oneR", exclude = c("V1", "V2"),
+                                 class_attr = "Class", num_attrs = 3)
 super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species", num_attrs = 3)
 super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species",
                                  num_attrs = 3, type = 2)
-super_iris  <- feature_selection(iris, "best_first_search", class_attr = "Species",
+super_iris  <- feature_selection(iris, "best_first_search", exclude = "Species",
                                  eval_fun = evaluator)
-super_iris  <- feature_selection(iris, "forward_search", class_attr = "Species",
+super_iris  <- feature_selection(iris, "forward_search", exclude = "Species",
                                  eval_fun = evaluator)
-super_iris  <- feature_selection(iris, "backward_search", class_attr = "Species",
+super_iris  <- feature_selection(iris, "backward_search", exclude = "Species",
                                  eval_fun = evaluator)
 super_iris  <- feature_selection(iris, "cfs", class_attr = "Species")
 super_iris  <- feature_selection(iris, "consistency", class_attr = "Species")

@@ -70,8 +70,8 @@ args.Boruta <- list(
 args.chi_squared <- list(
   num_attrs = list(
     check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_attrs"),
-    info    = paste("Number of attributes to pick. Should be lower than number of",
-                    "features in the dataset"),
+    info    = paste("Number of attributes to pick (apart from class_attr, if supplied).",
+                    "Should be lower than number of features in the dataset"),
     default = 1
   )
 )
@@ -116,20 +116,28 @@ args.consistency     <- list()
 doFeatSelection.Boruta <- function(task){
   callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
   callArgs <- mapArguments(task$args, callArgs)
-  classColumn <- task$classIndex
-  original_attrs <- names(task$dataset)
+  classIndex <- task$classIndex
+  classAttr  <- task$classAttr
+  dataset <- task$dataset
+  original_attrs <- names(dataset)
+
+  # Check that class attr has been passed to method and exists in the dataset
+  if(is.null(classAttr)){
+    stop("Boruta needs non NULL class_attr")
+  }
+  checkDatasetClass(dataset, classAttr)
 
   method <- mapMethod(featSelectionPackages, task$method)
 
-    # Method needs dataset and class attr to be filled separately
-  callArgs <- c(list(x = task$dataset[,-classColumn],
-                     y = task$dataset[,classColumn]),
+  # Method needs dataset and class attr to be filled separately
+  callArgs <- c(list(x = dataset[, -classIndex],
+                     y = dataset[, classIndex]),
                 callArgs)
   attrs <- do.call(method, callArgs)$finalDecision
   attrs <- names(attrs)[attrs %in% c("Confirmed", "Tentative")]
   attrs <- c(attrs, task$classAttr)
   attrs <- original_attrs[original_attrs %in% attrs]
-  result <- task$dataset[, attrs]
+  result <- dataset[, attrs]
 
   result
 }
@@ -139,21 +147,21 @@ doFeatSelection.FSelector <- function(task){
   callArgs <- mapArguments(task$args, callArgs)
   classAttr <- task$classAttr
   original_attrs <- names(task$dataset)
+  dataset <- task$dataset
 
   method <- mapMethod(featSelectionPackages, task$method)
 
   # If method is based on information gains, we keep non numerical attributes,
   # and apply method only on continuous variables
   if(task$method %in% c("information_gain", "gain_ratio", "sym_uncertainty")){
-    pick_attrs <- which(sapply(task$dataset, class) == "numeric")
-    pick_attrs <- c(original_attrs[pick_attrs], task$classAttr)
+    pick_attrs <- which(sapply(dataset, class) == "numeric")
+    pick_attrs <- c(original_attrs[pick_attrs], classAttr)
     whichNonNumeric <- which(! original_attrs %in% pick_attrs)
     nonNumeric <- original_attrs[whichNonNumeric]
     # Strip dataset from non continuous attributes, except from class
-    dataset <- task$dataset[, -whichNonNumeric]
+    dataset <- dataset[, -whichNonNumeric]
   } else{
     nonNumeric <- c()
-    dataset <- task$dataset
   }
 
   num_attrs <- callArgs$num_attrs
@@ -161,10 +169,15 @@ doFeatSelection.FSelector <- function(task){
 
   if(task$method %in% c("best_first_search", "backward_search",
                          "forward_search", "hill_climbing")){
-    args  <- c(list(attributes = original_attrs[original_attrs != classAttr]),
-               callArgs)
+    args  <- c(list(attributes = original_attrs), callArgs)
     attrs <- do.call(method, args)
   } else{
+    # Check that class attr has been passed to method and exists in the dataset
+    if(is.null(classAttr)){
+      stop(task$method, " needs non NULL class_attr")
+    }
+    checkDatasetClass(dataset, classAttr)
+
     args <- c(list(formula = as.formula(paste(classAttr, "~.")),
                    data    = dataset),
               callArgs)
@@ -176,7 +189,7 @@ doFeatSelection.FSelector <- function(task){
     }
   }
 
-  attrs <- c(attrs, task$classAttr, nonNumeric)
+  attrs <- c(attrs, classAttr, nonNumeric)
   attrs <- original_attrs[original_attrs %in% attrs]
   result <- task$dataset[, attrs]
 
@@ -189,6 +202,8 @@ doFeatSelection.FSelector <- function(task){
 #' @param method selected method of feature selection
 #' @param class_attr \code{character}. Indicates the class attribute or
 #'   attributes from \code{dataset}. Must exist in it.
+#' @param exclude \code{character}. Vector of attributes to exclude from the
+#'   feature selection process
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The treated dataset (either with noisy instances replaced or erased)
@@ -231,29 +246,43 @@ doFeatSelection.FSelector <- function(task){
 #' super_ecoli <- feature_selection(ecoli1, "sym_uncertainty",
 #'                                  class_attr = "Class", num_attrs = 3)
 #' super_votes <- feature_selection(HouseVotes84, "oneR", class_attr = "Class", num_attrs = 3)
+#' super_votes <- feature_selection(HouseVotes84, "oneR", exclude = c("V1", "V2"),
+#'                                  class_attr = "Class", num_attrs = 3)
 #' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species", num_attrs = 3)
 #' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species",
 #'                                  num_attrs = 3, type = 2)
-#' super_iris  <- feature_selection(iris, "best_first_search", class_attr = "Species",
+#' super_iris  <- feature_selection(iris, "best_first_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
-#' super_iris  <- feature_selection(iris, "forward_search", class_attr = "Species",
+#' super_iris  <- feature_selection(iris, "forward_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
-#' super_iris  <- feature_selection(iris, "backward_search", class_attr = "Species",
+#' super_iris  <- feature_selection(iris, "backward_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
 #' super_iris  <- feature_selection(iris, "cfs", class_attr = "Species")
 #' super_iris  <- feature_selection(iris, "consistency", class_attr = "Species")
 #'
-feature_selection <- function(dataset, method, class_attr = "Class", ...){
-  # Convert all not camelCase arguments to camelCase
+feature_selection <- function(dataset, method, class_attr = NULL,
+                              exclude = NULL, ...){
   classAttr <- class_attr
+  orig_dataset <- dataset
   checkDataset(dataset)
-  checkDatasetClass(dataset, classAttr)
+  checkInDataset(dataset, exclude)
 
-  method <- matchArg(method, featSelectionMethods)
+  method   <- matchArg(method, featSelectionMethods)
+  colnames <- names(dataset)
+  coltypes <- colTypes(dataset)
+
+  if(length(exclude) > 0){
+    dataset <- dataset[, -which(colnames %in% exclude)]
+  }
 
   # Do feature selection
-  task <- preprocessingTask(dataset, "featureSelection", method, classAttr, ...)
-  dataset <- preprocess(task)
+  task   <- preprocessingTask(dataset, "featureSelection", method, classAttr, ...)
+  result <- preprocess(task)
 
-  dataset
+  orig_dataset <- orig_dataset[, colnames %in% c(names(result), exclude)]
+
+  # Join excluded attrs again
+  result <- mergeDatasets(orig_dataset, result, exclude)
+
+  result
 }

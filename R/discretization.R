@@ -104,11 +104,25 @@ args.equalwidth       <- args.equalfreq
 args.globalequalwidth <- args.equalfreq
 
 doDiscretization.discretization <- function(task){
-  callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
-  callArgs <- mapArguments(task$args, callArgs)
-  callArgs <- c(list(task$dataset), callArgs)
-  method   <- mapMethod(discretizationPackages, task$method)
+  callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs   <- mapArguments(task$args, callArgs)
+  dataset    <- task$dataset
+  classAttr  <- task$classAttr
+  classIndex <- task$classIndex
+  method     <- mapMethod(discretizationPackages, task$method)
 
+  if(is.null(classAttr)){
+    stop(task$method, " needs non NULL class_attr")
+  }
+
+  checkDatasetClass(dataset, classAttr)
+
+  # Adjust class column to be last one
+  classCol <- dataset[, classIndex]
+  dataset  <- dataset[, -classIndex]
+  dataset[, classAttr] <- classCol
+
+  callArgs   <- c(list(dataset), callArgs)
 
   if(task$method == "CAIM"){
     callArgs <- c(callArgs, method = 1)
@@ -119,7 +133,9 @@ doDiscretization.discretization <- function(task){
   }
 
   result <- do.call(method, callArgs)
-  result$Disc.data
+  result <- result$Disc.data
+
+  result
 }
 
 
@@ -127,6 +143,10 @@ doDiscretization.infotheo <- function(task) {
   callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
   callArgs <- mapArguments(task$args, callArgs)
   callArgs <- c(list(X = task$dataset, disc = task$method), callArgs)
+
+  if(!is.null(task$classAttr))
+    stop(task$method, " must be called without class_attr")
+
   result   <- do.call(infotheo::discretize, callArgs)
 
   result
@@ -147,18 +167,23 @@ doDiscretization.infotheo <- function(task) {
 #' @examples
 #' library("amendr")
 #'
-#' super_iris <- discretize(iris, method = "chi_merge", exclude = c("Species", "Sepal.Length"))
-#' super_iris <- discretize(iris, method = "chi_merge", exclude = "Species", alpha = 0.7)
-#' super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
-#' super_iris <- discretize(iris, method = "chi2", exclude = "Species")
-#' super_iris <- discretize(iris, method = "extended_chi2", exclude = "Species")
-#' super_iris <- discretize(iris, method = "ameva", exclude = "Species")
-#' super_iris <- discretize(iris, method = "CAIM", exclude = "Species")
-#' super_iris <- discretize(iris, method = "CACC", exclude = "Species")
-#' super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
-#' super_iris <- discretize(iris, method = "equalfreq", "Species", num_bins = nrow(iris) / 2)
+#' super_iris <- discretize(iris, method = "chi_merge",
+#'                          class_attr = "Species", exclude = "Sepal.Length")
+#' super_iris <- discretize(iris, method = "chi_merge",
+#'                          class_attr = "Species", alpha = 0.7)
+#' super_iris <- discretize(iris, method = "chi2", "Species",
+#'                          alpha = 0.7, delta = 0.1)
+#' super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "extended_chi2", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
+#' super_iris <- discretize(iris, method = "equalwidth", num_bins = nrow(iris) / 2)
+#' super_iris <- discretize(iris, method = "equalfreq", num_bins = nrow(iris) / 2)
 #'
-discretize <- function(dataset, method, exclude = NULL, ...){
+discretize <- function(dataset, method, class_attr = NULL,
+                       exclude = NULL, ...){
+  classAttr <- class_attr
   orig_dataset <- dataset
   checkDataset(dataset)
   checkInDataset(dataset, exclude)
@@ -167,6 +192,7 @@ discretize <- function(dataset, method, exclude = NULL, ...){
   colnames <- names(dataset)
   coltypes <- colTypes(dataset)
   nonNumeric <- names(dataset)[! coltypes %in% c("numeric", "integer")]
+  nonNumeric <- nonNumeric[nonNumeric != classAttr]
 
   exclude <- unique(c(exclude, nonNumeric))
 
@@ -175,7 +201,7 @@ discretize <- function(dataset, method, exclude = NULL, ...){
   }
 
   # Perform discretization
-  task   <- preprocessingTask(dataset, "discretization", method, NULL, ...)
+  task   <- preprocessingTask(dataset, "discretization", method, classAttr, ...)
   result <- preprocess(task)
 
   # Join excluded attrs again

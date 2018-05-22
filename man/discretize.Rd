@@ -4,7 +4,7 @@
 \alias{discretize}
 \title{Discretization wrapper}
 \usage{
-discretize(dataset, method, exclude = NULL, ...)
+discretize(dataset, method, class_attr = NULL, exclude = NULL, ...)
 }
 \arguments{
 \item{dataset}{we want to perform discretization on}
@@ -25,15 +25,18 @@ Discretization wrapper
 \examples{
 library("amendr")
 
-super_iris <- discretize(iris, method = "chi_merge", exclude = c("Species", "Sepal.Length"))
-super_iris <- discretize(iris, method = "chi_merge", exclude = "Species", alpha = 0.7)
-super_iris <- discretize(iris, method = "chi2", "Species", alpha = 0.7, delta = 0.1)
-super_iris <- discretize(iris, method = "chi2", exclude = "Species")
-super_iris <- discretize(iris, method = "extended_chi2", exclude = "Species")
-super_iris <- discretize(iris, method = "ameva", exclude = "Species")
-super_iris <- discretize(iris, method = "CAIM", exclude = "Species")
-super_iris <- discretize(iris, method = "CACC", exclude = "Species")
-super_iris <- discretize(iris, method = "equalwidth", "Species", num_bins = nrow(iris) / 2)
-super_iris <- discretize(iris, method = "equalfreq", "Species", num_bins = nrow(iris) / 2)
+super_iris <- discretize(iris, method = "chi_merge",
+                         class_attr = "Species", exclude = "Sepal.Length")
+super_iris <- discretize(iris, method = "chi_merge",
+                         class_attr = "Species", alpha = 0.7)
+super_iris <- discretize(iris, method = "chi2", "Species",
+                         alpha = 0.7, delta = 0.1)
+super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
+super_iris <- discretize(iris, method = "extended_chi2", class_attr = "Species")
+super_iris <- discretize(iris, method = "ameva", class_attr = "Species")
+super_iris <- discretize(iris, method = "CAIM", class_attr = "Species")
+super_iris <- discretize(iris, method = "CACC", class_attr = "Species")
+super_iris <- discretize(iris, method = "equalwidth", num_bins = nrow(iris) / 2)
+super_iris <- discretize(iris, method = "equalfreq", num_bins = nrow(iris) / 2)
 
 }

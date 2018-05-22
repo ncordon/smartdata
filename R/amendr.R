@@ -57,7 +57,7 @@ options <- function(preprocess, method = NULL){
     "clean_noise"       = "noisePackages",
     "feature_selection" = "featSelectionPackages",
     "instance_selection"= "instSelectionPackages",
-    "discretization"    = "discretizationPackages",
+    "discretize"        = "discretizationPackages",
     "impute_missing"    = "missingValuesPackages"
   )
 

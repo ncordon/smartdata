@@ -11,6 +11,9 @@ discretize(dataset, method, class_attr = NULL, exclude = NULL, ...)
 
 \item{method}{selected method of discretization}
 
+\item{class_attr}{\code{character}. Indicates the class attribute or
+attributes from \code{dataset}. Must exist in it.}
+
 \item{exclude}{\code{character}. Vector of attributes to exclude from the
 discretization}
 

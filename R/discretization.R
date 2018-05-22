@@ -157,6 +157,8 @@ doDiscretization.infotheo <- function(task) {
 #'
 #' @param dataset we want to perform discretization on
 #' @param method selected method of discretization
+#' @param class_attr \code{character}. Indicates the class attribute or
+#'   attributes from \code{dataset}. Must exist in it.
 #' @param exclude \code{character}. Vector of attributes to exclude from the
 #'   discretization
 #' @param ... Further arguments for \code{method}

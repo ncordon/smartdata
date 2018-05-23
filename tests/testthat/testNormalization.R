@@ -11,12 +11,9 @@ data(yeast4)
 
 context("Normalization testing")
 
-# We change the class attribute in a dataset
-modecoli <- ecoli1
-names(modecoli)[ncol(modecoli)] <- "my_class"
-
 test_that("Correct normalization", {
   expect_error(normalization(iris0, "min_max"), NA)
+  expect_error(normalization(iris, "min_max", by = "row"), NA)
   expect_error(normalization(iris0, "pos_standardization"), NA)
   expect_error(normalization(iris0, "unitization"), NA)
   expect_error(normalization(iris0, "pos_unitization"), NA)
@@ -36,9 +33,9 @@ test_that("Correct normalization", {
   expect_error(normalization(glass0, "z_score"), NA)
   expect_error(normalization(glass0, "z_score", by = "column"), NA)
   #expect_error(normalization(glass0, "z-score", normalization = "row"), NA)
-  expect_error(normalization(haberman, "sigmoidal", exclude = "Class"), NA)
+  expect_error(normalization(haberman, "sigmoidal"), NA)
   expect_error(normalization(newthyroid1, method = "softmax"), NA)
   expect_error(normalization(iris0, method = "decimal_scaling"), NA)
-  expect_error(normalization(modecoli, method = "decimal_scaling"), NA)
-  expect_error(normalization(modecoli, method = "decimal_scaling", exclude = "my_class"), NA)
+  expect_error(normalization(ecoli1, method = "decimal_scaling"), NA)
+  expect_error(normalization(ecoli1, method = "decimal_scaling"), NA)
 })

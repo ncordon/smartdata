@@ -1,15 +1,53 @@
-oversamplingPackages <- list("RACOG" = "imbalance",
-                             "wRACOG" = "imbalance",
-                             "PDFOS" = "imbalance",
-                             "RWO" = "imbalance",
-                             "ADASYN" = "imbalance",
-                             "ANSMOTE" = "imbalance",
-                             "SMOTE" = "imbalance",
-                             "MWMOTE" = "imbalance",
-                             "BLSMOTE" = "imbalance",
-                             "DBSMOTE" = "imbalance",
-                             "SLMOTE" = "imbalance",
-                             "RSLSMOTE" = "imbalance")
+oversamplingPackages <- list(
+  "RACOG" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "wRACOG" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "PDFOS" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "RWO" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "ADASYN" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "ANSMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "SMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "MWMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "BLSMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "DBSMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "SLMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  ),
+  "RSLSMOTE" = list(
+    pkg = "imbalance",
+    map = "oversample"
+  )
+)
 
 oversamplingMethods <- names(oversamplingPackages)
 
@@ -17,31 +55,50 @@ doOversampling <- function(task){
   UseMethod("doOversampling")
 }
 
-args.imbalance <- list(
-  ratio = list(
-    check = Curry(qexpect, rules = "N1[0,1]"),
+args.RACOG <- list(
+  ratio     = list(
+    check   = Curry(qexpect, rules = "N1[0,1]", label = "ratio"),
+    info    = "Number between 0 and 1 indicating the desired ratio between minority examples and majority ones",
     default = 0.8
   ),
   filtering = list(
-    check = Curry(qexpect, rules = "B1"),
+    check   = Curry(qexpect, rules = "B1", label = "filtering"),
+    info    = "Logical (TRUE or FALSE) indicating wheter to apply filtering of oversampled instances with neater algorithm",
     default = FALSE
   ),
-  wrapper = list(
-    check = Curry(expect_choice, choices = c("C5.0", "KNN")),
+  wrapper   = list(
+    check   = Curry(expect_choice, choices = c("C5.0", "KNN"), label = "wrapper"),
+    info    = "A character corresponding to wrapper to apply if selected method is wracog. Possibilities are: 'C5.0' and 'KNN'",
     default = "KNN"
   )
 )
 
+args.wRACOG   <- args.RACOG
+args.PDFOS    <- args.RACOG
+args.RWO      <- args.RACOG
+args.ADASYN   <- args.RACOG
+args.ANSMOTE  <- args.RACOG
+args.SMOTE    <- args.RACOG
+args.MWMOTE   <- args.RACOG
+args.BLSMOTE  <- args.RACOG
+args.DBSMOTE  <- args.RACOG
+args.SLMOTE   <- args.RACOG
+args.RSLSMOTE <- args.RACOG
+
 doOversampling.imbalance <- function(task){
-  # Check correction of arguments passed to the method
-  task$args <- checkListArguments(task$args, args.imbalance)
+  callArgs   <- eval(parse(text = paste("args.", task$method, sep = "")))
+  callArgs   <- mapArguments(task$args, callArgs)
+  dataset    <- task$dataset
+  classAttr  <- task$classAttr
+  method     <- mapMethod(oversamplingPackages, task$method)
 
   # Prepare list of arguments for the methods
   callArgs <- c(list(dataset = task$dataset,
                      method = task$method,
-                     classAttr = task$classAttr),
-                task$args)
-  result <- do.call(imbalance::oversample, callArgs)
+                     classAttr = classAttr),
+                callArgs)
+
+  result <- do.call(method, callArgs)
   result
 }
 

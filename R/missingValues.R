@@ -140,12 +140,6 @@ args.expect_maximization <- list(
                     "If not included, continuous imputations could happen"),
     map     = "noms",
     default = NULL
-  ),
-  exclude   = list(
-    check   = NA,
-    info    = paste("Attributes we need to retain but will not be used in the imputation model"),
-    map     = "idvars",
-    default = NULL
   )
 )
 
@@ -319,7 +313,7 @@ doMissingValues.Amelia <- function(task){
   colnames <- names(task$dataset)
 
   # Adjust check functions for arguments
-  for(argName in c("ts_class", "ordinals", "nominals", "exclude")){
+  for(argName in c("ts_class", "ordinals", "nominals")){
     callArgs[[argName]]$check <- function(x){
       if(!is.null(x)){
         if(!x %in% colnames){
@@ -349,7 +343,6 @@ doMissingValues.DMwR <- function(task){
 
   callArgs <- c(list(data = task$dataset), callArgs)
   result <- do.call(method, callArgs)
-  result <- result$imputations[[1]]
 
   result
 }
@@ -430,6 +423,8 @@ doMissingValues.denoiseR <- function(task){
 #'
 #' @param dataset we want to impute missing values on
 #' @param method selected method of missing values imputation
+#' @param exclude \code{character}. Vector of attributes to exclude from the
+#'   feature selection process
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The treated dataset (either with noisy instances replaced or erased)
@@ -444,6 +439,7 @@ doMissingValues.denoiseR <- function(task){
 #' data(sleep,  package = "VIM")
 #'
 #' super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
+#' super_nhanes <- impute_missing(nhanes, "gibbs_sampling", exclude = "chl")
 #' # Use a different method for every column
 #' impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
 #' super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)
@@ -489,14 +485,28 @@ doMissingValues.denoiseR <- function(task){
 #' super_ozone <- impute_missing(ozone, "ATN", lambda = 0.025, gamma = 2.5)
 #' super_ozone <- impute_missing(ozone, "ATN", tune = "SURE")
 #'
-impute_missing <- function(dataset, method, ...){
+impute_missing <- function(dataset, method, exclude = NULL, ...){
+  orig_dataset <- dataset
   checkDataset(dataset)
+  checkInDataset(dataset, exclude)
 
   method <- matchArg(method, missingValuesMethods)
 
+  colnames <- names(dataset)
+  coltypes <- colTypes(dataset)
+
+  if(length(exclude) > 0){
+    dataset <- dataset[, -which(colnames %in% exclude)]
+  }
+
   # Impute missing values
   task <- preprocessingTask(dataset, "missingValues", method, ...)
-  dataset <- preprocess(task)
+  result <- preprocess(task)
 
-  dataset
+  orig_dataset <- orig_dataset[, colnames %in% c(names(result), exclude)]
+
+  # Join excluded attrs again
+  result <- mergeDatasets(orig_dataset, result, exclude)
+
+  result
 }

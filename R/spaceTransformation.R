@@ -46,7 +46,7 @@ args.lle_epsilon <- list(
     map     = "eps"
   ),
   method    = list(
-    check   = Curry(expect_choice, choices = 1:3, label = "by"),
+    check   = Curry(expect_choice, choices = 1:3, label = "method"),
     info    = "Regularisation method: 1, 2 or 3, by default 2",
     default = 2,
     map     = "reg"

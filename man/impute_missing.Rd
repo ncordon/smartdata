@@ -4,12 +4,15 @@
 \alias{impute_missing}
 \title{Missing values imputation wrapper}
 \usage{
-impute_missing(dataset, method, ...)
+impute_missing(dataset, method, exclude = NULL, ...)
 }
 \arguments{
 \item{dataset}{we want to impute missing values on}
 
 \item{method}{selected method of missing values imputation}
+
+\item{exclude}{\code{character}. Vector of attributes to exclude from the
+feature selection process}
 
 \item{...}{Further arguments for \code{method}}
 }
@@ -29,6 +32,7 @@ data(orange, package = "missMDA")
 data(sleep,  package = "VIM")
 
 super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
+super_nhanes <- impute_missing(nhanes, "gibbs_sampling", exclude = "chl")
 # Use a different method for every column
 impute_methods <- c("pmm", "midastouch", "norm_nob", "norm_boot")
 super_nhanes <- impute_missing(nhanes, "gibbs_sampling", imputation = impute_methods)

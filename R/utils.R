@@ -11,9 +11,10 @@ colTypes <- getFromNamespace("colTypes", "imbalance")
 
 checkInDataset <- function(dataset, vars){
   attrs <- names(dataset)
+  missingAttrs <- vars[!vars %in% attrs]
 
-  if(any(!vars %in% attrs)){
-    stop("All names should represent variables in the dataset")
+  if(length(missingAttrs) > 0){
+    stop("Variables ", paste(missingAttrs, collapse = ", "), " not present in dataset")
   }
 }
 

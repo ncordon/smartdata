@@ -177,15 +177,15 @@ doNormalization.dprep <- function(task){
 #' @examples
 #' library("amendr")
 #'
-#' super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "column")
+#' super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "column")
 #' # Use default parameter by = "row"
-#' super_iris <- normalization(iris, method = "min_max", exclude = c("Sepal.Length", "Species"))
-#' super_iris <- normalization(iris, method = "min_max", exclude = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "z_score", exclude = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "sd_quotient", exclude = "Species", by = "row")
-#' super_iris <- normalization(iris, method = "decimal_scaling", exclude = "Species")
+#' super_iris <- normalize(iris, method = "min_max", exclude = c("Sepal.Length", "Species"))
+#' super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "row")
+#' super_iris <- normalize(iris, method = "z_score", exclude = "Species", by = "row")
+#' super_iris <- normalize(iris, method = "sd_quotient", exclude = "Species", by = "row")
+#' super_iris <- normalize(iris, method = "decimal_scaling", exclude = "Species")
 #'
-normalization <- function(dataset, method, exclude = NULL, ...){
+normalize <- function(dataset, method, exclude = NULL, ...){
   orig_dataset <- dataset
   checkDataset(dataset)
   checkInDataset(dataset, exclude)

@@ -373,6 +373,7 @@ doMissingValues.missMDA <- function(task){
   callArgs <- c(list(task$dataset), callArgs)
   result <- do.call(method, callArgs)
   result <- result$completeObs
+  result <- data.frame(result)
 
   result
 }
@@ -467,7 +468,7 @@ doMissingValues.denoiseR <- function(task){
 #'                                imputation = "Regularized", random_init = TRUE)
 #' # Examples of calls to 'FAMD imputation' with hybrid datasets
 #' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
-#'                                imputation = "EM")
+#'                                imputation = "EM", exclude = c("Ne12", "Vx15"))
 #' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
 #'                                imputation = "Regularized")
 #' super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,

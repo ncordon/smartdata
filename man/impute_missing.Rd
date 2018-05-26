@@ -60,7 +60,7 @@ super_vnf    <- impute_missing(vnf, "MCA_imputation", num_dimensions = 5,
                                imputation = "Regularized", random_init = TRUE)
 # Examples of calls to 'FAMD imputation' with hybrid datasets
 super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
-                               imputation = "EM")
+                               imputation = "EM", exclude = c("Ne12", "Vx15"))
 super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,
                                imputation = "Regularized")
 super_ozone  <- impute_missing(ozone, "FAMD_imputation", num_dimensions = 5,

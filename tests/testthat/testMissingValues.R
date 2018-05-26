@@ -12,4 +12,6 @@ test_that("Correct imputation of missing values", {
   expect_equal(names(impute_missing(nhanes, "gibbs_sampling")), names(nhanes))
   expect_error(impute_missing(africa, "expect_maximization", exclude = "country"), NA)
   expect_error(impute_missing(africa, "expect_maximization", exclude = "country", ts_class = "year"), NA)
+  # exclude vars are not present in ozone
+  expect_error(impute_missing(ozone, "FAMD_imputation", num_dimensions = 5, imputation = "EM", exclude = c("foo", "bar")))
 })

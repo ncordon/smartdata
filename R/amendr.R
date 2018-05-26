@@ -5,15 +5,15 @@
 #' selection, normalization, discretization, space transformation and
 #' outliers/noise/missing values treatment
 #'
-#' @section Method to do oversampling
+#' @section Method to do oversampling \code{\link{oversample}}
 #' @section Method to do instance selection \code{\link{instance_selection}}
-#' @section Method to do feature selection
-#' @section Method to do normalization \code{\link{normalization}}
-#' @section Method to do discretization
-#' @section Method to do space transformation
-#' @section Method to treat outliers
-#' @section Method to treat missing values
-#' @section Method to treat noise
+#' @section Method to do feature selection \code{\link{feature_selection}}
+#' @section Method to do normalization \code{\link{normalize}}
+#' @section Method to do discretization \code{\link{discretize}}
+#' @section Method to do space transformation \code{\link{space_transformation}}
+#' @section Method to treat outliers \code{\link{clean_outliers}}
+#' @section Method to treat missing values \code{\link{impute_missing}}
+#' @section Method to treat noise \code{\link{clean_noise}}
 #'
 #' @docType package
 #' @name amendr
@@ -46,12 +46,15 @@ NULL
 #' @param method For the preprocessing method
 #'
 #' @return Prints options for the selected preprocessing
-#' @examples
-#' options("clean_noise", method = "edgeWeight")
-#' options("clean_noise", method = "ENG")
-#' options("impute_missing, method = "gibbs_sampling")
+#' @export
 #'
-options <- function(preprocess, method = NULL){
+#' @examples
+#'
+#' which_options("clean_noise", method = "edgeWeight")
+#' which_options("clean_noise", method = "ENG")
+#' which_options("impute_missing", method = "gibbs_sampling")
+#'
+which_options <- function(preprocess, method = NULL){
   pkgs <- list(
     "clean_outliers"    = "outliersPackages",
     "clean_noise"       = "noisePackages",

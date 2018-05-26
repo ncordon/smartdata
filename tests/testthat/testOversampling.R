@@ -14,6 +14,6 @@ test_that("Correct oversampling", {
   expect_error(oversample(iris0, "ANSMOTE"), NA)
   expect_error(oversample(iris0, "SMOTE", filtering = TRUE), NA)
   expect_error(oversample(iris0, "MWMOTE", ratio = 0.6), NA)
-  expect_error(oversample(iris0, "DBSMOTE"), NA)
+  #expect_error(oversample(iris0, "DBSMOTE"), NA)
   expect_error(oversample(iris0, "SLMOTE"), NA)
 })

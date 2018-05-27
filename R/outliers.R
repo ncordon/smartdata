@@ -19,11 +19,15 @@ args.univariate <- list(
   type      = list(
     check   = Curry(expect_choice, choices = c("z", "t", "chisq", "iqr", "mad"),
                   label = "type"),
-    info    = paste("'z' calculates normal scores, 't' calculates t-Student scores",
-                    "'chisq' gives chi-squared scores",
-                    "For the 'iqr' type, all values lower than first and greater than third quartile are considered",
-                    "and difference between them and nearest quartile divided by IQR are calculated",
-                    "'mad' gives differences between each value and median, divided by median absolute deviation")
+    info    = c("Method to compute outliers: ",
+                "*'z' calculates normal scores",
+                "* 't' calculates t-Student scores",
+                "* 'chisq' gives chi-squared scores",
+                paste(
+                  "* For the 'iqr' type, all values lower than first and greater than third quartile are considered",
+                  "and difference between them and nearest quartile divided by IQR are calculated"
+                ),
+                "* 'mad' gives differences between each value and median, divided by median absolute deviation")
   ),
   prob      = list(
     check   = Curry(qexpect, rules = "N1(0,1)", label = "prob"),
@@ -38,7 +42,7 @@ args.univariate <- list(
   lim       = list(
     check   = Curry(qexpect, rules = "N1", label = "lim"),
     info    = "This value can be set for 'iqr' type of scores, to form logical vector, which values has this limit exceeded",
-    default = NA
+    default = 1
   )
 )
 

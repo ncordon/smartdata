@@ -56,12 +56,15 @@ NULL
 #'
 which_options <- function(preprocess, method = NULL){
   pkgs <- list(
-    "clean_outliers"    = "outliersPackages",
-    "clean_noise"       = "noisePackages",
-    "feature_selection" = "featSelectionPackages",
-    "instance_selection"= "instSelectionPackages",
-    "discretize"        = "discretizationPackages",
-    "impute_missing"    = "missingValuesPackages"
+    "clean_outliers"       = "outliersPackages",
+    "clean_noise"          = "noisePackages",
+    "impute_missing"       = "missingValuesPackages",
+    "feature_selection"    = "featSelectionPackages",
+    "instance_selection"   = "instSelectionPackages",
+    "discretize"           = "discretizationPackages",
+    "normalize"            = "normalizationPackages",
+    "oversample"           = "oversamplingPackages",
+    "space_transformation" = "spaceTransformationPackages"
   )
 
   if(!preprocess %in% names(pkgs))

@@ -224,21 +224,6 @@ args.iterative_robust <- list(
   )
 )
 
-args.iterative_robust <- list(
-  num_iterations = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
-    info    = "Maximum number of iterations",
-    default = 100,
-    map     = "maxit"
-  ),
-  initialization = list(
-    check   = Curry(expect_choice, choices = c("kNN", "median"), label = "initialization"),
-    info    = "Initialization with 'median' or 'kNN'",
-    map     = "init.method",
-    default = "kNN"
-  )
-)
-
 args.regression_imputation <- list(
   formula = list(
     check   = function(x) {

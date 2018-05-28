@@ -2,6 +2,9 @@ noisePackages <- list(
   "AENN"  = list(
     pkg   = "NoiseFiltersR"
   ),
+  "ENN"  = list(
+    pkg   = "NoiseFiltersR"
+  ),
   "BBNR"  = list(
     pkg   = "NoiseFiltersR"
   ),
@@ -90,6 +93,10 @@ noisePackages <- list(
   "C45iteratedVoting" = list(
     pkg   = "NoiseFiltersR",
     map   = "C45iteratedVotingFilter"
+  ),
+  "CVCF" = list(
+    pkg   = "NoiseFiltersR",
+    map   = "C45iteratedVotingFilter"
   )
 )
 
@@ -108,9 +115,9 @@ args.AENN <- list(
 )
 
 args.BBNR <- args.AENN
-
-args.DROP <- args.AENN
-
+args.DROP1 <- args.AENN
+args.DROP2 <- args.AENN
+args.DROP3 <- args.AENN
 args.ENN  <- args.AENN
 
 args.dynamic <- list(
@@ -125,7 +132,7 @@ args.dynamic <- list(
     info    = "Use consensus vote if TRUE. Else, use majority vote",
     default = FALSE
   ),
-  num_ensemble <- list(
+  num_ensemble = list(
     check   = Curry(qexpect, rules = "X1[1,9]", label = "num_ensemble"),
     info    = "Number from 1 to 9. Number of classifiers to make up the ensemble",
     default = 3,
@@ -161,7 +168,7 @@ args.edgeBoost <- list(
   threshold = list(
     check   = Curry(qexpect, rules = "N1[0,1]", label = "threshold"),
     info    = "Number between 0 and 1. Minimum value required to erase an instance",
-    default = 0
+    default = 0.05
   ),
   num_boosting = list(
     check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_boosting"),
@@ -203,20 +210,6 @@ args.ENG <- list(
     info    = paste("Character indicating the type of graph to be constructed. It can be",
                     "chosen between 'GG' (Gabriel Graph) and 'RNG' (Relative Neighborhood Graph"),
     default = "GG"
-  )
-)
-
-args.edgeWeight <- list(
-  action    = list(
-    check   = Curry(expect_choice, choices = c("remove", "hybrid"), label = "action"),
-    info    = "Strategy to treat noisy instances: 'remove' or 'hybrid'",
-    default = "remove",
-    map     = "noiseAction"
-  ),
-  threshold = list(
-    check   = Curry(qexpect, rules = "N1[0,1]", label = "threshold"),
-    info    = "Number between 0 and 1. Limit between good and suspicious instances",
-    default = 0.25
   )
 )
 
@@ -270,9 +263,9 @@ args.INFFC <- list(
     default = 0.01,
     map     = "p"
   ),
-  stop_iterations = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "stop_iterations"),
-    info    = "The filter stops after stop_iterations iterations with not enough noisy instances removed",
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "The filter stops after num_iterations iterations with not enough noisy instances removed",
     default = 3,
     map     = "s"
   ),
@@ -302,9 +295,9 @@ args.IPF <- list(
     default = 0.01,
     map     = "y"
   ),
-  stop_iterations = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "stop_iterations"),
-    info    = "The filter stops after stop_iterations iterations with not enough noisy instances removed",
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "The filter stops after num_iterations iterations with not enough noisy instances removed",
     default = 3,
     map     = "s"
   ),
@@ -342,7 +335,7 @@ args.Mode <- list(
   num_iterations = list(
     check   = Curry(qexpect, rules = "N1[1,Inf)", label = "num_iterations"),
     info    = "Maximum number of iterations in 'iterative' type",
-    default = 1,
+    default = 200,
     map     = "maxIter"
   ),
   alpha     = list(
@@ -402,9 +395,9 @@ args.PF <- list(
     default = 0.01,
     map     = "y"
   ),
-  stop_iterations = list(
-    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "stop_iterations"),
-    info    = "The filter stops after stop_iterations iterations with not enough noisy instances removed",
+  num_iterations = list(
+    check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_iterations"),
+    info    = "The filter stops after num_iterations iterations with not enough noisy instances removed",
     default = 3,
     map     = "s"
   ),
@@ -430,7 +423,7 @@ args.saturation <- list(
   noise_threshold = list(
     check   = Curry(qexpect, rules = "N1[0.25,2]", label = "noise_threshold"),
     info    = "Real between 0.25 and 2. Threshold for removing noisy instances in the saturation filter.",
-    default = NULL,
+    default = 0.25,
     map     = "NoiseThreshold"
   )
 )
@@ -439,7 +432,7 @@ args.consensusSF <- list(
   noise_threshold = list(
     check   = Curry(qexpect, rules = "N1[0.25,2]", label = "noise_threshold"),
     info    = "Real between 0.25 and 2. Threshold for removing noisy instances in the saturation filter.",
-    default = NULL,
+    default = 0.25,
     map     = "NoiseThreshold"
   ),
   num_folds = list(
@@ -460,7 +453,7 @@ args.classificationSF <- list(
   noise_threshold = list(
     check   = Curry(qexpect, rules = "N1[0.25,2]", label = "noise_threshold"),
     info    = "Real between 0.25 and 2. Threshold for removing noisy instances in the saturation filter.",
-    default = NULL,
+    default = 0.25,
     map     = "NoiseThreshold"
   ),
   num_folds = list(
@@ -505,6 +498,7 @@ doNoiseClean.NoiseFiltersR <- function(task){
 #'
 #' @examples
 #' library("amendr")
+#' data(iris0, package = "imbalance")
 #'
 #' super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
 #' super_iris <- clean_noise(iris, "AENN", class_attr = "Species")
@@ -513,19 +507,21 @@ doNoiseClean.NoiseFiltersR <- function(task){
 #'                           num_folds = 10, agree_level = 0.7, num_trees = 5)
 #' super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
 #'                           consensus = FALSE, action = "repair")
+#' super_iris <- clean_noise(iris0, "TomekLinks")
+#'
+#' \dontrun{
 #' super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",
 #'                           action = "repair", epsilon = 0.05,
 #'                           num_iterations = 200, alpha = 1, beta = 1)
-#' \dontrun{
 #' super_iris <- clean_noise(iris, "INFFC", class_attr = "Species", consensus = FALSE,
-#'                           prob_noisy = 0.2, stop_iterations = 3, k = 5, threshold = 0)
+#'                           prob_noisy = 0.2, num_iterations = 3, k = 5, threshold = 0)
 #' super_iris <- clean_noise(iris, "IPF", class_attr = "Species", consensus = FALSE,
 #'                           num_folds = 3, prob_noisy = 0.2,
-#'                           prob_good = 0.5, stop_iterations = 3)
+#'                           prob_good = 0.5, num_iterations = 3)
 #' super_iris <- clean_noise(iris, "ORBoost", class_attr = "Species",
 #'                           num_boosting = 20, threshold = 11, num_adaboost = 20)
 #' super_iris <- clean_noise(iris, "PF", class_attr = "Species", prob_noisy = 0.01,
-#'                           stop_iterations = 5, prob_good = 0.5, theta = 0.8)
+#'                           num_iterations = 5, prob_good = 0.5, theta = 0.8)
 #' super_iris <- clean_noise(iris, "C45robust", class_attr = "Species", num_folds = 5)
 #' }
 clean_noise <- function(dataset, method, class_attr = "Class", ...){

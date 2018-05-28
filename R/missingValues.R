@@ -410,7 +410,7 @@ doMissingValues.denoiseR <- function(task){
 #' @param dataset we want to impute missing values on
 #' @param method selected method of missing values imputation
 #' @param exclude \code{character}. Vector of attributes to exclude from the
-#'   feature selection process
+#'   missing values treatment
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The treated dataset (either with noisy instances replaced or erased)

@@ -33,7 +33,7 @@ args.lle_knn <- list(
   ),
   num_features = list(
     check   = Curry(qexpect, rules = "X1[1,Inf)", label = "num_features"),
-    info    = "Desired number of numeric features to return",
+    info    = "Desired number of numeric features to return (non numeric will be binded to the numeric)",
     map     = "m"
   )
 )
@@ -87,50 +87,25 @@ doSpaceTransformation.lle <- function(task){
     callArgs <- c(callArgs, list(nnk = FALSE))
   }
 
-  classAttr  <- task$classAttr
   dataset    <- task$dataset
-  colnames   <- names(dataset)
-  dataset    <- dataset[, -which(colnames %in% classAttr)]
-  coltypes   <- colTypes(dataset)
-  nonNumeric <- which(! coltypes %in% c("numeric", "integer"))
-  nonNumericAttrs <- c(names(dataset)[nonNumeric], classAttr)
 
-  if(length(nonNumeric) > 0){
-    dataset <- dataset[, -nonNumeric]
-  }
-
-    # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(X = dataset), callArgs)
   result <- do.call(method, callArgs)$Y
-
-  result <- cbind(result, task$dataset[, nonNumericAttrs])
 
   result
 }
 
-doSpaceTransformation.adaptative_gpca <- function(task){
+doSpaceTransformation.adaptiveGPCA <- function(task){
   callArgs <- eval(parse(text = paste("args.", task$method, sep = "")))
   callArgs <- mapArguments(task$args, callArgs)
 
   method <- mapMethod(spaceTransformationPackages, task$method)
 
-  classAttr  <- task$classAttr
   dataset    <- task$dataset
-  colnames   <- names(dataset)
-  dataset    <- dataset[, -which(colnames %in% classAttr)]
-  coltypes   <- colTypes(dataset)
-  nonNumeric <- which(! coltypes %in% c("numeric", "integer"))
-  nonNumericAttrs <- c(names(dataset)[nonNumeric], classAttr)
 
-  if(length(nonNumeric) > 0){
-    dataset <- dataset[, -nonNumeric]
-  }
-
-  # Method needs dataset and class attr to be filled separately
   callArgs <- c(list(X = as.matrix(dataset)), callArgs)
   result <- do.call(method, callArgs)$U
   result <- data.frame(result)
-  result <- cbind(result, task$dataset[, nonNumericAttrs])
 
   result
 }
@@ -139,8 +114,8 @@ doSpaceTransformation.adaptative_gpca <- function(task){
 #'
 #' @param dataset we want to do space transformation on
 #' @param method selected method of space transformation
-#' @param class_attr \code{character}. Indicates the class attribute or
-#'   attributes from \code{dataset}. Must exist in it.
+#' @param exclude \code{character}. Vector of attributes to exclude from the
+#'   space transformation process
 #' @param ... Further arguments for \code{method}
 #'
 #' @return The transformed dataset
@@ -148,24 +123,38 @@ doSpaceTransformation.adaptative_gpca <- function(task){
 #' @examples
 #' library("amendr")
 #' data(ecoli1, package = "imbalance")
+#' data(AntibioticSmall, package = "adaptiveGPCA")
+#' antibiotics <- data.frame(AntibioticSmall$X)
 #'
-#'
-#' super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 3)
+#' super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
+#'                                    exclude = c("Mcg", "Alm1"))
 #' \dontrun{
 #' super_iris <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
 #' }
+#' super_iris <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
+#'                                    num_features = 2)
 #'
-space_transformation <- function(dataset, method, class_attr = "Class", ...){
-  # Convert all not camelCase arguments to camelCase
-  classAttr <- class_attr
+space_transformation <- function(dataset, method, exclude = NULL, ...){
+  orig_dataset <- dataset
   checkDataset(dataset)
-  checkDatasetClass(dataset, classAttr)
+  checkInDataset(dataset, exclude)
 
   method <- matchArg(method, spaceTransformationMethods)
 
-  # Do feature selection
-  task <- preprocessingTask(dataset, "spaceTransformation", method, classAttr, ...)
-  dataset <- preprocess(task)
+  colnames <- names(dataset)
+  coltypes <- colTypes(dataset)
+  nonNumeric <- colnames[which(! coltypes %in% c("numeric", "integer"))]
+  exclude  <- unique(c(exclude, nonNumeric))
 
-  dataset
+  if(length(exclude) > 0){
+    dataset <- dataset[, -which(colnames %in% exclude)]
+  }
+
+  # Do feature selection
+  task   <- preprocessingTask(dataset, "spaceTransformation", method, NULL, ...)
+  result <- preprocess(task)
+
+  result <- cbind(result, orig_dataset[, exclude])
+
+  result
 }

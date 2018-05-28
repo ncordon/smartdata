@@ -12,7 +12,7 @@ impute_missing(dataset, method, exclude = NULL, ...)
 \item{method}{selected method of missing values imputation}
 
 \item{exclude}{\code{character}. Vector of attributes to exclude from the
-feature selection process}
+missing values treatment}
 
 \item{...}{Further arguments for \code{method}}
 }

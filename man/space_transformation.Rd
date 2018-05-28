@@ -11,10 +11,10 @@ space_transformation(dataset, method, exclude = NULL, ...)
 
 \item{method}{selected method of space transformation}
 
-\item{...}{Further arguments for \code{method}}
+\item{exclude}{\code{character}. Vector of attributes to exclude from the
+space transformation process}
 
-\item{class_attr}{\code{character}. Indicates the class attribute or
-attributes from \code{dataset}. Must exist in it.}
+\item{...}{Further arguments for \code{method}}
 }
 \value{
 The transformed dataset
@@ -28,7 +28,8 @@ data(ecoli1, package = "imbalance")
 data(AntibioticSmall, package = "adaptiveGPCA")
 antibiotics <- data.frame(AntibioticSmall$X)
 
-super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 3)
+super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
+                                   regularization = 1, exclude = c("Mcg", "Alm1"))
 \dontrun{
 super_iris <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
 }

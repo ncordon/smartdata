@@ -25,9 +25,9 @@ args.lle_knn <- list(
     info    = "Number of neighbors used in KNN",
     default = 1
   ),
-  method    = list(
+  regularization = list(
     check   = Curry(expect_choice, choices = 1:3, label = "method"),
-    info    = "Regularisation method: 1, 2 or 3, by default 2",
+    info    = "Regularization method: 1, 2 or 3, by default 2",
     default = 2,
     map     = "reg"
   ),
@@ -45,9 +45,9 @@ args.lle_epsilon <- list(
     default = 0.99,
     map     = "eps"
   ),
-  method    = list(
+  regularization = list(
     check   = Curry(expect_choice, choices = 1:3, label = "method"),
-    info    = "Regularisation method: 1, 2 or 3, by default 2",
+    info    = "Regularization method: 1, 2 or 3, by default 2",
     default = 2,
     map     = "reg"
   ),
@@ -127,7 +127,7 @@ doSpaceTransformation.adaptiveGPCA <- function(task){
 #' antibiotics <- data.frame(AntibioticSmall$X)
 #'
 #' super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
-#'                                    exclude = c("Mcg", "Alm1"))
+#'                                    regularization = 1, exclude = c("Mcg", "Alm1"))
 #' \dontrun{
 #' super_iris <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
 #' }

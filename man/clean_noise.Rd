@@ -27,15 +27,14 @@ library("amendr")
 data(iris0, package = "imbalance")
 
 super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
-super_iris <- clean_noise(iris, "AENN", class_attr = "Species")
 super_iris <- clean_noise(iris, "GE", class_attr = "Species", k = 5, relabel_th = 2)
 super_iris <- clean_noise(iris, "HARF", class_attr = "Species",
                           num_folds = 10, agree_level = 0.7, num_trees = 5)
-super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
-                          consensus = FALSE, action = "repair")
 super_iris <- clean_noise(iris0, "TomekLinks")
 
-\dontrun{
+\donttest{
+super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
+                          consensus = FALSE, action = "repair")
 super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",
                           action = "repair", epsilon = 0.05,
                           num_iterations = 200, alpha = 1, beta = 1)

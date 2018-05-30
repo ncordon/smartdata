@@ -19,20 +19,7 @@
 #' @name amendr
 NULL
 
-
-#' @import imbalance
-#' @import magrittr
-#' @import unbalanced
-#' @import discretization
-#' @import NoiseFiltersR
-#' @import FSelector
-#' @import Boruta
 #' @import mice
-#' @import Amelia
-#' @import DMwR
-#' @import missForest
-#' @import missMDA
-#' @import VIM
 #' @importFrom functional Curry
 #' @importFrom checkmate expect_choice
 #' @importFrom checkmate matchArg

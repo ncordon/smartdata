@@ -23,7 +23,7 @@ An oversampled dataset
 Oversampling wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 data(iris0, package = "imbalance")
 
 super_iris <- oversample(iris0, method = "MWMOTE", class_attr = "Class",

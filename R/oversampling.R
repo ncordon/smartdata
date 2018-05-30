@@ -114,7 +114,7 @@ doOversampling.imbalance <- function(task){
 #' @export
 #'
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #' data(iris0, package = "imbalance")
 #'
 #' super_iris <- oversample(iris0, method = "MWMOTE", class_attr = "Class",

@@ -167,7 +167,7 @@ doDiscretization.infotheo <- function(task) {
 #' @export
 #'
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #'
 #' super_iris <- discretize(iris, method = "chi_merge",
 #'                          class_attr = "Species", exclude = "Sepal.Length")

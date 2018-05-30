@@ -23,7 +23,7 @@ The treated dataset (either with noisy instances replaced or erased)
 Missing values imputation wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 data(africa, package = "Amelia")
 data(nhanes, package = "mice")
 data(ozone,  package = "missMDA")

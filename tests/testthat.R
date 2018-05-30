@@ -1,4 +1,4 @@
 library(testthat)
-library(amendr)
+library(smartdata)
 
-test_check("amendr")
+test_check("smartdata")

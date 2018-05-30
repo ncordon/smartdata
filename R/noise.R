@@ -497,7 +497,7 @@ doNoiseClean.NoiseFiltersR <- function(task){
 #' @export
 #'
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #' data(iris0, package = "imbalance")
 #'
 #' super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)

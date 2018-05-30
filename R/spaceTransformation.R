@@ -121,7 +121,7 @@ doSpaceTransformation.adaptiveGPCA <- function(task){
 #' @return The transformed dataset
 #' @export
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #' data(ecoli1, package = "imbalance")
 #' data(AntibioticSmall, package = "adaptiveGPCA")
 #' antibiotics <- data.frame(AntibioticSmall$X)

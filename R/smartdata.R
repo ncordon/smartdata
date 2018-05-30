@@ -1,4 +1,4 @@
-#' amendr: A package to ease data preprocessing tasks
+#' smartdata: A package to ease data preprocessing tasks
 #'
 #' Provides a pipe interface that integrates a collection of the most used data
 #' preprocessing libraries, providing oversampling, instance and feature
@@ -16,7 +16,7 @@
 #' @section Method to treat noise \code{\link{clean_noise}}
 #'
 #' @docType package
-#' @name amendr
+#' @name smartdata
 NULL
 
 #' @import mice

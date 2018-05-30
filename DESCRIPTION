@@ -1,4 +1,4 @@
-Package: amendr
+Package: smartdata
 Title: Data preprocessing for R
 Version: 0.0.0.9000
 Authors@R: c(

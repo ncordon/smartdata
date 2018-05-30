@@ -26,7 +26,7 @@ The treated dataset (either with noisy instances replaced or erased)
 Feature selection wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 library("rpart")
 data(ecoli1, package = "imbalance")
 data(HouseVotes84, package = "mlbench")

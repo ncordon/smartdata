@@ -1,11 +1,11 @@
-url: http://ncordon.github.io/amendr
+url: http://ncordon.github.io/smartdata
 
 template:
   params:
     bootswatch: cosmo
 
 navbar:
-  title: "amendr"
+  title: "smartdata"
   type: default
   left:
     - text: "Home"
@@ -16,4 +16,4 @@ navbar:
       href: "reference/index.html"
   right:
     - icon: fa-github
-      href: https://github.com/ncordon/amendr
+      href: https://github.com/ncordon/smartdata

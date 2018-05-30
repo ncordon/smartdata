@@ -23,7 +23,7 @@ The transformed dataset
 Space transformation wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 data(ecoli1, package = "imbalance")
 data(AntibioticSmall, package = "adaptiveGPCA")
 antibiotics <- data.frame(AntibioticSmall$X)

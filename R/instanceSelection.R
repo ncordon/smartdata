@@ -173,7 +173,7 @@ doInstSelection.RoughSets <- function(task){
 #' @export
 #'
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #'
 #' super_iris <- instance_selection(iris, method = "CNN", class_attr = "Species")
 #' # Use k = 2 instead of default k

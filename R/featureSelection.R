@@ -210,7 +210,7 @@ doFeatSelection.FSelector <- function(task){
 #' @export
 #' @importFrom stats as.formula
 #' @examples
-#' library("amendr")
+#' library("smartdata")
 #' library("rpart")
 #' data(ecoli1, package = "imbalance")
 #' data(HouseVotes84, package = "mlbench")

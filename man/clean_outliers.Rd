@@ -25,7 +25,7 @@ The treated dataset (either with outliers replaced or erased)
 Outliers cleaning wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 
 super_iris <- clean_outliers(iris, method = "multivariate", type = "adj")
 super_iris <- clean_outliers(iris, method = "multivariate", type = "quan")

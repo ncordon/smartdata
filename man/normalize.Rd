@@ -23,7 +23,7 @@ The normalized dataset
 Normalization wrapper
 }
 \examples{
-library("amendr")
+library("smartdata")
 
 super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "column")
 # Use default parameter by = "row"

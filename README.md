@@ -24,10 +24,16 @@ library("smartdata")
 
 ## Examples
 
-`smartdata` provides the following wrappers: \* `instance_selection` \*
-`feature_selection` \* `normalize` \* `discretize` \*
-`space_transformation` \* `clean_outliers` \* `impute_missing` \*
-`clean_noise`.
+`smartdata` provides the following wrappers:
+
+  - `instance_selection`
+  - `feature_selection`
+  - `normalize`
+  - `discretize`
+  - `space_transformation`
+  - `clean_outliers`
+  - `impute_missing`
+  - `clean_noise`
 
 To get the possible methods available for a certain wrapper, we can do:
 
@@ -55,56 +61,56 @@ data(ecoli1, package = "imbalance")
 data(nhanes, package = "mice")
 ```
 
-### Oversampling
+#### Oversampling
 
 ``` r
 super_iris <- iris0 %>% oversample(method = "MWMOTE", ratio = 0.8, filtering = TRUE)
 ```
 
-### Instance selection
+#### Instance selection
 
 ``` r
 super_iris <- iris %>% instance_selection("multiedit", k = 3, num_folds = 2, 
                                           null_passes = 10, class_attr = "Species")
 ```
 
-### Feature selection
+#### Feature selection
 
 ``` r
 super_ecoli <- ecoli1 %>% feature_selection("Boruta", class_attr = "Class")
 ```
 
-### Normalization
+#### Normalization
 
 ``` r
 super_iris <- iris %>% normalize("min_max", exclude = c("Sepal.Length", "Species"))
 ```
 
-### Discretization
+#### Discretization
 
 ``` r
 super_iris <- iris %>% discretize("ameva", class_attr = "Species")
 ```
 
-### Space transformation
+#### Space transformation
 
 ``` r
 super_ecoli <- ecoli1 %>% space_transformation("lle_knn", k = 3, num_features = 2)
 ```
 
-### Outliers
+#### Outliers
 
 ``` r
 super_iris <- iris %>% clean_outliers("multivariate", type = "adj")
 ```
 
-### Missing values
+#### Missing values
 
 ``` r
 super_nhanes <- nhanes %>% impute_missing("gibbs_sampling")
 ```
 
-### Noise
+#### Noise
 
 ``` r
 super_iris <- iris %>% clean_noise("hybrid", class_attr = "Species", 

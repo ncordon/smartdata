@@ -144,31 +144,31 @@ preprocess <- function(task){
 }
 
 preprocess.normalization <- function(task){
-  class(task) <- normalizationPackages[[task$method]]
+  class(task) <- normalizationPackages[[task$method]]$pkg
 
   doNormalization(task)
 }
 
 preprocess.instanceSelection <- function(task){
-  class(task) <- instSelectionPackages[[task$method]]
+  class(task) <- instSelectionPackages[[task$method]]$pkg
 
   doInstSelection(task)
 }
 
 preprocess.discretization <- function(task){
-  class(task) <- discretizationPackages[[task$method]]
+  class(task) <- discretizationPackages[[task$method]]$pkg
 
   doDiscretization(task)
 }
 
 preprocess.oversampling <- function(task){
-  class(task) <- oversamplingPackages[[task$method]]
+  class(task) <- oversamplingPackages[[task$method]]$pkg
 
   doOversampling(task)
 }
 
 preprocess.outliers <- function(task){
-  class(task) <- outliersPackages[[task$method]]
+  class(task) <- outliersPackages[[task$method]]$pkg
 
   doOutliersClean(task)
 }

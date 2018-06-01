@@ -1,0 +1,64 @@
+---
+title: "Contributing to `smartdata`"
+author: "Ignacio Cordón"
+date: "`r Sys.Date()`"
+output: rmarkdown::pdf_document
+geometry: margin=3.8cm
+papersize: A4
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, echo = FALSE, include = FALSE}
+library(smartdata)
+```
+
+# Purpose of `smartdata`
+The package `smartdata` aims to provide an useful common interface for a collection of machine learning packages. In other ways, it was thought to ease the application of algorithms, since there are plenty of packages in R dedicated to machine learning topics. In addition to this, it offers a pipe operator, through `magrittr` package, which makes possible to have a nice and convenient workflow of operations.
+
+Since the purpose of this package is to integrate as much packages as possible, all contributions are welcomed. The goal of this vignette is to describe as easily as possible the general structure of the package, so that making contributions gets easier for an external programmer.
+
+# General structure
+The package covers the following topics, each one with its respective `.R` file in the folder `/R` and with an associated function:
+
+| Topic                | File                    | Wrapper               |
+| :---                 | :---                    | :---                  |
+| Oversampling         | `oversampling.R`        | `oversample`          |
+| Instance selection   | `instanceSelection.R`   | `instance_selection`  |
+| Feature selection    | `featureSelection.R`    | `feature_selection`   |
+| Normalization        | `normalization.R`       | `normalize`           |
+| Discretization       | `discretization.R`      | `discretize`          |
+| Space transformation | `spaceTransformation.R` | `space_transformation`|
+| Outliers             | `outliers.R`            | `clean_outliers`      |
+| Noise                | `noise.R`               | `clean_noise`         |
+| Missing values       | `missingValues.R`       | `impute_missing`      |
+
+The file `R/smartdata.R` contains the description of the package, some imports needed for the correct functioning of the software, the definition of the documentation function `which_options`, which describes the parameters and options available for each method, and the `preprocess` mappings. To illustrate the purpose of `which_options` and the `preprocess` functions, here there are some examples:
+
+```{r options_method}
+which_options("instance_selection")
+which_options("instance_selection", "multiedit")
+```
+
+`preprocess` is an `S3` method which assigns to an object `task` the name of the package the method is in, and calls the function which resolves the task (which is going to be another `S3` method which would be different for each single package):
+
+```{r preprocess, eval = FALSE}
+preprocess <- function(task){
+  UseMethod("preprocess")
+}
+
+preprocess.instanceSelection <- function(task){
+  class(task) <- instSelectionPackages[[task$method]]$pkg
+
+  doInstSelection(task)
+}
+```

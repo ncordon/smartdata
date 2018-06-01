@@ -27,6 +27,17 @@ NULL
 NULL
 
 
+#' Pipe operator
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+NULL
+
+
 #' Prints options for a certain preprocessing method
 #'
 #' @param preprocess Possible preprocessing: \code{'clean_noise'}

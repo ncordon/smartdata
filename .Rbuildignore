@@ -3,3 +3,6 @@
 ^docs$
 ^_pkgdown\.yml$
 ^\.travis\.yml$
+^\README\.org$
+^README\.Rmd$
+^README-.*\.png$

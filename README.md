@@ -49,8 +49,11 @@ which_options("instance_selection", "multiedit")
 #> For more information do: ?class::multiedit 
 #> Parameters for multiedit are: 
 #>   * k: Number of neighbors used in KNN 
+#>        Default value: 1 
 #>   * num_folds: Number of partitions the train set is split in 
-#>   * null_passes: Number of null passes to use in the algorithm
+#>                Default value: 3 
+#>   * null_passes: Number of null passes to use in the algorithm 
+#>                  Default value: 5
 ```
 
 First let’s load a bunch of datasets:

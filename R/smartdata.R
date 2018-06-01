@@ -101,6 +101,11 @@ which_options <- function(preprocess, method = NULL){
       info   <- args[[argName]]$info
       exdent <- nchar(argName) + nchar(mysep) + nchar(innersep)
 
+      # Indicate default value if there is one
+      if(!is.null(args[[argName]]$default)){
+        info <- c(info, paste("Default value:", args[[argName]]$default))
+      }
+
       for(n in 1:length(info)){
         if (n == 1){
           indent <- 0

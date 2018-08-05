@@ -2,23 +2,29 @@
 % Please edit documentation in R/smartdata.R
 \name{which_options}
 \alias{which_options}
-\title{Prints options for a certain preprocessing method}
+\title{Prints options for a wrapper or a certain preprocessing method}
 \usage{
 which_options(preprocess, method = NULL)
 }
 \arguments{
-\item{preprocess}{Possible preprocessing: \code{'clean_noise'}}
+\item{preprocess}{Possible preprocessing: \code{'oversample'},
+\code{'clean_noise'}, \code{'instance_selection'},
+\code{'feature_selection'}, \code{'normalize'}, \code{'discretize'},
+\code{'space_transformation'}, \code{'clean_outliers'},
+\code{'impute_missing'}, \code{'clean_noise'}}
 
 \item{method}{For the preprocessing method}
 }
 \value{
-Prints options for the selected preprocessing
+Prints valid preprocessings for the selected wrapper or options for a
+  given preprocessing
 }
 \description{
-Prints options for a certain preprocessing method
+Prints options for a wrapper or a certain preprocessing method
 }
 \examples{
 
+which_options("oversample")
 which_options("clean_noise", method = "edgeWeight")
 which_options("clean_noise", method = "ENG")
 which_options("impute_missing", method = "gibbs_sampling")

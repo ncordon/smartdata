@@ -38,16 +38,22 @@ NULL
 NULL
 
 
-#' Prints options for a certain preprocessing method
+#' Prints options for a wrapper or a certain preprocessing method
 #'
-#' @param preprocess Possible preprocessing: \code{'clean_noise'}
+#' @param preprocess Possible preprocessing: \code{'oversample'},
+#'   \code{'clean_noise'}, \code{'instance_selection'},
+#'   \code{'feature_selection'}, \code{'normalize'}, \code{'discretize'},
+#'   \code{'space_transformation'}, \code{'clean_outliers'},
+#'   \code{'impute_missing'}, \code{'clean_noise'}
 #' @param method For the preprocessing method
 #'
-#' @return Prints options for the selected preprocessing
+#' @return Prints valid preprocessings for the selected wrapper or options for a
+#'   given preprocessing
 #' @export
 #'
 #' @examples
 #'
+#' which_options("oversample")
 #' which_options("clean_noise", method = "edgeWeight")
 #' which_options("clean_noise", method = "ENG")
 #' which_options("impute_missing", method = "gibbs_sampling")

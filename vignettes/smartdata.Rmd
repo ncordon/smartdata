@@ -1,0 +1,201 @@
+---
+title: "Using `smartadata`"
+author: "Ignacio Cordón"
+date: "`r Sys.Date()`"
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE, 
+  message = FALSE
+)
+```
+
+
+## Purpose of `smartdata`
+R programming language has a wide variety of packages that target machine learning topiscs. However, each package has its own interface, which makes the task of using several of them quite time-consuming. The main purpose of `smartdata` is to provide a common interface for a collection of well-used machine learning packages, so that using methods from different libraries gets easier. Also, it standardizes names of arguments, so that if a method had a parameter `num_iterations` and other had a parameter `iterations` which had a similar meaning, both methods have the same name for the parameter in `smartdata`.
+
+`smartdata` includes preprocessing algorithms for oversampling, instance selection, feature selection, normalization, discretization, space transformation, outliers treatment, missing values treatment and noise cleaning.
+
+Each of the aforementioned topics has its corresponding wrapper: `instance_selection`, `feature_selection`, `normalize`, `discretize`, `space_transformation`, `clean_outliers`, `impute_missing` and `clean_noise`.
+
+In addition to that, `magrittr` has been used to provide a pipeline, so that a workflow can be expressed as:
+
+```{r, eval = FALSE}
+result <- dataset %>% impute_missing %>% clean_noise %>% oversample %>% feature_selection
+```
+
+## Basic help
+To check methods a certain wrapper can be called with, we can simply call the `help` function included in `smartdata`: `which_options`.
+
+```{r, warning = FALSE, message = FALSE}
+library("smartdata")
+which_options("instance_selection")
+```
+
+To check parameters for a wrapper, it suffices to do `?{name of the wrapper}`. For example: `?instance_selection`, which would output:
+
+```
+Usage
+
+instance_selection(dataset, method, class_attr = "Class", ...)
+
+Arguments
+
+dataset	    we want to perform an instance selection on
+method	    selected method of instance selection
+class_attr	character. Indicates the class attribute from dataset. Must exist in it
+...         Further arguments for method
+```
+
+Moreover, if we already know which method we want to use but we do not recall its arguments, we can check its list of parameters with:
+
+```{r}
+which_options("instance_selection", "multiedit")
+```
+
+That option provides a brief description for each possible parameter, as well as a reference to the original function, in case the information for some parameter might not seem clear enough (although mapping between original function's arguments and `smartdata` wrapper is not exact).
+
+In summary, a valid call for `multiedit` would be:
+```{r}
+super_iris <- iris %>% instance_selection("multiedit", k = 3, num_folds = 2, 
+                                          null_passes = 10, class_attr = "Species")
+```
+
+Or:
+```{r}
+super_iris <- iris %>% instance_selection("multiedit", k = 3, null_passes = 10,                                           
+                                          class_attr = "Species")
+```
+
+Or:
+```{r}
+super_iris <- iris %>% instance_selection("multiedit", k = 3, 
+                                          class_attr = "Species")
+```
+
+Or even:
+```{r}
+super_iris <- iris %>% instance_selection("multiedit", class_attr = "Species")
+```
+
+# Techniques included in `smartdata`
+Let $S = \{(x_i, y_i)\}_{i=1^m}$ be our set of data from this moment on. It holds $x_i \in \mathcal{X} \subset \mathbb{R}^n$ and $y_i\in \mathcal{Y}$ where $\mathcal{Y}$ is a finite set of labels. $(x_i, y_i)$ is called instance.
+
+## Oversampling
+Oversampling consists in given $\mathcal{Y}$ with $|\mathcal{Y}| = 2$, and more instances labeled with one class than with the other, generating synthetic instances labeled with the minority class, namely $E$ so that the resulting dataset $S \cup E$ has better characteristics for classification. 
+
+Since oversampling is going to replicate or generate artificial instances belonging to the minority class, a class attribute must be indicated with `class_attr` argument, as well as a `ratio` of a desired ratio of imbalancement (when applicable), where this ratio is computed as:
+\[
+\frac{\textrm{number of minority instances}}{\textrm{number of majority instances}}
+\]
+
+Also, a `filtering` argument can be provided, indicating wHether to to perform a filtering of the generated instances, using NEATER.
+
+Possible methods are:
+
+* PDFOS
+* RWO
+* ADASYN
+* ANSMOTE
+* SMOTE
+* MWMOTE
+* BLSMOTE
+* DBSMOTE
+* SLMOTE
+* RSLSMOTE
+* RACOG
+* wRACOG 
+
+Only if picked method is wRACOG, an additional parameter `wrapper` with possible values 'KNN' and 'C5.0' can be provided. That parameter indicates the desired classificator to select instances.
+
+As example:
+```{r, message = FALSE, warning = FALSE, results = "hide"}
+data(iris0, package = "imbalance")
+super_iris <- oversample(iris0, method = "MWMOTE", class_attr = "Class",
+                         ratio = 0.8, filtering = TRUE)
+```
+
+## Instance selection
+Consists in picking a subset $S'\subseteq S$, so that certain characteristics are preserved with respect to the original sample (such as distribution of classes) or at least we keep most of representative instances.
+
+As said, methods try to pick instances preserving original classes distribution, so `class_attr` must be supplied.
+
+Possible methods are:
+
+* CNN
+* ENN
+* multiedit
+* FRIS
+
+As example:
+```{r, message = FALSE, warning = FALSE, results = "hide"}
+super_iris <- instance_selection(iris, method = "CNN", class_attr = "Species")
+```
+
+## Feature selection
+Consists in given a subset of features $T = \{i: i \in \{1,\ldots n\}$, projecting the tuples of $S = \{(x_i, y_i)\}_{i=1}^m$ to the set of features given by $T$. That is, if we defined 
+\[
+p_{T}((x_{i1}, \ldots, x_{in})) = (x_{ij})_{j \in T}
+\]
+as the projection to the features in $T$, doing a feature selection would result in a set $S' = \{(p_T(x_i), y_i)\}_{i=1}^m$, if the picked features were $T$.
+
+Appart from the parameters for each specific method, `class_attr` must be supplied for each of the preprocessings, and an additional parameter `exclude` can be supplied with a vector of features names, so that those features are striped before the feature selection and joined after the procedure.
+
+Possible methods are:
+
+* Boruta
+* chi_squared
+* information_gain
+* gain_ratio
+* sym_uncertainty
+* oneR
+* RF_importance
+* best_first_search
+* forward_search
+* backward_search
+* hill_climbing
+* cfs
+* consistency 
+
+## Normalization
+Implies converting the sample data $S$ into another dataset $S'$ where each tuple is treated so that standard deviation of the data ends up being zero (feature-wise or considered as elements of $\mathbb{R}^n$), or all the data is mapped to $[0,1]$ interval (e.g. dividing by the maximum feature-wise), etc
+
+Possible methods are:
+
+* z_score
+* pos_standardization
+* unitization
+* pos_unitization
+* min_max
+* rnorm
+* rpnorm
+* sd_quotient
+* mad_quotient
+* range_quotient
+* max_quotient
+* mean_quotient
+* median_quotient
+* sum_quotient
+* ssq_quotient
+* norm
+* pnorm
+* znorm
+* decimal_scaling
+* sigmoidal
+* softmax
+
+Appart from the parameters for each specific method, an additional parameter `exclude` can be supplied with a vector of features names, so that those features are striped before the normalization and joined after the procedure, with the unchanged original data.
+
+As an example:
+
+```{r, results = "hide", warning = FALSE, message = FALSE}
+super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "column")
+```

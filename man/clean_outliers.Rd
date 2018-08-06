@@ -7,12 +7,12 @@
 clean_outliers(dataset, method, ...)
 }
 \arguments{
-\item{dataset}{we want to clean outliers on}
+\item{dataset}{we want to clean outliers of}
 
 \item{method}{selected method to clean outliers. Possbilities are: \itemize{
-\item{"univariate"}{detects outliers column by column (an outlier will be
+\item{"univariate"}{ detects outliers column by column (an outlier will be
 an abnormal value inside a column) and fills them with mean or median of
-the corresponding column} \item{"multivariate"}{detects outliers using a
+the corresponding column} \item{"multivariate"}{ detects outliers using a
 multicolumn approach, so that an outlier will be a whole observation (row).
 And deletes those observations} }}
 

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 ## Purpose of `smartdata`
 R programming language has a wide variety of packages that target machine learning topiscs. However, each package has its own interface, which makes the task of using several of them quite time-consuming. The main purpose of `smartdata` is to provide a common interface for a collection of well-used machine learning packages, so that using methods from different libraries gets easier. Also, it standardizes names of arguments, so that if a method had a parameter `num_iterations` and other had a parameter `iterations` which had a similar meaning, both methods have the same name for the parameter in `smartdata`.
 
-`smartdata` includes preprocessing algorithms for oversampling, instance selection, feature selection, normalization, discretization, space transformation, outliers treatment, missing values treatment and noise cleaning.
+`smartdata` includes preprocessing algorithms for oversampling, instance selection, feature selection, normalization, discretization, space transformation, outliers treatment, missing values imputation and noise cleaning.
 
 Each of the aforementioned topics has its corresponding wrapper: `instance_selection`, `feature_selection`, `normalize`, `discretize`, `space_transformation`, `clean_outliers`, `impute_missing` and `clean_noise`.
 
@@ -198,4 +198,119 @@ As an example:
 
 ```{r, results = "hide", warning = FALSE, message = FALSE}
 super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "column")
+```
+
+## Discretization
+Discretizing a dataset consists in turning continuous variables into discrete attributes, that is, taking an attribute which can take real values and making a binning so that there exists a finite set of values for the variable. This procedure can have a great importance in procedures such as classification.
+
+Possible methods are:
+
+* chi2
+* chi_merge
+* extended_chi2
+* mod_chi2
+* CAIM
+* CACC
+* ameva
+* mdlp
+* equalfreq
+* equalwidth
+* globalequalwidth 
+
+Similar to feature selection or normalization wrappers, `discretize` needs a `class_attr` in certain cases (e.g. methods like `equalfreq`, `equalwidth` or `globalequalwidth` do not need it, and will output an error if this argument is supplied to `discretize`).
+
+Also an `exclude` argument can be passed to the method, indicating which variables are going to be ignored when performing the process.
+
+As an example:
+```{r}
+super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
+```
+
+## Space transformation
+
+
+## Outliers
+Outliers are instances that lie far from the others (that is, they seem quite distant from the others, using some kind of predefined distance or measure).
+
+Possible methods are:
+
+* multivariate
+* univariate
+
+When treating outliers, those can be considered as whole rows of the dataset (that is, an outlier is a whole instance), or as certain values inside each column (that is, outliers inside attributes). The first case receives the name of "multivariate" approach, whereas the second case is called "univariate".
+
+"multivariate" approach will imply deletion of the outlier instances from the dataset. "univariate" outliers can be treated imputing the median or the mean of the instances.
+
+As example:
+```{r}
+super_iris <- clean_outliers(iris, method = "multivariate", type = "adj")
+super_iris <- clean_outliers(iris, method = "univariate", type = "z", fill = "mean")
+```
+
+## Missing values
+Missing values are tuples that lack from a certain attribute value, so a preliminary imputation could have a lot of benefits with respect to a posterior machine learning technique, such as classification.
+
+Possible methods are:
+
+* gibbs_sampling
+* expect_maximization
+* central_imputation
+* knn_imputation
+* rf_imputation
+* PCA_imputation
+* MCA_imputation
+* FAMD_imputation
+* hotdeck
+* iterative_robust
+* regression_imputation
+* ATN 
+
+An `exclude` argument in form of a vector of column names can be passed to `impute_missing`, so that those columns will be ignored during the procedure and appended without variation after it.
+
+As example:
+```{r}
+data(nhanes, package = "mice")
+super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
+```
+
+## Noise
+Noisy data are instances which include additional meaningless information appart from the true information they encode. Removing or repairing those instances prior to a classification, can have a potential benefit on it.
+
+Possible methods are:
+
+* AENN
+* ENN
+* BBNR
+* DROP1
+* DROP2
+* DROP3
+* EF
+* ENG
+* HARF
+* GE
+* INFFC
+* IPF
+* Mode
+* PF
+* PRISM
+* RNN
+* ORBoost
+* edgeBoost
+* edgeWeight
+* TomekLinks
+* dynamic
+* hybrid
+* saturation
+* consensusSF
+* classificationSF
+* C45robust
+* C45voting
+* C45iteratedVoting
+* CVCF
+
+A `class_attr` must be supplied.
+
+As example:
+```{r}
+super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
 ```

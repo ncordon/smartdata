@@ -9,7 +9,7 @@ space_transformation(dataset, method, exclude = NULL, ...)
 \arguments{
 \item{dataset}{we want to do space transformation on}
 
-\item{method}{selected method of space transformation}
+\item{method}{selected method for space transformation}
 
 \item{exclude}{\code{character}. Vector of attributes to exclude from the
 space transformation process}
@@ -28,12 +28,12 @@ data(ecoli1, package = "imbalance")
 data(AntibioticSmall, package = "adaptiveGPCA")
 antibiotics <- data.frame(AntibioticSmall$X)
 
-super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
+super_ecoli <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
                                    regularization = 1, exclude = c("Mcg", "Alm1"))
 \dontrun{
-super_iris <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
+super_ecoli <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
 }
-super_iris <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
-                                   num_features = 2)
+super_antibiotics <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
+                                         num_features = 2)
 
 }

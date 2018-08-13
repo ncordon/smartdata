@@ -113,7 +113,7 @@ doSpaceTransformation.adaptiveGPCA <- function(task){
 #' Space transformation wrapper
 #'
 #' @param dataset we want to do space transformation on
-#' @param method selected method of space transformation
+#' @param method selected method for space transformation
 #' @param exclude \code{character}. Vector of attributes to exclude from the
 #'   space transformation process
 #' @param ... Further arguments for \code{method}
@@ -126,13 +126,13 @@ doSpaceTransformation.adaptiveGPCA <- function(task){
 #' data(AntibioticSmall, package = "adaptiveGPCA")
 #' antibiotics <- data.frame(AntibioticSmall$X)
 #'
-#' super_iris <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
+#' super_ecoli <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
 #'                                    regularization = 1, exclude = c("Mcg", "Alm1"))
 #' \dontrun{
-#' super_iris <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
+#' super_ecoli <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
 #' }
-#' super_iris <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
-#'                                    num_features = 2)
+#' super_antibiotics <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
+#'                                          num_features = 2)
 #'
 space_transformation <- function(dataset, method, exclude = NULL, ...){
   orig_dataset <- dataset

@@ -22,12 +22,12 @@ knitr::opts_chunk$set(
 library(smartdata)
 ```
 
-The package `smartdata` aims to provide an useful common interface for a collection of machine learning packages. In other ways, it was thought to ease the application of algorithms, since there are plenty of packages in R dedicated to machine learning topics. In addition to this, it offers a pipe operator, through `magrittr` package, which makes possible to have a nice and convenient workflow of operations.
+The package `smartdata` aims to provide an useful common interface for a collection of machine learning packages. In other words, it was thought to ease the application of algorithms, since there are plenty of packages in R dedicated to machine learning topics. In addition to this, it offers a pipe operator, through `magrittr` package, which makes possible to have a nice and convenient workflow of operations.
 
 Since the purpose of this package is to integrate as much packages as possible, all contributions are welcomed. The goal of this vignette is to describe as easily as possible the general structure of the package, so that making contributions gets easier for an external programmer.
 
 # General structure
-The package covers the following topics, each one with its respective `.R` file in the folder `/R` and with an associated function:
+The package covers the following topics, each one with its respective `.R` file in the folder `R/` and with an associated function:
 
 | Topic                | File                    | Wrapper               |
 | :---                 | :---                    | :---                  |
@@ -42,17 +42,17 @@ The package covers the following topics, each one with its respective `.R` file 
 | Missing values       | `missingValues.R`       | `impute_missing`      |
 
 ## Naming conventions
-Inside the package, everything is coded using [`CamelCase`](https://en.wikipedia.org/wiki/Camel_case) style, but the API for the functions that can be called from outside the package, once loaded, is coded using [`snake_case`](https://en.wikipedia.org/wiki/Snake_case) style. The reason for the former convention is to ensure compatibility with [`Tidyverse`](https://www.tidyverse.org) packages, which use that naming convention.
+Inside the package, everything is coded using [`CamelCase`](https://en.wikipedia.org/wiki/Camel_case) style, but the API for the functions callable from outside the package, once loaded, is named using [`snake_case`](https://en.wikipedia.org/wiki/Snake_case) style. The reason for the former convention is to ensure compatibility with [`Tidyverse`](https://www.tidyverse.org) packages, which use that naming convention.
 
 # `smartdata.R`
-The file `R/smartdata.R` contains the description of the package, some imports needed for the correct functioning of the software, the definition of the documentation function `which_options`, which describes the parameters and options available for each method, and the `preprocess` mappings. To illustrate the purpose of `which_options` and the `preprocess` functions, here there are some examples:
+The file `R/smartdata.R` contains the description of the package, some imports needed for the correct functioning of the software, the definition of the documentation function `which_options`, which describes the parameters and options available for each method, and the `preprocess` mappings. To illustrate the purpose of `which_options` and the `preprocess` functions, here are some examples:
 
 ```{r options_method}
 which_options("instance_selection")
 which_options("instance_selection", "multiedit")
 ```
 
-`preprocess` is an `S3` method which assigns to an object `task` the name of the package the method is in as a class, and calls the function which resolves the task (which is going to be another `S3` method which would be different for each single package):
+`preprocess` is an `S3` method which assigns to an object `task` the name of the package the method is in as a class, and calls the function which resolves the task (which is going to be another `S3` method which different for each single package):
 
 ```{r preprocess, eval = FALSE}
 preprocess <- function(task){
@@ -68,7 +68,7 @@ preprocess.instanceSelection <- function(task){
 
 # `{wrapper}.R`
 
-Inside each `{wrapper}.R` file, we will find, on the top part, a declaration of the available methods for that preprocessing with information about the package they come from (`pkg` slot), and the original name of the method in that package (`map` slot). For example, for `instanceSelection.R`:
+Inside each `{wrapper}.R` file, we will find, at the top, a declaration of the available methods for that preprocessing with information about the package they come from (`pkg` slot), and the original name of the method in that package (`map` slot). For example, for `instanceSelection.R`:
 
 ```{r wrapper-packages, eval = FALSE}
 instSelectionPackages <- list(
@@ -90,15 +90,17 @@ instSelectionPackages <- list(
 )
 ```
 
-We know from the information above that `CNN` method derives from the `unbalanced` package, and the `ubCNN` function inside it.
+An absent `map` slot means the method in the origin package coincides with the method name.
 
-The names of the valid methods will be contained in a similar variable.
+From the information above, we know `CNN` method derives from the `unbalanced` package and the `ubCNN` function inside it.
+
+Names of valid methods will be contained in a similar variable:
 
 ```{r wrapper-methods, eval = FALSE}
 instSelectionMethods <- names(instSelectionPackages)
 ```
 
-For each method, there should be a declared variable `arg.{method}` which would contain information for each of the accepted arguments for that method (`default` values in case those arguments omitted when calling the function -, a `check` function to ensure the parameter is passed correctly, and a string of information `info` about the parameter, which will be shown if `which_options` is called with the names of the wrapper and the method). Specifically, package `checkmate` has been used to provide verbose compact check functions (curryfied in the first argument with `Curry` method from `functional` package, i.e. the same as writing `function(x) { qexpect(x, rules = "foo")}`). As example:
+For each method, there should be a declared variable `arg.{method}` which would contain information for each of the accepted arguments for that method (`default` values in case those arguments can be omitted when calling the function, a `check` function to ensure the parameter is passed correctly, and a string of information about the parameter, `info`, which will be shown if `which_options` is called with the names of the wrapper and the method). Specifically, package `checkmate` has been used to provide verbose and compact check functions (curried in the first argument with `Curry` method from `functional` package, i.e. the same as writing `function(x) { qexpect(x, rules = "foo") }`). As example:
 
 ```{r method-args, eval = FALSE}
 args.multiedit <- list(
@@ -122,9 +124,9 @@ args.multiedit <- list(
 )
 ```
 
-If an argument is missing the `default` slot then a value must be provided for it when calling the function.
+If an argument has a missing `default` slot, then a value must be provided for it when the function is called.
 
-There should be an `S3` method which evaluates the wrapper for the methods included in a given package. As an example, let's observe the method that evaluates instance selections using methods from `unbalanced`:
+There should be an `S3` method which evaluates the wrapper for methods included in a given package. As an example, let's observe the method that evaluates instance selection using methods from `unbalanced`:
 
 ```{r resolve-method, eval = FALSE}
 doInstSelection.unbalanced <- function(task){
@@ -161,7 +163,7 @@ doInstSelection.unbalanced <- function(task){
 }
 ```
 
-A reason to use such an structure (resolve each call grouping methods per origin package instead of treating each method differently) is that methods taht come from the same package (usually) need similar adjustments (for example, order of columns).
+A reason to use such an structure (resolve each call grouping methods per origin package instead of treating each method differently) is that methods  coming from the same package usually need similar adjustments (for example, order of columns).
 
 Finally, the correspoding wrapper will:
 
@@ -193,6 +195,6 @@ instance_selection <- function(dataset, method, class_attr = "Class", ...){
 The file `utils.R` contains helpers to assist in the coding process. Most useful ones are:
 
 * `checkDataset`: given a variable returns whether its class is `data.frame`.
-* `checkDatasetClass`: checks that a certain class variable is present in a `data.frame`
-* `mapArguments`: is used inside `doInstSelection.unbalanced` for example, and matches a list of arguments (present in `...` variable passed to the corresponding wrapper against `args.CNN` or `args.ENN` in the case of `unbalanced` package), maps its names to the original names the origin package needs and substitutes default arguments.
+* `checkDatasetClass`: checks whether a certain class variable is present in a `data.frame`
+* `mapArguments`: used inside `doInstSelection.unbalanced` for example, it matches a list of arguments (present in `...` argument passed to the corresponding wrapper) against `args.CNN` or `args.ENN`, in the case of `unbalanced` package, maps its names to the original names the origin package needs and substitutes default arguments.
 * `mapMethod`: given a packages list and a name of method, returns the function to evaluate (that is, returns `pkg::method` function, that can be evaluated with `do.call` and a list of arguments).

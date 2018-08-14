@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 
-## Purpose of `smartdata`
+# Purpose of `smartdata`
 R programming language has a wide variety of packages that target machine learning topiscs. However, each package has its own API, which makes the task of using several of them quite time-consuming. The main purpose of `smartdata` is to provide a common interface for a collection of well-used machine learning packages, so that using methods from different libraries gets easier. Also, it standardizes names of arguments, so that if a method had a parameter `num_iterations` and other had a parameter `iterations` with similar meaning, then both methods would take the same parameter name in `smartdata`.
 
 `smartdata` includes preprocessing algorithms for oversampling, instance selection, feature selection, normalization, discretization, space transformation, outliers treatment, missing values imputation and noise cleaning.
@@ -32,7 +32,7 @@ In addition to that, `magrittr` has been used to provide a pipeline, so that a t
 result <- dataset %>% impute_missing %>% clean_noise %>% oversample %>% feature_selection
 ```
 
-## Basic help
+# Basic help
 To check the methods a certain wrapper can be called with, we can simply call the `help` function included in `smartdata`: `which_options`.
 
 ```{r, warning = FALSE, message = FALSE}
@@ -205,7 +205,7 @@ Possible methods are:
 * `sigmoidal`
 * `softmax`
 
-Apart from the parameters for each specific method, an additional parameter `exclude` can be supplied with a vector of features names, so that those features are striped before the normalization and joined after the procedure, with the unchanged original data.
+Apart from the parameters for each specific method, an additional parameter `exclude` can be supplied with a vector of feature names, so that those features are striped before the normalization and joined after the procedure, with the unchanged original data.
 
 As an example:
 
@@ -214,23 +214,23 @@ super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "col
 ```
 
 ## Discretization
-Discretizing a dataset consists in turning continuous variables into discrete attributes, that is, taking an attribute which can take real values and making a binning so that there exists a finite set of values for the variable. This procedure can have a great importance in procedures such as classification.
+Discretizing a dataset consists in turning continuous variables into discrete attributes, that is, picking an attribute which can take real values and making a binning so that there exists a finite set of values for the variable. This procedure can have a great importance in procedures such as classification.
 
 Possible methods are:
 
-* chi2
-* chi_merge
-* extended_chi2
-* mod_chi2
-* CAIM
-* CACC
-* ameva
-* mdlp
-* equalfreq
-* equalwidth
-* globalequalwidth 
+* `chi2`
+* `chi_merge`
+* `extended_chi2`
+* `mod_chi2`
+* `CAIM`
+* `CACC`
+* `ameva`
+* `mdlp`
+* `equalfreq`
+* `equalwidth`
+* `globalequalwidth` 
 
-Similar to feature selection or normalization wrappers, `discretize` needs a `class_attr` in certain cases (e.g. methods like `equalfreq`, `equalwidth` or `globalequalwidth` do not need it, and will output an error if this argument is supplied to `discretize`).
+Similar to feature selection or normalization wrappers, `discretize` needs a `class_attr` in certain cases (methods like `equalfreq`, `equalwidth` or `globalequalwidth` do not need it, and will output an error if this argument is supplied to `discretize`).
 
 Also an `exclude` argument can be passed to the method, indicating which variables are going to be ignored when performing the process.
 
@@ -240,27 +240,34 @@ super_iris <- discretize(iris, method = "chi2", class_attr = "Species")
 ```
 
 ## Space transformation
-Space transformation changes a training set $S = \{(x_i^{(1)}, \ldots x_i^{(n)})\}_{i=1^m}$ where $x_i^{(j)} \in \mathbb{R}$ into another set $S' = \{(\bar{x}_i^{(1)}, \ldots, \bar{x}_i^{(k)})\}_{i=1^m}$ with better properties for machine learning methods.
+Space transformation changes a training set $S = \{(x_i^{(1)}, \ldots x_i^{(n)})\}_{i=1\ldots m}$ where $x_i^{(j)} \in \mathbb{R}$ into another set $S' = \{(\bar{x}_i^{(1)}, \ldots, \bar{x}_i^{(k)})\}_{i=1\ldots m}$ with better properties for machine learning methods.
 
 Possible methods are:
 
-* lle_knn
-* lle_epsilon
-* adaptative_gpca
+* `lle_knn`
+* `lle_epsilon`
+* `adaptative_gpca`
 
 This treatment accepts an `exclude` argument in form of a vector of column names. Those columns will be ignored during the procedure and appended in the same order without variation after it, before the non numeric columns (which will be appended in the precise sequence they appeared originally).
+
+As example:
+```{r, results = "hide"}
+data(ecoli1, package = "imbalance")
+super_ecoli <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
+                                   regularization = 1, exclude = c("Mcg", "Alm1"))
+```
 
 ## Outliers
 Outliers are instances that lie far from the others (that is, they seem quite distant from the others, using some kind of predefined distance or measure).
 
 Possible methods are:
 
-* multivariate
-* univariate
+* `multivariate`
+* `univariate`
 
-When treating outliers, those can be considered as whole rows of the dataset (that is, an outlier is a whole instance), or as certain values inside each column (that is, outliers inside attributes). The first case receives the name of "multivariate" approach, whereas the second case is called "univariate".
+When treating outliers, those can be considered as whole rows of the dataset (that is, an outlier is a whole instance), or as certain values inside each column (that is, outliers inside attributes). The first case receives the name of `multivariate` approach, whereas the second case is called `univariate`.
 
-"multivariate" approach will imply deletion of the outlier instances from the dataset. "univariate" outliers can be treated imputing the median or the mean of the instances.
+`multivariate` approach will imply deletion of the outlier instances from the dataset. `univariate` outliers can be treated imputing the median or the mean of the column.
 
 As example:
 ```{r}
@@ -269,22 +276,22 @@ super_iris <- clean_outliers(iris, method = "univariate", type = "z", fill = "me
 ```
 
 ## Missing values
-Missing values are tuples that lack from a certain attribute value, so a preliminary imputation could have a lot of benefits with respect to a posterior machine learning technique, such as classification.
+Missing values are tuples that lack a certain attribute value, so a preliminary imputation could have a lot of benefits with respect to a posterior machine learning technique, such as classification.
 
 Possible methods are:
 
-* gibbs_sampling
-* expect_maximization
-* central_imputation
-* knn_imputation
-* rf_imputation
-* PCA_imputation
-* MCA_imputation
-* FAMD_imputation
-* hotdeck
-* iterative_robust
-* regression_imputation
-* ATN 
+* `gibbs_sampling`
+* `expect_maximization`
+* `central_imputation`
+* `knn_imputation`
+* `rf_imputation`
+* `PCA_imputation`
+* `MCA_imputation`
+* `FAMD_imputation`
+* `hotdeck`
+* `iterative_robust`
+* `regression_imputation`
+* `ATN` 
 
 An `exclude` argument in form of a vector of column names can be passed to `impute_missing`, so that those columns will be ignored during the procedure and appended without variation after it.
 
@@ -295,39 +302,39 @@ super_nhanes <- impute_missing(nhanes, "gibbs_sampling")
 ```
 
 ## Noise
-Noisy data are instances which include additional meaningless information appart from the true information they encode. Removing or repairing those instances prior to a classification, can have a potential benefit on it.
+Noisy data are instances which include additional meaningless information apart from the true information they encode. Removing or repairing those instances prior to a classification can have a potential benefit on it.
 
 Possible methods are:
 
-* AENN
-* ENN
-* BBNR
-* DROP1
-* DROP2
-* DROP3
-* EF
-* ENG
-* HARF
-* GE
-* INFFC
-* IPF
-* Mode
-* PF
-* PRISM
-* RNN
-* ORBoost
-* edgeBoost
-* edgeWeight
-* TomekLinks
-* dynamic
-* hybrid
-* saturation
-* consensusSF
-* classificationSF
-* C45robust
-* C45voting
-* C45iteratedVoting
-* CVCF
+* `AENN`
+* `ENN`
+* `BBNR`
+* `DROP1`
+* `DROP2`
+* `DROP3`
+* `EF`
+* `ENG`
+* `HARF`
+* `GE`
+* `INFFC`
+* `IPF`
+* `Mode`
+* `PF`
+* `PRISM`
+* `RNN`
+* `ORBoost`
+* `edgeBoost`
+* `edgeWeight`
+* `TomekLinks`
+* `dynamic`
+* `hybrid`
+* `saturation`
+* `consensusSF`
+* `classificationSF`
+* `C45robust`
+* `C45voting`
+* `C45iteratedVoting`
+* `CVCF`
 
 A `class_attr` must be supplied.
 

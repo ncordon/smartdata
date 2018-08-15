@@ -15,8 +15,6 @@ r_packages:
 r_github_packages:
   - cran/callr
   - hadley/pkgdown
-  # Temporary until new version is in CRAN
-  - ncordon/imbalance
 
 script:
   - R CMD build . ${R_BUILD_ARGS}

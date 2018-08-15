@@ -14,6 +14,9 @@ navbar:
     - text: "Quick reference"
       icon: fa-bars
       href: "reference/index.html"
+    - text: "Articles"
+      icon: fa-books
+      href: "articles/index.html"
   right:
     - icon: fa-github
       href: https://github.com/ncordon/smartdata

@@ -6,3 +6,14 @@
 ^\README\.org$
 ^README\.Rmd$
 ^README-.*\.png$
+^.*\.Rproj$
+^\.Rproj\.user$
+^packrat/
+^\.Rprofile$
+^\.gitignore$
+^data-raw$
+^revdep$
+^cran-comments.md$
+^NEWS\.md$
+^.*\.tar\.gz$
+^article$

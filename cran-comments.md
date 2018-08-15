@@ -1,5 +1,4 @@
 ## Test environments
-* OS X (on travis-ci), devel
 * ubuntu 14.04 (on travis-ci), devel and release
 * local Arch Linux 4.14.32-1-lts, R 3.5.0
 * win-builder (devel and release)

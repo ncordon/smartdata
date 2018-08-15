@@ -70,19 +70,19 @@ normalizationPackages <- list(
   "znorm" = list(
     pkg  = "clusterSim",
     map  = "data.Normalization"
-  ),
-  "decimal_scaling" = list(
-    pkg             = "dprep",
-    map             = "decscale"
-  ),
-  "sigmoidal" = list(
-    pkg       = "dprep",
-    map       = "signorm"
-  ),
-  "softmax"   = list(
-    pkg       = "dprep",
-    map       = "softmaxnorm"
   )
+  # "decimal_scaling" = list(
+  #   pkg             = "dprep",
+  #   map             = "decscale"
+  # ),
+  # "sigmoidal" = list(
+  #   pkg       = "dprep",
+  #   map       = "signorm"
+  # ),
+  # "softmax"   = list(
+  #   pkg       = "dprep",
+  #   map       = "softmaxnorm"
+  # )
 )
 
 normalizationMethods <- names(normalizationPackages)
@@ -183,7 +183,6 @@ doNormalization.dprep <- function(task){
 #' super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "row")
 #' super_iris <- normalize(iris, method = "z_score", exclude = "Species", by = "row")
 #' super_iris <- normalize(iris, method = "sd_quotient", exclude = "Species", by = "row")
-#' super_iris <- normalize(iris, method = "decimal_scaling", exclude = "Species")
 #'
 normalize <- function(dataset, method, exclude = NULL, ...){
   orig_dataset <- dataset

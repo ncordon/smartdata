@@ -30,9 +30,9 @@ super_iris <- clean_noise(iris, method = "AENN", class_attr = "Species", k = 3)
 super_iris <- clean_noise(iris, "GE", class_attr = "Species", k = 5, relabel_th = 2)
 super_iris <- clean_noise(iris, "HARF", class_attr = "Species",
                           num_folds = 10, agree_level = 0.7, num_trees = 5)
-super_iris <- clean_noise(iris0, "TomekLinks")
 
 \donttest{
+super_iris <- clean_noise(iris0, "TomekLinks")
 super_iris <- clean_noise(iris, "hybrid", class_attr = "Species",
                           consensus = FALSE, action = "repair")
 super_iris <- clean_noise(iris, "Mode", class_attr = "Species", type = "iterative",

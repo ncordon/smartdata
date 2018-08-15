@@ -245,18 +245,18 @@ doFeatSelection.FSelector <- function(task){
 #'                                  class_attr = "Class", num_attrs = 3)
 #' super_ecoli <- feature_selection(ecoli1, "sym_uncertainty",
 #'                                  class_attr = "Class", num_attrs = 3)
-#' super_votes <- feature_selection(HouseVotes84, "oneR", class_attr = "Class", num_attrs = 3)
 #' super_votes <- feature_selection(HouseVotes84, "oneR", exclude = c("V1", "V2"),
 #'                                  class_attr = "Class", num_attrs = 3)
-#' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species", num_attrs = 3)
 #' super_votes <- feature_selection(iris, "RF_importance", class_attr = "Species",
 #'                                  num_attrs = 3, type = 2)
+#' \donttest{
 #' super_iris  <- feature_selection(iris, "best_first_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
 #' super_iris  <- feature_selection(iris, "forward_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
 #' super_iris  <- feature_selection(iris, "backward_search", exclude = "Species",
 #'                                  eval_fun = evaluator)
+#' }
 #' super_iris  <- feature_selection(iris, "cfs", class_attr = "Species")
 #' super_iris  <- feature_selection(iris, "consistency", class_attr = "Species")
 #'

@@ -31,6 +31,5 @@ super_iris <- normalize(iris, method = "min_max", exclude = c("Sepal.Length", "S
 super_iris <- normalize(iris, method = "min_max", exclude = "Species", by = "row")
 super_iris <- normalize(iris, method = "z_score", exclude = "Species", by = "row")
 super_iris <- normalize(iris, method = "sd_quotient", exclude = "Species", by = "row")
-super_iris <- normalize(iris, method = "decimal_scaling", exclude = "Species")
 
 }

@@ -128,11 +128,13 @@ doSpaceTransformation.adaptiveGPCA <- function(task){
 #'
 #' super_ecoli <- space_transformation(ecoli1, "lle_knn", k = 3, num_features = 2,
 #'                                    regularization = 1, exclude = c("Mcg", "Alm1"))
-#' \dontrun{
+#' \donttest{
 #' super_ecoli <- space_transformation(ecoli1, "lle_epsilon", epsilon = 0.99, num_features = 3)
-#' }
-#' super_antibiotics <- space_transformation(antibiotics, "adaptative_gpca", similarity = AntibioticSmall$Q,
+#'
+#' super_antibiotics <- space_transformation(antibiotics, "adaptative_gpca",
+#'                                          similarity = AntibioticSmall$Q,
 #'                                          num_features = 2)
+#' }
 #'
 space_transformation <- function(dataset, method, exclude = NULL, ...){
   orig_dataset <- dataset

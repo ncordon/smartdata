@@ -1,3 +1,7 @@
+## Resubmission
+This is a resubmission. In this version I have:
+* Corrected the title of the package to comply with CRAN requirements
+
 ## Test environments
 * ubuntu 14.04 (on travis-ci), release
 * local Arch Linux 4.14.32-1-lts, devel and release

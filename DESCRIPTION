@@ -3,7 +3,10 @@ Title: Data preprocessing for R
 Version: 1.0.0
 Authors@R: c(
    person("Ignacio", "Cordón", email = "nacho.cordon.castillo@gmail.com", role = c("aut", "cre")),
-   person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut")
+   person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut"),
+   person("Julián", "Luengo", email = "julianlm@decsai.ugr.es", role = "aut"),
+   person("Salvador", "García", email = "salvagl@decsai.ugr.es", role = "aut"),
+   person("Francisco", "Herrera", email = "herrera@decsai.ugr.es", role = "aut")
  )
 Maintainer: Ignacio Cordón <nacho.cordon.castillo@gmail.com>
 Description: Eases data preprocessing tasks, providing a data flow based 

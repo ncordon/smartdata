@@ -1,6 +1,6 @@
 ## Test environments
-* ubuntu 14.04 (on travis-ci), devel and release
-* local Arch Linux 4.14.32-1-lts, R 3.5.0
+* ubuntu 14.04 (on travis-ci), release
+* local Arch Linux 4.14.32-1-lts, devel and release
 * win-builder (devel and release)
 
 ## R CMD check results

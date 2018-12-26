@@ -6,7 +6,7 @@ output: rmarkdown::pdf_document
 geometry: margin=3.8cm
 papersize: A4
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Contributing to smartdata}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

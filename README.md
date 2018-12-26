@@ -2,10 +2,11 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![Build
-Status](https://travis-ci.org/ncordon/imbalance.svg?branch=master)](https://travis-ci.org/ncordon/smartdata)
+Status](https://travis-ci.com/ncordon/smartdata.svg?branch=master)](https://travis-ci.com/ncordon/smartdata)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-1.0.0-orange.svg?style=flat-square)](https://github.com/ncordon/imbalance/commits/master)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/smartdata)](https://cran.r-project.org/package=smartdata)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.0.0-orange.svg?style=flat-square)](https://github.com/ncordon/smartdata/commits/master)
 
 # smartdata
 

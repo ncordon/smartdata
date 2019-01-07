@@ -8,35 +8,33 @@ warnings_are_errors: true
 
 apt_packages:
   - qpdf
-
-r_packages:
-  - devtools
   
-r_github_packages:
-  - cran/callr
-  - hadley/pkgdown
-
 script:
   - R CMD build . ${R_BUILD_ARGS}
-  - R CMD check `ls -1t *.tar.gz | head -n 1` ${R_CHECK_ARGS}$
-  - R CMD INSTALL `ls -1t *.tar.gz | head -n 1`
+  - export PKG_TARBALL=`ls -1t *.tar.gz | head -n 1`
+  - R CMD check ${PKG_TARBALL} ${R_CHECK_ARGS}
 
 notifications:
   email: false
 
-after_success:
-  - Rscript -e 'pkgdown::build_site()'
-  - mv docs ..
-  - rm -r *
-  - mv ../docs/* .
-  
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_API_TOKEN
-  on:
-    branch: master
-  target_branch: gh-pages
+matrix:
+  include:
+  - r: bioc-devel  
+  - r: bioc-release
+    
+    after_success:
+      - Rscript -e 'pkgdown::build_site()'
+      - mv docs ..
+      - rm -r *
+      - mv ../docs/* .
+      
+    deploy:
+      provider: pages
+      skip_cleanup: true
+      github_token: $GITHUB_API_TOKEN
+      on:
+        branch: master
+        target_branch: gh-pages
   
 env:
    global:

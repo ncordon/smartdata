@@ -23,6 +23,8 @@ matrix:
   - r: bioc-release
     
     after_success:
+      - R CMD INSTALL ${PKG_TARBALL}
+      - Rscript -e 'install.packages("pkgdown")'
       - Rscript -e 'pkgdown::build_site()'
       - mv docs ..
       - rm -r *

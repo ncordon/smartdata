@@ -270,7 +270,8 @@ When treating outliers, those can be considered as whole rows of the dataset (th
 `multivariate` approach will imply deletion of the outlier instances from the dataset. `univariate` outliers can be treated imputing the median or the mean of the column.
 
 As example:
-```{r}
+
+```{r, eval = FALSE}
 super_iris <- clean_outliers(iris, method = "multivariate", type = "adj")
 super_iris <- clean_outliers(iris, method = "univariate", type = "z", fill = "mean")
 ```

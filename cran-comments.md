@@ -1,16 +1,15 @@
-## Resubmission
-This is a resubmission. In this version I have:
-* Corrected the title of the package to comply with CRAN requirements
+## Version 1.0.1
+Patches for the following problems:
+* Corrected the titles of the vignettes so they appear correctly on CRAN
+* Corrected issue compiling one of the vignettes (issue regarding fancyvrb / xcolor with options)
 
 ## Test environments
 * ubuntu 14.04 (on travis-ci), release
-* local Arch Linux 4.14.32-1-lts, devel and release
+* local Arch Linux 4.14.90-1-lts, devel and release
 * win-builder (devel and release)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
-There was 1 NOTE:
-    * New submission
     
 ## Downstream dependencies
 I have also run R CMD check on downstream dependencies of imbalance:

@@ -4,7 +4,8 @@
 \alias{feature_selection}
 \title{Feature selection wrapper}
 \usage{
-feature_selection(dataset, method, class_attr = NULL, exclude = NULL, ...)
+feature_selection(dataset, method, class_attr = NULL, exclude = NULL,
+  ...)
 }
 \arguments{
 \item{dataset}{we want to do feature selection on}

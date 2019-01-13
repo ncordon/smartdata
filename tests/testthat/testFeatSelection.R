@@ -18,6 +18,7 @@ test_that("Correct feature selection", {
   expect_error(feature_selection(iris0, "Boruta", class_attr = "Class", num_iterations = 200), NA)
   expect_error(feature_selection(iris, "chi_squared"))
   expect_error(feature_selection(iris, "chi_squared", class_attr = "Species", exclude = c("Petal.Width", "Sepal.Width")), NA)
+  expect_error(feature_selection(iris, "information_gain", class_attr = "Species", num_attrs = 2), NA)
   # exclude argument contains things not present in the dataset
   expect_error(feature_selection(ecoli1, "information_gain", class_attr = "Class", exclude = c("Petal.Width", "Sepal.Width")))
   expect_error(feature_selection(ecoli1, "information_gain", class_attr = "Class", exclude = c("Alm1", "Alm2")), NA)

@@ -159,7 +159,8 @@ doFeatSelection.FSelector <- function(task){
     whichNonNumeric <- which(! original_attrs %in% pick_attrs)
     nonNumeric <- original_attrs[whichNonNumeric]
     # Strip dataset from non continuous attributes, except from class
-    dataset <- dataset[, -whichNonNumeric]
+    if (length(whichNonNumeric) > 0)
+      dataset <- dataset[, -whichNonNumeric]
   } else{
     nonNumeric <- c()
   }
@@ -269,7 +270,6 @@ feature_selection <- function(dataset, method, class_attr = NULL,
 
   method   <- matchArg(method, featSelectionMethods)
   colnames <- names(dataset)
-  coltypes <- colTypes(dataset)
 
   if(length(exclude) > 0){
     dataset <- dataset[, -which(colnames %in% exclude)]

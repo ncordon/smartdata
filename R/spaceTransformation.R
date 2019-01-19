@@ -64,7 +64,7 @@ args.adaptative_gpca <- list(
       if(class(x) != "matrix")
         stop("similarity parameter needs a matrix of similarities of the dataset variabless")
     },
-    info    = "A p \times p similarity matrix on the variables defining an inner product on the rows of X",
+    info    = "An square similarity matrix on the variables defining an inner product on the rows of X",
     map     = "Q"
   ),
   num_features = list(

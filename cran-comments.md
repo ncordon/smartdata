@@ -1,7 +1,8 @@
-## Version 1.0.1
-Patches for the following problems:
-* Corrected the titles of the vignettes so they appear correctly on CRAN
-* Corrected issue compiling one of the vignettes (issue regarding fancyvrb / xcolor with options)
+## Version 1.0.2
+Corrects the following bugs:
+  * The instance selection wrapper applied for methods *information_gain*, *gain_ratio* and *sym_uncertainty* returned error when there was no categorical attribute in the dataset, apart from the class one.
+  * Changes `num_attrs` parameter for `num_features` in feature selection to standardize parameters w.r.t. space transformation wrapper.
+  * Corrects output of lle space transformation: result was a matrix instead of a dataset.
 
 ## Test environments
 * ubuntu 14.04 (on travis-ci), release

@@ -6,7 +6,7 @@ Status](https://travis-ci.com/ncordon/smartdata.svg?branch=master)](https://trav
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/smartdata)](https://cran.r-project.org/package=smartdata)
-[![packageversion](https://img.shields.io/badge/Package%20version-1.0.1-orange.svg?style=flat-square)](https://github.com/ncordon/smartdata/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.0.2-orange.svg?style=flat-square)](https://github.com/ncordon/smartdata/commits/master)
 
 # smartdata
 

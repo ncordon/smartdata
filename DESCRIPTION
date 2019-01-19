@@ -1,6 +1,6 @@
 Package: smartdata
 Title: Data Preprocessing
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
    person("Ignacio", "Cordón", email = "nacho.cordon.castillo@gmail.com", role = c("aut", "cre")),
    person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut"),

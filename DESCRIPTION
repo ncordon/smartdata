@@ -12,7 +12,7 @@ Maintainer: Ignacio Cordón <nacho.cordon.castillo@gmail.com>
 Description: Eases data preprocessing tasks, providing a data flow based 
    on a pipe operator which eases cleansing, transformation, oversampling, 
    or instance/feature selection operations.
-Depends: R (>= 3.4.0),
+Depends: R (>= 3.5.0),
          mice (>= 2.46.0)
 Imports:
    functional,

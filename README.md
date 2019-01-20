@@ -4,7 +4,7 @@
 [![Build
 Status](https://travis-ci.com/ncordon/smartdata.svg?branch=master)](https://travis-ci.com/ncordon/smartdata)
 [![minimal R
-version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
+version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/smartdata)](https://cran.r-project.org/package=smartdata)
 [![packageversion](https://img.shields.io/badge/Package%20version-1.0.2-orange.svg?style=flat-square)](https://github.com/ncordon/smartdata/commits/master)
 
@@ -16,11 +16,13 @@ transformation, and outliers/missing values/noise cleaning.
 
 ## Installation
 
-You can install smartdata from github with:
+You can install the latest smartdata stable release from CRAN
+with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ncordon/smartdata")
+# This sets both CRAN and Bioconductor as repositories to resolve dependencies
+setRepositories(ind = 1:2)
+install.packages("smartdata")
 ```
 
 and load it into an R session with:

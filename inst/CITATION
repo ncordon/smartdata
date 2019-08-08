@@ -1,0 +1,16 @@
+citHeader("To cite package smartdata in publications use:")
+
+citEntry(
+  entry = "Article",
+  title = "Smartdata: Data preprocessing to achieve smart data in R",
+  author = c(person("Ignacio", "Cordón"),
+             person("Julián", "Luengo"),
+             person("Salvador", "García"),
+             person("Francisco", "Herrera"),
+             person("Francisco", "Charte")),
+  month = "6",
+  year = "2019",
+  journal = "Neurocomputing",
+  url = "https://doi.org/10.1016/j.neucom.2019.06.006",
+  textVersion = 'Cordón I, Julián L, García S, Herrera F, Charte F (2019). "Smartdata: Data preprocessing to achieve smart data in R", Neurocomputing'
+)

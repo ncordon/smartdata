@@ -61,7 +61,7 @@ args.lle_epsilon <- list(
 args.adaptative_gpca <- list(
   similarity = list(
     check   = function(x){
-      if(class(x) != "matrix")
+      if(!is.matrix(x))
         stop("similarity parameter needs a matrix of similarities of the dataset variabless")
     },
     info    = "An square similarity matrix on the variables defining an inner product on the rows of X",

@@ -1,6 +1,6 @@
 Package: smartdata
 Title: Data Preprocessing
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: c(
    person("Ignacio", "Cordón", email = "nacho.cordon.castillo@gmail.com", role = c("aut", "cre")),
    person("Francisco", "Charte", email = "francisco@fcharte.com", role = "aut"),
@@ -49,5 +49,5 @@ Encoding: UTF-8
 LazyData: true
 BugReports: http://github.com/ncordon/smartdata/issues
 URL: http://github.com/ncordon/smartdata
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr

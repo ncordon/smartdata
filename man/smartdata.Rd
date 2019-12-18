@@ -3,7 +3,6 @@
 \docType{package}
 \name{smartdata}
 \alias{smartdata}
-\alias{smartdata-package}
 \title{smartdata: A package to ease data preprocessing tasks}
 \description{
 Provides a pipe interface that integrates a collection of the most used data

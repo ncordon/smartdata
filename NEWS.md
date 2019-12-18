@@ -1,3 +1,6 @@
+# smartdata 1.0.3
+  * Complies with new API for `class(m)` where if `m` is a matrix, the result is `c(array, matrix)`
+
 # smartdata 1.0.2
   * Corrects a bug for the instance selection wrapper applied for methods *information_gain*, *gain_ratio* and *sym_uncertainty* which gave failure when there was no categorical attribute in the dataset, apart from the class one.
   * Changes `num_attrs` parameter for `num_features` in feature selection to standardize parameters w.r.t. space transformation wrapper.

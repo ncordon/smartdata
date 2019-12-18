@@ -1,0 +1,10 @@
+pandoc: '2.2'
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  smartdata: smartdata.html
+  smartdata_dev: smartdata_dev.html
+urls:
+  reference: http://ncordon.github.io/smartdata/reference
+  article: http://ncordon.github.io/smartdata/articles
+
